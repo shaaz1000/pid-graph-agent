@@ -28,7 +28,7 @@ This document describes the code at the frozen implementation commit `a8d56b3` (
 2. [Two graph views](#two-graph-views)
 3. [The seven graph tools](#the-seven-graph-tools), especially [adjacency, reachability, path](#adjacency-reachability-and-path)
 4. [Agent workflow](#agent-workflow)
-5. [Claim-level grounding](#claim-level-grounding)
+5. [Evidence references](#evidence-references)
 6. [Evaluation](#evaluation)
 7. [Known limitations](#known-limitations)
 
@@ -55,7 +55,7 @@ For study before a conversation: [what went wrong and what I changed](#what-went
 | Entity resolution | Names and descriptions to entities; ambiguity | Yes | [`graph/entity_resolver.py`](../src/pid_agent/graph/entity_resolver.py) → `EntityResolver.resolve` |
 | Graph operations | Seven generic tools; traversal | Yes | [`graph/service.py`](../src/pid_agent/graph/service.py) → `GraphService`; [`graph/traversal.py`](../src/pid_agent/graph/traversal.py) → `FlowGraph.bfs` |
 | LLM planning | Choose tools, decide when to stop, word the answer | **No** | [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `PidAgent._plan`; [`llm/`](../src/pid_agent/llm/) |
-| Grounding | Validate the answer's structured claims against typed facts from tool results | Yes | [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `check_answer`; token-level second layer in [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) |
+| Grounding | Resolve the evidence ids an answer cites to typed facts and check each sentence against them | Yes | [`agent/evidence_refs.py`](../src/pid_agent/agent/evidence_refs.py) → `check_answer`; facts in [`agent/claims.py`](../src/pid_agent/agent/claims.py) |
 | Presentation | Trace, evidence, transcript, CLI | Yes | [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `format_transcript`; [`main.py`](../src/pid_agent/main.py) |
 | Evaluation | 15 questions, gold facts, scorer | Yes (the scorer) | [`evals/evaluator.py`](../evals/evaluator.py), [`evals/questions.json`](../evals/questions.json) |
 
@@ -289,7 +289,8 @@ Eight files explain most of the system. Suggested reading order:
 | [`agent/prompts.py`](../src/pid_agent/agent/prompts.py) | `SYSTEM_PROMPT` and three auxiliary prompts |
 | [`agent/state.py`](../src/pid_agent/agent/state.py) | `AgentState`, `TraceStep`, `AgentResult` |
 | [`agent/compact.py`](../src/pid_agent/agent/compact.py) | `compact_result` (model-facing view), `render_evidence` |
-| [`agent/claims.py`](../src/pid_agent/agent/claims.py) | `build_facts`, `validate_claim`, `check_answer`: claim-level grounding |
+| [`agent/evidence_refs.py`](../src/pid_agent/agent/evidence_refs.py) | `annotate_refs`, `check_sentence`, `check_answer`, `render_rows`: evidence ids and answer validation |
+| [`agent/claims.py`](../src/pid_agent/agent/claims.py) | `build_facts`, `validate_claim`: typed facts and typed claims |
 | [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) | `check_grounding`, `EvidenceCorpus`, `extract_claims`: the token-level layer |
 | [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) | `PidAgent`, `AgentLimits`, `format_transcript` |
 
@@ -302,6 +303,7 @@ Eight files explain most of the system. Suggested reading order:
 | [`llm/base.py`](../src/pid_agent/llm/base.py) | `LLMClient` protocol, `LLMResponse`, `ToolCall`, `LLMError` |
 | [`llm/groq_provider.py`](../src/pid_agent/llm/groq_provider.py) | `GroqProvider` (Groq SDK) |
 | [`llm/openai_compatible.py`](../src/pid_agent/llm/openai_compatible.py) | `OpenAICompatibleProvider` (shared HTTP adapter) |
+| [`llm/nvidia_provider.py`](../src/pid_agent/llm/nvidia_provider.py) | `NvidiaProvider`: the default; endpoint, timeout, low-effort option for answer-only calls |
 | [`llm/openrouter_provider.py`](../src/pid_agent/llm/openrouter_provider.py), [`llm/deepseek_provider.py`](../src/pid_agent/llm/deepseek_provider.py) | A name and a base URL each |
 | [`llm/__init__.py`](../src/pid_agent/llm/__init__.py) | `create_llm(settings)` |
 
@@ -1139,9 +1141,52 @@ Every tool returns a `ToolResult` ([`models.py`](../src/pid_agent/models.py)).
 
 ---
 
-## Claim-level grounding
+## Evidence references
 
-Added after the evaluation. This is the primary grounding mechanism; the token-level check in the next section is a second, purely restrictive layer.
+The current answer protocol. It replaced model-written claims as the primary mechanism after a live finding: restating ten valves as thirty claims, on top of the model's hidden reasoning, overran the output-token limit and the answer was cut off.
+
+```text
+Graph tool -> structured result -> evidence ids (code) -> answer cites ids -> validator resolves ids to typed facts -> final answer
+```
+
+All in [`agent/evidence_refs.py`](../src/pid_agent/agent/evidence_refs.py); the typed facts come from [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `build_facts`.
+
+| Piece | Function | What it does |
+|---|---|---|
+| Evidence ids | `annotate_refs` | Gives each row of a full tool result `E<step>.<n>`, the result `R<step>`, and its status facts `E<step>.0`. Deterministic, per agent run, never produced by the model |
+| Fact refs | `Fact.refs`, `FactIndex.by_ref` | Every typed fact records the rows it came from, so an id resolves to facts with graph provenance |
+| Citation parsing | `sentences_of` | Splits the answer into sentences and list items; a citation after the full stop, on its own line under a list, or under a lead-in line is attached to the right text |
+| Sentence check | `check_sentence` | Tokens must be carried by cited facts; values must belong to a named item; stated relations must be shown, in direction |
+| Fact graph | `Scope` | `downstream_pairs` (tool-computed routes, plus single pipes followed under the chamber rule), `related_pairs`, `involved`, `carriers` |
+| Rendering | `render_rows` | When the answer is ids only, writes the cited rows as text from the structured result |
+| Whole answer | `check_answer` | Returns `ClaimReport`: supported statements with their facts, problems, gaps, level |
+
+**Outcomes per sentence.**
+
+| Finding | Kind | Effect |
+|---|---|---|
+| Id that no result has, or malformed | `bad_reference` | Problem |
+| Identifier or value in no tool result | `identifier`, `number`, `value_with_unit`, ... | Problem |
+| Value that belongs to another item | `pairing` | Problem |
+| Relation not shown, or shown the other way | `relationship` | Problem |
+| Value described as a different property | `value_attribution` | Problem |
+| Item known only as a suggestion or note, stated as fact | `untyped` | Problem |
+| Supported, but by evidence the sentence does not cite | `uncited`, `unreferenced` | Gap: at most `limited` |
+
+Problems trigger the one rewrite and, if they remain, the fallback. Gaps trigger the rewrite once and otherwise leave the answer `limited`.
+
+**Truncation.** `LLMResponse.finish_reason` is kept; `truncated` is true for `length`. A truncated output is never parsed: the agent records a trace step, asks once for a shorter answer, and withholds the answer if it is cut off again (`failure_reason` starts with `answer_truncated`). `AgentResult.truncated_outputs` counts them. A timeout is a different failure (`provider_unavailable`) with its own setting, `LLM_TIMEOUT_SECONDS`.
+
+**Reasoning tokens.** Nemotron's hidden reasoning counts against the output limit. Calls that only write up collected evidence (rewrites, forced answers) request NVIDIA's documented low-effort mode (`NvidiaProvider.synthesis_options`); planning calls keep the default.
+
+**Limits.** Relation checking recognises a fixed set of wordings. A negated or hedged relation is not verified. Several items with several values in one sentence can be mis-paired among themselves. Prose with no identifier, number or relation word is not checked.
+
+---
+
+## Typed claims (still accepted)
+
+The first claim-level mechanism. The model is no longer asked for it, but a `claims` block is still validated if present, and the facts that support its claims count as cited evidence.
+
 
 ### Why
 
@@ -1560,6 +1605,10 @@ score = max(0, required facts found - forbidden facts found) / required facts
 
 ### Results
 
+**Final run** (NVIDIA `nvidia/nemotron-3-super-120b-a12b`, current agent): 12 of 15 fully correct, 13.42 of 15 points, mean 0.894; 14 grounded, 1 limited, 0 unsupported claims; 52 model calls, 33 tool calls; median latency 21.4 s, mean 51.9 s, p95 140.8 s. Three partial answers: an incomplete list of drawing ends (answer writing), a route that omits its valve (answer writing), and a control loop followed one lookup short (planning). Graph tools took about 0.15 s in total; hosted inference took the rest.
+
+The table below is the **earlier** pair of runs, made with the first agent and its token-level grounding check. They are not comparable with the final run.
+
 | | Groq `openai/gpt-oss-20b` | DeepSeek `deepseek-chat` |
 |---|---|---|
 | Questions asked | 1 of 15 (provider daily quota) | 15 of 15 |
@@ -1633,7 +1682,7 @@ All from the DeepSeek run.
 
 ## Testing strategy
 
-501 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
+556 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
 
 | Layer | File | Tests | What it pins down |
 |---|---|---|---|
@@ -1650,7 +1699,8 @@ All from the DeepSeek run.
 | Agent | `test_agent.py` | 59 | The workflow with a scripted model: tools, ambiguity, not found, missing data, loops, limits, malformed output, provider failure, grounding failure |
 | Providers | `test_llm.py`, `test_openrouter.py`, `test_deepseek.py` | 51 | Adapters against mocks: requests, parsing, usage, error categories, no key leakage, no failover |
 | Evaluation | `test_eval.py` | 26 | Gold facts re-derived from the graph; scorer behaviour |
-| Claim-level grounding | `test_claims.py` | 59 | Twenty adversarial cases that must not become supported, the matching positive cases, guardrails (scope, injection, tool allowlist, operating state), and the agent loop with scripted claims |
+| Evidence references | `test_evidence_refs.py` | 55 | Finish reasons and truncation; valid, unknown, malformed and duplicate ids; enumeration at several real sizes; pairing, relation and direction; invented items; traversal through fittings, stop at equipment, drawing ends; application-rendered answers |
+| Typed claims | `test_claims.py` | 59 | Twenty adversarial cases that must not become supported, the matching positive cases, guardrails (scope, injection, tool allowlist, operating state), and the agent loop with scripted claims |
 | Chat UI adapter | `test_ui_adapter.py` | 18 | Result-to-display mapping: steps, evidence, grounding, ambiguity, not found, provider error, missing fields; one scripted run of the page |
 
 **What the tests give confidence in.**

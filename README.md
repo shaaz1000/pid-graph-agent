@@ -11,6 +11,13 @@ DEXPI reference P&ID `C01V04-VER.EX01.xml`.
 Every answer comes with the tool calls that produced it, the graph facts it rests on, and the
 result of a grounding check.
 
+The agent uses an open-weight LLM through NVIDIA-hosted inference
+(`nvidia/nemotron-3-super-120b-a12b`). The model interprets the question, plans graph
+operations and words the answer. pyDEXPI and NetworkX hold the plant facts, deterministic
+tools retrieve them, and code checks the answer against the evidence it cites. Inference is
+remote because the project was built and tested on an 8 GB MacBook; nothing needs a GPU or a
+local model.
+
 | Looking for | Go to |
 |---|---|
 | Install and ask a question | [How to run](#how-to-run) |
@@ -26,7 +33,7 @@ result of a grounding check.
 ```bash
 git clone <this repository> && cd <this repository>
 uv sync                                          # install (Python 3.12 is fetched if needed)
-cp .env.example .env                             # then put your API key in .env
+cp .env.example .env                             # then put your NVIDIA_API_KEY in .env
 uv run pid-agent "What is P4711 connected to, and through which pipes?"
 ```
 
@@ -37,7 +44,7 @@ Without any API key you can still call the graph tools directly and run the test
 
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
-uv run pytest                                    # 501 deterministic tests, no network
+uv run pytest                                    # 556 deterministic tests, no network
 uv run python evals/evaluator.py                 # re-score the saved evaluation runs
 ```
 
@@ -56,7 +63,7 @@ not sent to the model. The UI was added after the evaluation below and played no
 
 ![Local chat UI showing a saved evaluation answer](docs/images/chat-ui.jpeg)
 
-*The screenshot shows the UI rendering the saved DeepSeek evaluation answer for question 12.*
+*The screenshot was taken before the evidence-reference grounding was added; it shows a saved DeepSeek answer, and the status label has since changed.*
 
 ### Configuration
 
@@ -65,18 +72,33 @@ failover.
 
 | `LLM_PROVIDER` | Key variable | `LLM_MODEL` |
 |---|---|---|
-| `groq` (default) | `GROQ_API_KEY` | `openai/gpt-oss-20b` (default) |
-| `deepseek` | `DEEP_SEEK_API_KEY` | must be set, e.g. `deepseek-chat` |
-| `openrouter` | `OPENROUTER_API_KEY` | must be set to a tool-calling model id |
+| `nvidia` (default) | `NVIDIA_API_KEY` | `nvidia/nemotron-3-super-120b-a12b` (default) |
 
-**Which model was actually used.** The design target is the open-weight `openai/gpt-oss-20b`
-(weights published by OpenAI under Apache-2.0) hosted on Groq, and all early development runs used it. Groq's free tier allows 200,000 tokens
-per day, which ran out during development. The formal evaluation below therefore has one
-complete run on **DeepSeek, model `deepseek-chat`**, and a run on **Groq, model
-`openai/gpt-oss-20b`** that the quota stopped after the first question. `deepseek-chat` is a
-hosted API alias; I have not verified which released weights it serves and make no licensing
-claim for it. To run with `openai/gpt-oss-20b`, put a Groq key in `.env` and leave the
-defaults. The OpenRouter adapter is tested only against mocks.
+Other adapters exist behind the same interface and are selected only by setting
+`LLM_PROVIDER`: `groq` (`GROQ_API_KEY`, default model `openai/gpt-oss-20b`), `deepseek`
+(`DEEP_SEEK_API_KEY`) and `openrouter` (`OPENROUTER_API_KEY`); the last two need `LLM_MODEL`.
+
+`LLM_BASE_URL` overrides the NVIDIA endpoint (default `https://integrate.api.nvidia.com/v1`)
+and `LLM_TIMEOUT_SECONDS` the per-call timeout (default 240 s for NVIDIA).
+
+**Model choice.** Four NVIDIA-hosted candidates were tried on this agent's own tasks: native
+tool calling with the real tool schema, then six questions through the full agent. Nemotron 3
+Super was the only one with no malformed tool calls and had the most answers grounded on the
+first attempt; `openai/gpt-oss-20b` on NVIDIA produced malformed tool names, Nemotron 3.5
+Lightning timed out on every question, and one listed model was not callable. This is a
+task-specific observation from a small sample, not a general ranking.
+
+**What "open" means here.** Nemotron 3 Super's weights are public under the *NVIDIA Nemotron
+Open Model License*, which permits commercial use, modification and redistribution with
+notice requirements. NVIDIA describes it as an open model with open weights. It is not an
+OSI-approved open-source licence, so the accurate term is open-weight. The Apache-2.0
+`openai/gpt-oss-20b` remains selectable with `LLM_PROVIDER=groq`. The agent framework
+(LangGraph), pyDEXPI and NetworkX are open source.
+
+**Earlier runs.** Development started on Groq `openai/gpt-oss-20b`, whose free daily quota
+ran out, and the first complete evaluation was run on DeepSeek `deepseek-chat` (a hosted
+alias; no licensing claim is made for it). Those runs are kept below as historical records.
+The OpenRouter adapter is tested only against mocks.
 
 ## Design note
 
@@ -119,25 +141,27 @@ suggestions.
 graph objects.
 
 **Agent.** A LangGraph state machine:
-plan -> execute tools -> plan again if needed -> draft answer with structured claims ->
-claim validation -> (one regeneration from evidence only) -> final answer, or a cautious answer
-assembled directly from evidence. The model chooses tools and words the answer. Budgets (8 planning turns, 16
+plan -> execute tools -> plan again if needed -> answer citing evidence ids -> validation ->
+(one regeneration from evidence only) -> final answer, or a cautious answer assembled directly
+from evidence. When the answer is just what some result rows say, the model replies with the
+ids alone and the application prints those rows, so the model is not used to reformat facts. The model chooses tools and words the answer. Budgets (8 planning turns, 16
 tool calls, repeated-call detection) guarantee termination.
 
-**Grounding.** The model ends its answer with a block of structured claims (subject,
-predicate, object or value, qualifiers) from a small fixed vocabulary that mirrors the tools:
-`has_property`, `connected_to`, `reachable`, `path`, `operates`, `open_end`, `not_found` and
-so on. Code turns the tool results into typed facts and accepts a claim only if one fact
-entails it: the same subject, the same relation or property, the same value and unit. "DN 80"
-on one line does not support "DN 80" on another, and `800.0 mm` never supports `DN 800`; no
-unit is converted. No model judges the answer. Tool inputs, messages and warnings never become
-facts, so a value the user typed cannot ground anything. A second, token-level pass then
-checks that every identifier and value in the answer text is covered by a supported claim; it
-can only reject. An answer whose claims all hold is `grounded`; one that passes only the
-token-level pass (for example because the model supplied no claims) is shown as `limited`;
-anything unsupported gets one rewrite and is then withheld. Each supported claim is returned
-with the fact, evidence id and DEXPI objects it rests on
-([agent/claims.py](src/pid_agent/agent/claims.py)).
+**Grounding.** Code gives every row of a tool result an evidence id (`E2.3` = row 3 of step
+2, `R2` = the whole result) and turns the rows into typed facts (subject, relation or
+property, value, qualifiers, graph source). The answer cites ids instead of restating
+evidence: "P4711 feeds H1007 through line 47122. [E2.3]". For each sentence, code resolves the
+ids and checks association, not just presence: an identifier or value must be in the cited
+facts; a value must belong to an item the sentence names (so "P4712's line is DN 80" fails
+even though both tokens exist in the evidence); and a stated relation (connected, feeds,
+downstream of, operates) must be one a tool result shows, in that direction. Adjacent pipes
+may be followed only under the chamber rule; `800.0 mm` never supports `DN 800`; nothing is
+converted. Tool inputs, messages and warnings never become facts. No model judges the answer.
+A fully cited answer that passes is `grounded`; one that passes only against all evidence,
+without ids, is `limited`; anything unsupported gets one rewrite and is then withheld. A model
+output cut off at its token limit is detected and never parsed as an answer
+([agent/evidence_refs.py](src/pid_agent/agent/evidence_refs.py),
+[agent/claims.py](src/pid_agent/agent/claims.py)).
 
 **Visible workflow.** The trace lists the actual tool calls, inputs and results. It contains
 no model reasoning.
@@ -158,195 +182,192 @@ flowchart TD
 
 ## Example transcripts
 
-All from real runs. Each block shows the actual tool calls; full transcripts with every tool
-result are in the linked files. The first six are from the evaluation run
-(DeepSeek `deepseek-chat`, evaluation commit `407d6ba`).
+All nine are from the final evaluation run (NVIDIA `nvidia/nemotron-3-super-120b-a12b`), unedited.
+Each block shows the actual tool calls and the answer; the linked file has every tool result,
+the grounded statements and the evidence. `[E2.3]` is an evidence id: row 3 of the tool result
+in step 2.
 
-**1. Route with pipe properties** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-07.txt))
-
-```
-Q: Trace the route from heat exchanger H1007 to tank T4750 and give the line number and pipe size along it.
-1 find_entities {"query": "H1007"}                                   -> success
-2 find_entities {"query": "T4750"}                                   -> success
-3 find_path {"source_entity_id": "PlateHeatExchanger-1", "target_entity_id": "Tank-1"} -> success
-A: H1007 nozzle N2 (Chamber-1) -> GlobeValve 47123/C1 (GlobeValve-2) -> T4750 nozzle N1.
-   Line number: 47123 (segment S1), nominal diameter DN 80, fluid code MNb.
-GROUNDING: grounded
-```
-
-**2. Reachability with several end points** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-05.txt))
+**1. Direct connection** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-03.txt))
 
 ```
-Q: If I follow the piping downstream from the swing check valve, where does the drawing end?
-1 find_entities {"query": "swing check valve"}                       -> success
-2 traverse {"start_entity_id": "SwingCheckValve-1", "direction": "downstream"} -> success
-A: Four terminal points: BallValve 47126/C2, BlindFlange 47126/C6, BlindFlange 47126/C11 and
-   FlowOutPipeOffPageConnector-1 ... The off-page connector is a real pipe leaving this
-   drawing; its destination is not shown ... The traversal did not continue through H1008
-   from Chamber-3 to Chamber-4 - those are separate chambers/sides.
-GROUNDING: grounded
+Q: What sits directly on either side of the pipe reducer, and what size is the pipe on each side?
+1 find_entities {"query": "reducer"}                                              -> success
+2 get_connections {"entity_id": "PipeReducer-1", "direction": "both", "relationship": "piping"} -> success
+A: The pipe reducer (PipeReducer-1) has an upstream connection to SwingCheckValve-1
+   (SwingCheckValve 47124/C2) via pipe segment S2 on line 47124 with nominal diameter DN 80 [E2.2].
+   It has a downstream connection to BallValve-1 (BallValve 47124/C4) via pipe segment S3 on
+   line 47124 with nominal diameter DN 50 [E2.3].
+GROUNDING: grounded    3 model calls, 19 s
 ```
 
-**3. Ambiguity is surfaced, not guessed** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-02.txt))
+**2. Multi-hop traversal** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-04.txt))
+
+```
+Q: Which pumps are upstream of the tubular heat exchanger?
+1 find_entities {"query": "tubular heat exchanger"}                               -> success
+2 traverse {"start_entity_id": "TubularHeatExchanger-1", "direction": "upstream", "entity_types": ["pump"]} -> success
+A: The pumps upstream of the tubular heat exchanger (H1008) are ReciprocatingPump-1 (P4712)
+   and CentrifugalPump-1 (P4711). [E1.1, E2.1, E2.2]
+GROUNDING: grounded    3 model calls, 16 s
+```
+
+**3. Property lookup** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-09.txt))
+
+```
+Q: What fluid code and piping class does line 47125 carry?
+1 find_entities {"query": "47125", "entity_type": "line"}                          -> success
+2 get_properties {"ids": "PipingNetworkSystem-5", "requested_properties": ["fluidCode", "pipingClass"]} -> success
+A: Line 47125 carries fluid code MNc [E2.1]. Its piping class is 73HG12 [E2.4].
+GROUNDING: grounded    3 model calls, 50 s
+```
+
+**4. Items along a route** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-08.txt))
+
+```
+Q: Going from pump P4712 to heat exchanger H1008, which valves do I pass through?
+1 find_entities {"query": "P4712", "entity_type": "pump"}                          -> success
+2 find_entities {"query": "H1008", "entity_type": "heatExchanger"}                 -> success
+3 find_path {"source_entity_id": "ReciprocatingPump-1", "target_entity_id": "TubularHeatExchanger-1", "direction": "downstream"} -> success
+A: You pass through BallValve 47126/C7 (BallValve-4) on the line 47126, DN 50, fluid MNc. [R3]
+GROUNDING: grounded    4 model calls, 19 s
+```
+
+**5. Ambiguity is surfaced, not guessed** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-02.txt))
 
 ```
 Q: What is the nominal diameter at component C1?
-1 find_entities {"query": "C1"}                                      -> ambiguous
-A: "C1" is not unique in this P&ID - five components carry the piping component number C1,
-   on five different lines: GlobeValve-2 (47123/C1), ButterflyValve-1 (47124/C1),
-   PipeTee-2 (47126/C1), GlobeValve-1 (47127/C1), GlobeValve-3 (47141/C1).
-   Tell me which line (or the tag/type) you mean and I'll give you the nominal diameter.
-GROUNDING: grounded
+1 find_entities {"query": "C1"}                                                    -> ambiguous
+2 get_properties {"ids": [five candidates], "requested_properties": ["nominalDiameter"]} -> success
+A: The supplied P&ID does not contain a single nominal diameter for component C1 because the
+   identifier "C1" matches multiple entities (GlobeValve-2, ButterflyValve-1, PipeTee-2,
+   GlobeValve-1, GlobeValve-3) that have different nominal diameters, and the graph does not
+   select one of them.
+GROUNDING: limited (first draft rejected; the rewrite cited no evidence ids)    4 model calls, 243 s
 ```
 
-**4. Missing data** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-11.txt))
+**6. Missing data** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-11.txt))
 
 ```
 Q: How much does heat exchanger H1007 weigh?
-1 find_entities {"query": "H1007"}                                   -> success
-2 get_properties {"ids": "PlateHeatExchanger-1"}                     -> success
-A: The supplied P&ID does not contain a weight for H1007 (PlateHeatExchanger-1). No
-   mass/weight property exists for it. (It then lists the properties that do exist.)
-GROUNDING: grounded
+1 find_entities {"query": "H1007"}                                                 -> success
+2 get_properties {"ids": ["PlateHeatExchanger-1"]}                                 -> success
+A: The P&ID does not contain a weight property for heat exchanger H1007. [R2]
+GROUNDING: grounded    3 model calls, 14 s
 ```
 
-**5. Struggle: correct, but ten tool calls** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-13.txt))
+**7. Struggle: the right route, an incomplete answer** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-07.txt))
+
+```
+Q: Trace the route from heat exchanger H1007 to tank T4750 and give the line number and pipe size along it.
+1 find_entities "H1007"   2 find_entities "T4750"
+3 find_path {"source_entity_id": "PlateHeatExchanger-1", "target_entity_id": "Tank-1", "direction": "any"} -> success
+A: The route from heat exchanger H1007 to tank T4750 follows line 47123 with a pipe size of DN 80. [E3.1]
+GROUNDING: grounded    score 0.67
+```
+
+`find_path` returned the route through GlobeValve-2. Everything the answer says is true and
+grounded, but it was asked to trace the route and left the valve out.
+
+**8. Failure: the planner stopped one step early** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-13.txt))
 
 ```
 Q: For control loop 4712.02: where is the pressure sensed, and which valve does the loop end up acting on?
-1 find_entities "4712.02"   2 list_entities   3 get_entity (controller)   4 get_connections (controller)
-5 get_entity (transmitter)  6 get_entity (actuator)  7 get_connections (transmitter)
-8 get_connections (actuator)  9 get_entity (blind flange)  10 get_entity (valve)
-A: Pressure sensed by PT4712.02 at BlindFlange 47126/C11; signal to PICSA4712.02, then to
-   PV4712.02, which operates GlobeValve 47127/C1. The actuator is configured fail close.
-GROUNDING: grounded     6 model calls, 23,870 tokens
+1 find_entities {"query": "4712.02"}                                               -> success
+2 get_connections {"entity_id": "ProcessInstrumentationFunction-2", "relationship": "instrumentation"} -> success
+A: Pressure is sensed by PT4712.02 [E2.3]. The control loop acts on valve PV4712.02 [E2.2].
+GROUNDING: grounded    score 0.50
 ```
 
-Four of the ten calls were not needed. Following an instrumentation chain takes one call per
-hop, and nothing stops the model from exploring further once it has the answer.
+It read the controller's links once and answered with the transmitter and the actuating
+function. The question asked where the transmitter senses (BlindFlange-2) and which valve the
+actuator operates (GlobeValve-1); both need one more lookup that the model did not make. The
+grounding check cannot catch this: nothing in the answer is false.
 
-**6. Struggle: first draft rejected by the grounding check** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-10.txt))
-
-```
-Q: What design pressure limits apply to each chamber of tank T4750?
-1 find_entities {"query": "T4750"}                                   -> success
-2 get_entity {"entity_id": "Tank-1", "include_children": true}       -> success
-   draft rejected: "DN 20000" (the graph says nominalDiameter 20000.0 mm, which is not a DN)
-A: Chamber 1: -0.1 bar to 0.1 bar. Chamber 2: -0.1 bar to 0.05 bar.
-GROUNDING: regenerated
-```
-
-**7. Failure: wrong answer after hitting the turn limit**
-([full](examples/transcripts/dev-failure-groq-instrumentation-turn-limit.txt); Groq
-`openai/gpt-oss-20b`, development build before `c0a881c`)
+**9. Failure: a narrow reading after a rewrite** ([full](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/transcripts/eval-05.txt))
 
 ```
-Q: Which instrument operates the globe valve on line 47127, and what is its fail action?
-1 find_entities "line 47127" (type valve) -> the line   2 get_connections on the line -> error
-3 get_entity (line)   4-7 find_entities on the valve and on its alias PV4712.02_YV (x4)
-8 find_entities "OperatedValveReference-1" -> not_found      LIMIT: 8 planning steps
-A: ... The fail action of that instrument cannot be determined from the supplied P&ID data.
+Q: If I follow the piping downstream from the swing check valve, where does the drawing end?
+1 find_entities {"query": "swing check valve"}                                     -> success
+2 traverse {"start_entity_id": "SwingCheckValve-1", "direction": "downstream"}     -> success
+   draft rejected: it cited a malformed evidence id
+A: The drawing ends at the FlowOutPipeOffPageConnector-1 (FlowOutPipeOffPageConnector-1). [E2.18, R2]
+GROUNDING: regenerated    score 0.25
 ```
 
-Wrong: the graph says *fail close*. Looking up the valve's alias returned the valve itself, so
-the model went round in a circle. Fixed generally in `67221a5` (type-plus-line resolution,
-link counts on entities, instrumentation links explained in words).
+The traversal returned all four ends. The rewrite named only the off-page connector and
+dropped the two blind flanges and the dead-end ball valve.
 
-**8. Failure: truncated search presented as the end**
-([full](examples/transcripts/dev-partial-deepseek-truncated-traversal.txt); DeepSeek, `308dc59`)
-
-```
-Q: Where does pump P4712 discharge to?
-1 find_entities   2 get_connections (downstream)   3 traverse {"direction": "downstream", "max_depth": 4}
-A: ... the discharge ultimately reaches tank T4750 via the relief branch, with the remaining
-   branches ending at valves C2, C5 and C7.
-```
-
-Partly wrong: C5 and C7 are not ends. The model chose depth 4 and never saw the heat exchanger
-and off-page connector beyond it. Results now mark such entities `continues_beyond_max_depth`
-(`db563eb`); question 6 of the evaluation exercises this.
-
-**9. Failure: correct answer withheld**
-([full](examples/transcripts/dev-withheld-deepseek-chamber-warning.txt); DeepSeek, `308dc59`)
-
-The model's draft was right but quoted two identifiers that the tool had only put in a
-warning, so the grounding check withheld it and returned an evidence list instead. Chamber
-boundaries are now structured evidence (`db563eb`).
+Transcripts from earlier development, including three failures on older builds, are in
+[examples/transcripts/](examples/transcripts/) and [examples/live-smoke/](examples/live-smoke/).
 
 ## Evaluation
 
 - **Set:** 15 questions in [evals/questions.json](evals/questions.json): entity resolution and
   ambiguity (2), adjacency (1), reachability including a depth-limited case (3), routes (2),
   line and chamber properties (2), missing data (1), instrumentation (2), a nonexistent tag
-  and a false premise (2). None repeats a development question.
-- **Gold facts** were read from the deterministic graph tools, never from an LLM. Each
-  question lists the tool calls its facts came from, and `tests/test_eval.py` re-derives them
-  from the C01 graph on every test run.
-- **Scoring** ([evals/evaluator.py](evals/evaluator.py)) uses no LLM judge. Each question has
-  required facts and, where it makes sense, forbidden ones (an invented weight, a valve that
-  is not on the route). `score = max(0, required found - forbidden found) / required`.
-  Matching ignores case, markdown, dash style and spacing inside identifiers. An answer the
-  agent withheld scores 0; provider failures are reported separately.
-- **This evaluation predates claim-level grounding.** Both runs used the earlier token-level
-  check. The structured-claim validation described in the design note was added afterwards
-  and is covered by deterministic tests ([tests/test_claims.py](tests/test_claims.py): 20
-  adversarial cases and the corresponding positive cases, with no model involved). The
-  evaluation was not re-run, so these scores say nothing about how a live model performs with
-  the claims format.
-- **Live smoke test after that change.** Seven questions were asked once each
-  ([examples/live-smoke/](examples/live-smoke/)); this is not a score. On Groq
-  `openai/gpt-oss-20b`: one answer fully grounded, one wrong draft correctly withheld, then
-  the daily quota stopped the run. The remaining five were asked on DeepSeek `deepseek-chat`
-  as a diagnostic: three grounded (two after one rewrite), one correctly reported as
-  ambiguous, one `limited` because of a claims-parsing bug. That run exposed four general
-  issues, since fixed: claims written one per line, a missing direction on open-end facts, a
-  mislabelled status after an empty rewrite, and an output-token limit too small for the
-  claims block.
-- **Runs:** each question asked once, no retries of answers, no changes between questions.
-  The questions and scorer were committed (`407d6ba`) before the first run and are identical
-  for both runs. The agent code is the same frozen commit (`a8d56b3`) in both.
+  and a false premise (2).
+- **Gold facts** were read from the deterministic graph tools, never from an LLM, and
+  `tests/test_eval.py` re-derives them from the C01 graph on every test run.
+- **Scoring** ([evals/evaluator.py](evals/evaluator.py)) uses no LLM judge. Each question
+  lists required facts and, where it makes sense, forbidden ones.
+  `score = max(0, required found - forbidden found) / required`, so a question scores between
+  0 and 1. "Fully correct" means a score of 1.0; the points total is the sum of the 15 scores.
+- **Run:** each question asked once, no retries, nothing changed between questions.
+
+### Final run: NVIDIA `nvidia/nemotron-3-super-120b-a12b`
+
+| | |
+|---|---|
+| Fully correct | **12 of 15** |
+| Points | **13.42 of 15** (mean score 0.894) |
+| Partially correct | 3 (scores 0.25, 0.67, 0.50) |
+| Grounding | 14 grounded (11 on the first attempt, 3 after one rewrite), 1 limited |
+| Unsupported claims in final answers | 0 |
+| Truncated outputs, provider failures | 0, 0 |
+| Model calls / graph tool calls | 52 / 33 (3.5 / 2.2 per question) |
+| Latency per question | median 21.4 s, mean 51.9 s, p95 140.8 s (fastest 13.7 s, slowest 242.5 s) |
+
+The three partial answers:
+
+| Question | What happened |
+|---|---|
+| 5, where the drawing ends | The traversal found all four ends. The answer read "drawing end" narrowly and, after a rewrite, named only the off-page connector |
+| 7, route H1007 to T4750 | The correct path was retrieved; the answer omitted the globe valve on it |
+| 13, control loop 4712.02 | The planner stopped one graph lookup too early and reported the transmitter and actuating function, not the sensing point and the valve |
+
+None of the three contains a false statement; they are incomplete. Two are answer-writing
+failures and one is a planning failure. They are left as they are.
+
+**Latency.** The graph tools took about 0.15 s in total across the whole run. Hosted model
+inference accounted for effectively all of the 779 s. The spread comes from the provider: two
+questions of the same shape took 14 s and 109 s.
+
+**Provenance.** [run.json](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/run.json) records commit `1fb4106`, but the run was made from
+the working tree before it was committed; the code that ran is the commit that follows it,
+"feat: ground answers with evidence references". The evaluator now records whether the tree
+was clean and a hash of uncommitted changes, for future runs.
+
+Per run, under [evals/runs/](evals/runs/): `run.json` (raw results with full traces),
+`results.json` (scores) and `transcripts/`. `uv run python evals/evaluator.py` re-scores every
+saved run without a key.
+
+### Earlier runs (not comparable)
 
 | | Groq `openai/gpt-oss-20b` | DeepSeek `deepseek-chat` |
 |---|---|---|
 | Questions asked | 1 of 15 (stopped by the provider's daily token quota) | 15 of 15 |
-| Mean score | none claimed | **1.00** |
-| Outcomes | question 1: full credit; questions 2-15: not asked | 15 correct |
-| Required facts found | 2 of 2 on the one question | 41 of 41 |
-| Forbidden facts found | 0 | 0 |
-| Model calls / tool calls | 3 / 2 on the one question | 50 / 43 (3.3 / 2.9 per question) |
-| Tokens | 6,153 on the one question | 149,044 (about 9,900 per question) |
-| Drafts rejected by grounding, then regenerated | 0 | 3 (questions 1, 10, 15) |
-| Fallback answers, turn-limit hits | 0, 0 | 0, 0 |
+| Result | question 1 fully correct; no score claimed | 15 fully correct, mean 1.00 |
 
-**Groq `openai/gpt-oss-20b`** is supported and was exercised. The frozen evaluation started
-successfully on it and question 1 scored full credit. Groq's daily token quota (HTTP 429,
-200,000 tokens per day) then prevented the remaining questions from being asked, so no
-GPT-OSS evaluation score is claimed, and one question says nothing about how the model would
-score overall. Nothing was filled in from another model. The partial run is preserved
-separately and can be completed with `LLM_PROVIDER=groq uv run python evals/evaluator.py --run`,
-which only asks the questions that have no answer yet.
+These used an earlier agent with a token-level grounding check: an answer passed if its
+identifiers and values appeared anywhere in the tool results. The current agent requires
+evidence ids and checks that values belong to the items named and that stated relations are
+shown, and it runs a different model. The scores are therefore not directly comparable; the
+earlier runs are kept as a record.
 
-**DeepSeek `deepseek-chat`**: the complete 15-question evaluation was run once on it.
-
-Per run, under [evals/runs/](evals/runs/): `run.json` (raw results with full traces),
-`results.json` (scores) and `transcripts/`.
-[DeepSeek run](evals/runs/deepseek-deepseek-chat/) |
-[Groq run](evals/runs/groq-openai-gpt-oss-20b/)
-
-**How much to read into this.** I read all 15 DeepSeek answers against the gold facts by hand
-and agree with the scores, but a perfect score on 15 questions mostly shows the set is not
-hard enough to separate good from excellent:
-
-- It is one run of one model. Hosted models are not deterministic even at temperature 0.
-- The complete run is not on the intended open-weight model. On `openai/gpt-oss-20b` (Groq),
-  an earlier 15-question development run, before the stabilization fixes, gave 11 correct, 1
-  overly literal, 1 incomplete, 1 wrong and 1 withheld. Apart from the single evaluation
-  question above, those fixes have not been re-measured on that model.
-- The scorer checks that required facts are present. It does not check everything else the
-  answer says; that is the grounding check's job, and it is not perfect either.
-- I wrote the questions knowing the graph and the tools.
-- Of the three rejected drafts, two were real catches (a diameter in mm rewritten as "DN")
-  and one was a false alarm by the property-attribution check.
+**How much to read into this.** It is one run of one model on 15 questions that I wrote
+knowing the graph and the tools. Hosted models are not deterministic. The scorer checks that
+required facts are present, not everything else the answer says; that is the grounding
+check's job, and it has the limits listed below.
 
 ## Limitations
 
@@ -359,20 +380,31 @@ hard enough to separate good from excellent:
   `47126/C5`; the agent says when an identifier is derived.
 - **`find_path` returns only the shortest route.**
 - **Instrumentation is one call per hop**; there is no multi-hop instrumentation traversal.
-- **Claim-level grounding has only a small live smoke test**, not an evaluation: eight live
-  answers across two models, two of them on the open-weight model. If a model omits or
-  under-fills the claims block, the answer is still checked token by token and labelled
-  `limited`, which is the old behaviour. An answer in that state can contain values that are
-  in the tool results but were not matched to a claim.
-- **What claim validation cannot prove.** It checks the claims the model lists; a sentence
-  with no identifier, number or claim (a general-knowledge gloss such as expanding the
-  instrument code "TICSA") is not detected. A claim is only as right as the graph: errors or
-  omissions in the source P&ID pass through, and "not in the graph" does not mean "not in the
-  plant". Facts outside the fixed predicates cannot be stated at all.
+- **Latency.** NVIDIA's hosted endpoint was slow and uneven during testing: a model call
+  usually returned in 2 to 30 s but at times took 90 to 145 s, so one question took between
+  half a minute and several minutes. The agent makes one call per tool round plus one for the
+  answer, and one more if a draft is rewritten.
+- **"Feeds" can stop at a fitting.** Asked what a pump feeds, the model sometimes reports the
+  direct neighbour (a tee) and does not traverse to the equipment beyond it. The answer is
+  true and grounded but shallow. The generic operation exists
+  (`traverse` with `stop_at_types=["equipment"]`); choosing it is up to the model.
+- **What the grounding check cannot prove.** A sentence with no identifier, number or
+  relation word it recognises (a general-knowledge gloss such as expanding the instrument code
+  "TICSA") is not checked. Relation checking covers a fixed set of wordings (connected, feeds,
+  downstream/upstream of, operates, route); a relation phrased differently is only checked
+  for the presence of its items and values. Several items with several values in one sentence
+  can be mis-paired among themselves. A fact is only as right as the graph: errors in the
+  source P&ID pass through, and "not in the graph" does not mean "not in the plant".
+- **Answers without evidence ids** are checked against all tool results and labelled
+  `limited`.
 - **No "enough evidence" detector.** The model may make redundant calls; budgets bound it.
 - **Provider and model variance**, and Groq's free daily limit covers roughly one and a half
   15-question runs.
-- **Not built:** OCR ingestion, visual highlighting on the drawing, hosting (the bonus item),
+- **OCR is not implemented.** The DEXPI XML is the authoritative source and is read
+  structurally. A later extension could use an OCR or document-parsing model (NVIDIA lists
+  `nvidia/nemotron-parse`) to find tags on a scanned drawing and match them to graph entities;
+  it would never replace the graph as the source of topology.
+- **Not built:** visual highlighting on the drawing, hosting (the bonus item),
   conversational memory between questions. The chat UI is local only.
 
 ## Development notes

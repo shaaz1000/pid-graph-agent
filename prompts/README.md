@@ -23,6 +23,13 @@ written; later prompts never overwrite earlier ones.
 | `15-structured-claim-grounding.md` | Post-publication hardening: claim-level structured grounding, typed evidence validation and focused guardrails | Preserved development instruction |
 | `16-final-release-readiness.md` | Release audit, live smoke test of claim-level grounding, licensing, stale-document fixes, freeze | Preserved development instruction |
 | `17-nvidia-provider-migration.md` | Switch the hosted LLM provider to NVIDIA's OpenAI-compatible API with an open-weight model | Preserved development instruction |
+| `18-nvidia-verification-and-default.md` | Verify the NVIDIA key, probe candidate models for tool calling and agent behaviour, keep all adapters | Preserved development instruction |
+| `19-claims-truncation-and-scaling-brief.md` | Timeout investigation outcome: treat claims-block truncation as a scaling issue, plan a general fix | Preserved development instruction |
+| `20-evidence-reference-grounding.md` | Approve evidence references, relationship-aware validation, truncation detection, traversal semantics | Preserved development instruction |
+| `21-live-validation-of-evidence-references.md` | Live validation runs on the selected model, licence check, reasoning experiment | Preserved development instruction |
+| `22-finish-and-submit.md` | Stop expanding scope: application-side rendering of simple results, evaluation, documentation, commit and push | Preserved development instruction |
+| `23-evaluation-baseline-instructions.md` | Let the evaluation finish untouched; what to capture and report as the baseline | Preserved development instruction |
+| `24-freeze-and-submit.md` | Freeze the agent, accept the NVIDIA baseline, fix provenance for future runs, finish documentation, commit and push | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 

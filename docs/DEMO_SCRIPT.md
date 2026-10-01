@@ -24,13 +24,16 @@ What to point out:
 
 - Open **Tool calls**: `find_entities` resolved the tag, then `get_connections` returned the two pipes.
 - Every value in the answer (47121, 47122, DN 80) is in the step 2 result. The model added nothing.
-- Open **Grounding**. For each claim you can follow the chain: the structured claim
-  (`connected_to(CentrifugalPump-1, -> PlateHeatExchanger-1, lineNumber: 47122)`), the graph
-  fact that supports it, its evidence id (`PipingNetworkSegment-2/connections/1`) and the
-  graph it came from (conceptual graph, with the DEXPI segment and line objects).
+- The answer cites evidence ids such as `[E2.3]`: row 3 of the tool result in step 2. Open
+  **Tool calls**, step 2, "View raw result" to see that row.
+- Open **Grounding**. For each statement you can follow the chain: the sentence, the ids it
+  cites, the graph fact behind each id (for example `flows_to` from the pump to the
+  exchanger with line 47122), and the graph it came from (conceptual graph, with the DEXPI
+  segment and line objects).
 - The status line comes from that validation, not from the model. "Grounded" means every
-  claim matched a fact. "Partially grounded (limited)" means the model did not list claims
-  for everything it wrote, so those parts were only checked token by token.
+  factual sentence cited evidence that supports it. "Partially grounded (limited)" means some
+  sentences cited nothing and were checked against all tool results instead.
+- Expect a wait: the hosted model can take from half a minute to a few minutes per question.
 
 ## Question 2: multi-step traversal
 

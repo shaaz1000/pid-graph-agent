@@ -234,63 +234,64 @@ There are four such pipes. Traversal never walks through them.
 
 ## Grounding: a good and a bad answer
 
-The model does not just write an answer. It ends the answer with a list of **structured claims**, and plain Python decides whether each claim is true of the graph. No model judges the answer.
+Every row of a tool result gets an **evidence id** from the application: `E2.3` is row 3 of step 2, `R2` is the whole result of step 2. The model does not restate facts. It cites ids, and plain Python checks each sentence against the facts those ids stand for. No model judges the answer.
 
 ```text
-ANSWER TEXT        "P4711 feeds H1007 through line 47122, DN 80."
+ANSWER SENTENCE    "P4711 feeds H1007 through line 47122, DN 80. [E2.3]"
       |
-STRUCTURED CLAIM   connected_to(subject = CentrifugalPump-1, object = PlateHeatExchanger-1,
-                                direction = downstream, lineNumber = 47122,
-                                nominalDiameterRepresentation = DN 80)
+EVIDENCE ID        E2.3  (assigned by code to a row of get_connections, step 2)
       |
 TYPED FACT         flows_to: CentrifugalPump-1 -> PlateHeatExchanger-1
                    (lineNumber 47122, nominalDiameterRepresentation DN 80, ...)
       |
-EVIDENCE ID        PipingNetworkSegment-2/connections/1
-      |
 GRAPH SOURCE       conceptual graph; DEXPI objects PipingNetworkSegment-2, PipingNetworkSystem-2
 ```
 
-A claim is supported only if **one fact** has the same subject, the same relation or property, the same value and the same unit. The value appearing somewhere else in the results is not enough.
+The check is about **association**, not presence:
 
-**Good.**
+**Good.** `P4711 has designShaftPower 60.0 kW. [E1.1]`: the cited fact is about P4711 and carries that value.
+
+**Bad: right value, wrong item.**
 
 ```text
-claim     has_property(PlateHeatExchanger-1, upperLimitDesignPressure, "60.0 bar")
-fact      Chamber-1 (part of PlateHeatExchanger-1) upperLimitDesignPressure = 60.0 bar
-result    supported
+sentence   "P4712's line is DN 80. [R1, R2]"
+facts      DN 80 belongs to the pipe P4711 -> H1007. P4712's pipe is DN 50.
+result     rejected: the value does not belong to the item the sentence names
 ```
 
-**Bad: right value, wrong thing.**
+Both `P4712` and `DN 80` are in the evidence. That is not enough.
+
+**Bad: relation that no tool result shows, or shows the other way.**
 
 ```text
-claim     has_property(P4712, designShaftPower, "60.0 kW")
-facts     designShaftPower = 60.0 kW belongs to P4711; nothing of that name was returned for P4712
-result    rejected
+"P4711 feeds T4750."            rejected: no result relates them that way
+"H1007 is upstream of P4711."   rejected: the result shows it downstream
 ```
 
-**Bad: unit reinterpreted** (the model really did this in the evaluation, question 1).
+**Bad: unit reinterpreted** (the model really did this in the first evaluation).
 
 ```text
-graph     nominalDiameter = 800.0 mm        (a chamber dimension)
-claim     has_property(chamber, nominalDiameter, "DN 800")
-result    rejected. 800.0 mm is a length; DN is a pipe size designation. Nothing is converted.
+graph      nominalDiameter = 800.0 mm   (a chamber dimension)
+sentence   "... DN 800 ..."
+result     rejected. 800.0 mm is a length; DN is a size designation. Nothing is converted.
 ```
 
 The rules:
 
-1. **Facts come only from graph data in tool results.** Tool inputs, messages and warnings never become facts, so a value the user typed cannot support anything.
-2. **Subjects must be identified by a tool.** A tag nobody looked up, a fuzzy suggestion, or an identifier that matches several entities cannot be the subject of a claim.
-3. **Relations are not chained.** "A reaches the exchanger" and "the exchanger connects to B" do not add up to "A reaches B"; only reachability the traversal computed counts. That is what keeps the two sides of a heat exchanger apart.
-4. **A small fixed vocabulary.** Eighteen predicates that mirror the tools. Anything else (the purpose of a valve, the meaning of a code, whether something is open) is not a graph fact and is rejected.
-5. **The text is checked too.** Every identifier and value in the prose must be covered by a supported claim. This second pass can only reject.
-6. **One rewrite, then fail closed.** Unsupported content gets one rewrite; if it is still there, the user gets the tool results and "could not determine", not the model's text.
+1. **Facts come only from graph data in tool results.** Tool inputs, messages and warnings never become facts, so a value the user typed supports nothing.
+2. **Ids come from code.** A made-up or malformed id is rejected.
+3. **A value must belong to an item the sentence names.**
+4. **A stated relation must be shown by a tool result, in that direction.** Checked wordings: connected, feeds / fed by, downstream / upstream of, operates, route. Single pipes may be followed one after another only under the chamber rule, so the two sides of a heat exchanger stay apart.
+5. **One rewrite, then fail closed.** If something unsupported is still there, the user gets the tool results and "could not determine".
+6. **Cut-off output is detected.** If the model hits its output limit, the incomplete text is discarded, not parsed.
 
-The result carries a status that comes from this validation, not from the model: `grounded` (every claim held), `limited` (the text passed only the token-level pass, for example because the model listed no claims), `ambiguous`, or `insufficient evidence`. There is no confidence percentage.
+**When no wording is needed.** If the answer is just what some rows say (an item, a property, a list of results), the model replies with ids only, for example `[R2]`, and the application prints those rows itself. The model is used for deciding what to look up and for explanations, not for reformatting facts.
 
-What it still cannot do: check a sentence that contains no identifier, number or claim; know whether the P&ID itself is right; or say anything about the physical plant beyond the drawing. Beyond deterministic tests, this claim format has had only a seven-question live smoke test, not a scored evaluation.
+The result carries a status set by this validation, not by the model: `grounded` (every factual sentence cited and supported), `limited` (supported, but only against all evidence because ids were missing), `ambiguous`, or `insufficient evidence`. There is no confidence percentage.
 
-Code: [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `build_facts`, `validate_claim`, `check_answer`. The token-level pass is [`agent/grounding.py`](../src/pid_agent/agent/grounding.py).
+What it still cannot do: check a sentence that has no identifier, number or recognised relation word; untangle several items and several values packed into one sentence; know whether the P&ID itself is right.
+
+Code: [`agent/evidence_refs.py`](../src/pid_agent/agent/evidence_refs.py) → `annotate_refs`, `check_sentence`, `check_answer`. Facts are built in [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `build_facts`.
 
 ## What happens when things go wrong
 
@@ -302,8 +303,9 @@ Code: [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `build_facts`, `
 | No path | "No downstream path from A to B" (and whether one exists the other way) | `find_path` returns `empty` with a message |
 | Open end | "An open-ended pipe on line 47141; its destination is not shown" | Connection carries `open_end`; the far end is `null` |
 | Truncated traversal | "The search stopped at depth N; piping continues beyond" | Entities at the cut are marked `continues_beyond_max_depth` |
-| Unsupported claim | Usually nothing: the rewrite is clean. Otherwise an evidence list | Claim validation rejects, one regeneration, then fallback |
-| Model lists no claims | The answer, marked "partially grounded (limited)" | Only the token-level pass applied; never shown as grounded |
+| Unsupported statement | Usually nothing: the rewrite is clean. Otherwise an evidence list | Validation rejects, one regeneration, then fallback |
+| Model cites no evidence ids | The answer, marked "partially grounded (limited)" | Checked against all tool results; never shown as grounded |
+| Model output cut off | A shorter answer, or "the answer was cut off and withheld" | `finish_reason=length` is detected; incomplete text is never parsed |
 | Question not about the plant | "I can only answer from the loaded P&ID graph" | No graph-supported statement was produced, so the model's text is withheld |
 | Request for the key or the instructions | Same refusal | The model has no key to give; text quoting its instructions is withheld |
 | Provider failure | "The model provider call failed. This is not a statement about the P&ID" | Error is categorised (rate limit, auth, ...) and kept out of evaluation scores |
@@ -314,7 +316,7 @@ Code: [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `build_facts`, `
 flowchart TD
     P["plan (LLM)"] -->|"wants tools"| E["execute tools (code)"]
     E -->|"results"| P
-    P -->|"writes a draft + claims"| V["validate claims (code)"]
+    P -->|"answer citing evidence ids"| V["validate (code)"]
     V -->|"unsupported, first time"| R["regenerate (LLM)"]
     R --> V
     V -->|"supported"| F["final answer"]
@@ -339,7 +341,7 @@ Code: [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `PidAgent`.
 
 On top of that are seven generic tools: find entities, list, get entity, direct connections, traverse, find path, get properties. There is nothing question-specific, because the review uses unseen questions.
 
-The agent is a small LangGraph state machine. The model picks tools, the code runs them, and that repeats until the model answers. The answer ends with structured claims, and a deterministic validator accepts each claim only if a typed fact from the tool results has the same subject, relation, value and unit. If something is unsupported the model gets one rewrite; after that the user gets the raw evidence instead.
+The agent is a small LangGraph state machine. The model picks tools, the code runs them, and that repeats until the model answers. The answer cites evidence ids, and a deterministic validator checks each sentence against the typed facts behind those ids. If something is unsupported the model gets one rewrite; after that the user gets the raw evidence instead.
 
 Two things I am most pleased with are the handling of the drawing's messiness: heat exchangers have two sides that must not be connected by a search, and some pipes leave the drawing with no destination, which I report as open ends without inventing where they go."
 
@@ -351,9 +353,9 @@ Add to the above:
 - **Direction** is DEXPI source-to-target, which I verified against the XML's `FromID`/`ToID` and the flow-arrow symbols. It is drawing direction, not live flow.
 - **Chamber-aware search**: the search state is (entity, chamber), so a path cannot enter one side of an exchanger and leave the other. The boundary is reported as evidence.
 - **Traversal results carry path facts**: distance, equipment passed through, real ends, and whether the search was cut off by its depth limit. Those exist because a real model misread a truncated search as "the line ends here".
-- **Grounding** is claim-level: the model lists structured claims, code matches each against typed facts derived from tool results (subject, relation, value, unit), and nothing is converted or chained. The earlier token-level check caught the model turning "800 mm" into "DN 800" in the evaluation; the claim validator makes that impossible to accept.
-- **Evaluation**: 15 questions with gold facts read from the graph, a deterministic scorer, no LLM judge, committed before the run. DeepSeek `deepseek-chat` scored 15 of 15. The intended open-weight model on Groq answered one question correctly before the free daily quota ran out, so I claim no score for it.
-- **Honest limits**: claim-level grounding was added after the evaluation and has deterministic tests plus a small live smoke test, not a scored run; prose with nothing checkable is not detected; the model can make redundant calls; only C01 has been tested; one evaluation run.
+- **Grounding** uses evidence ids: code labels every result row, the answer cites the ids, and each sentence is checked against the typed facts behind them for pairing (value belongs to the named item) and relation (shown by a tool result, in that direction). Simple results are printed by the application from the rows, without model prose.
+- **Evaluation**: 15 questions with gold facts read from the graph, a deterministic scorer, no LLM judge. The final run on NVIDIA-hosted Nemotron 3 Super got 12 of 15 fully correct (13.42 of 15 points), 14 grounded and 1 limited, with no unsupported claims. An earlier run on DeepSeek scored 15 of 15 with a weaker grounding check, so the two are not comparable.
+- **Honest limits**: NVIDIA-hosted inference is slow at times (a question can take minutes); the model sometimes answers "feeds" with the adjacent fitting; prose with nothing checkable is not detected; the model can make redundant calls; only C01 has been tested; one evaluation run.
 
 ### Questions you will be asked
 
@@ -370,7 +372,7 @@ One has the right shape for following flow, the other has the complete facts. Ne
 To map arbitrary wording onto graph operations and chain several of them. That is the part that has to work on questions nobody anticipated.
 
 **How do you prevent hallucinations?**
-The model has no plant knowledge to draw on and must call a tool first. It has to state its facts as structured claims, and code accepts a claim only when a typed fact from the tool results has the same subject, relation, value and unit. Unsupported content gets one rewrite and is then withheld. That reduces hallucination; it does not make it impossible: a sentence with nothing checkable in it gets through.
+The model has no plant knowledge to draw on and must call a tool first. Its answer cites evidence ids, and code checks each sentence against the facts those ids stand for: the value must belong to the item named, and a stated relation must be one a tool result shows. Unsupported content gets one rewrite and is then withheld. That reduces hallucination; it does not make it impossible: a sentence with nothing checkable in it gets through.
 
 **What does downstream mean?**
 Following pipes in the direction they are drawn, source to target. It does not mean fluid is currently flowing; valve positions are not in a P&ID.
@@ -382,10 +384,10 @@ A search cannot enter through one chamber and leave through another. The boundar
 It is reported as missing: absent properties, unknown tags, pipes with no destination. Nothing is filled in.
 
 **How did you evaluate it?**
-Fifteen questions with graph-derived expected facts and a deterministic scorer, frozen before the run. I also say plainly that a perfect score on fifteen questions I wrote mostly shows the set is too easy.
+Fifteen questions with graph-derived expected facts and a deterministic scorer. The final run got 12 fully correct and 3 partially correct, none with a false statement: two answers left something out and one stopped a lookup early. Median latency was 21 s, almost all of it hosted model inference.
 
 **What are the biggest current limitations?**
-No complete evaluation on the open-weight model; claim-level grounding has only a small live smoke test; instrumentation chains cost one call per hop; only one drawing has been tried.
+Provider latency; "feeds" answered with the adjacent fitting; instrumentation chains cost one call per hop; only one drawing has been tried.
 
 **What would you build next in production?**
 Many drawings joined across sheets through the off-page connectors, a persistent graph store behind the same tool interface, stored traces for audit, and evaluation sets written by plant engineers.
