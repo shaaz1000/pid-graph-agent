@@ -234,37 +234,63 @@ There are four such pipes. Traversal never walks through them.
 
 ## Grounding: a good and a bad answer
 
-After the model drafts an answer, plain Python pulls out everything in it that looks like a plant fact (tags, ids, line numbers, numbers with units, DN values) and looks each one up in the tool results.
+The model does not just write an answer. It ends the answer with a list of **structured claims**, and plain Python decides whether each claim is true of the graph. No model judges the answer.
+
+```text
+ANSWER TEXT        "P4711 feeds H1007 through line 47122, DN 80."
+      |
+STRUCTURED CLAIM   connected_to(subject = CentrifugalPump-1, object = PlateHeatExchanger-1,
+                                direction = downstream, lineNumber = 47122,
+                                nominalDiameterRepresentation = DN 80)
+      |
+TYPED FACT         flows_to: CentrifugalPump-1 -> PlateHeatExchanger-1
+                   (lineNumber 47122, nominalDiameterRepresentation DN 80, ...)
+      |
+EVIDENCE ID        PipingNetworkSegment-2/connections/1
+      |
+GRAPH SOURCE       conceptual graph; DEXPI objects PipingNetworkSegment-2, PipingNetworkSystem-2
+```
+
+A claim is supported only if **one fact** has the same subject, the same relation or property, the same value and the same unit. The value appearing somewhere else in the results is not enough.
 
 **Good.**
 
 ```text
-graph says      nominalDiameterRepresentation = "DN 80"
-answer says     "nominal diameter DN 80"
-check           "DN 80" is in the tool results  ->  supported
+claim     has_property(PlateHeatExchanger-1, upperLimitDesignPressure, "60.0 bar")
+fact      Chamber-1 (part of PlateHeatExchanger-1) upperLimitDesignPressure = 60.0 bar
+result    supported
 ```
 
-**Bad** (this really happened in the evaluation, question 1).
+**Bad: right value, wrong thing.**
 
 ```text
-graph says      nominalDiameter = 800.0 mm        (a chamber dimension)
-draft said      "DN 800"
-check           "DN 800" is not in the tool results.
-                800.0 mm is a measurement; DN is a pipe size designation. Different things.
-result          draft rejected -> model asked once to rewrite from the evidence -> clean answer
+claim     has_property(P4712, designShaftPower, "60.0 kW")
+facts     designShaftPower = 60.0 kW belongs to P4711; nothing of that name was returned for P4712
+result    rejected
 ```
 
-The rules, conceptually:
+**Bad: unit reinterpreted** (the model really did this in the evaluation, question 1).
 
-1. Only real graph data counts as evidence. Tool inputs and warning text do not, because they can repeat what the user typed.
-2. A number with a unit must match as a number and a unit.
-3. An identifier must fit the role the sentence gives it ("segment C3" fails if C3 is a component number).
-4. Something that appears only in the question may be mentioned only in a sentence that disclaims it ("P4771 was not found").
-5. One rewrite is allowed. If that fails too, the user gets the tool results and an honest "could not determine", not the unsupported text.
+```text
+graph     nominalDiameter = 800.0 mm        (a chamber dimension)
+claim     has_property(chamber, nominalDiameter, "DN 800")
+result    rejected. 800.0 mm is a length; DN is a pipe size designation. Nothing is converted.
+```
 
-It is a text-matching check, not understanding. A wrong sentence built entirely from real values can pass.
+The rules:
 
-Code: [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) → `check_grounding`.
+1. **Facts come only from graph data in tool results.** Tool inputs, messages and warnings never become facts, so a value the user typed cannot support anything.
+2. **Subjects must be identified by a tool.** A tag nobody looked up, a fuzzy suggestion, or an identifier that matches several entities cannot be the subject of a claim.
+3. **Relations are not chained.** "A reaches the exchanger" and "the exchanger connects to B" do not add up to "A reaches B"; only reachability the traversal computed counts. That is what keeps the two sides of a heat exchanger apart.
+4. **A small fixed vocabulary.** Eighteen predicates that mirror the tools. Anything else (the purpose of a valve, the meaning of a code, whether something is open) is not a graph fact and is rejected.
+5. **The text is checked too.** Every identifier and value in the prose must be covered by a supported claim. This second pass can only reject.
+6. **One rewrite, then fail closed.** Unsupported content gets one rewrite; if it is still there, the user gets the tool results and "could not determine", not the model's text.
+
+The result carries a status that comes from this validation, not from the model: `grounded` (every claim held), `limited` (the text passed only the token-level pass, for example because the model listed no claims), `ambiguous`, or `insufficient evidence`. There is no confidence percentage.
+
+What it still cannot do: check a sentence that contains no identifier, number or claim; know whether the P&ID itself is right; or say anything about the physical plant beyond the drawing. This claim format has only been tested with scripted model output, not yet against a live model.
+
+Code: [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `build_facts`, `validate_claim`, `check_answer`. The token-level pass is [`agent/grounding.py`](../src/pid_agent/agent/grounding.py).
 
 ## What happens when things go wrong
 
@@ -276,7 +302,10 @@ Code: [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) → `check_gro
 | No path | "No downstream path from A to B" (and whether one exists the other way) | `find_path` returns `empty` with a message |
 | Open end | "An open-ended pipe on line 47141; its destination is not shown" | Connection carries `open_end`; the far end is `null` |
 | Truncated traversal | "The search stopped at depth N; piping continues beyond" | Entities at the cut are marked `continues_beyond_max_depth` |
-| Unsupported draft | Usually nothing: the rewrite is clean. Otherwise an evidence list | Grounding rejects, one regeneration, then fallback |
+| Unsupported claim | Usually nothing: the rewrite is clean. Otherwise an evidence list | Claim validation rejects, one regeneration, then fallback |
+| Model lists no claims | The answer, marked "partially grounded (limited)" | Only the token-level pass applied; never shown as grounded |
+| Question not about the plant | "I can only answer from the loaded P&ID graph" | No graph-supported statement was produced, so the model's text is withheld |
+| Request for the key or the instructions | Same refusal | The model has no key to give; text quoting its instructions is withheld |
 | Provider failure | "The model provider call failed. This is not a statement about the P&ID" | Error is categorised (rate limit, auth, ...) and kept out of evaluation scores |
 
 ## The agent loop
@@ -285,7 +314,7 @@ Code: [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) → `check_gro
 flowchart TD
     P["plan (LLM)"] -->|"wants tools"| E["execute tools (code)"]
     E -->|"results"| P
-    P -->|"writes a draft"| V["validate (code)"]
+    P -->|"writes a draft + claims"| V["validate claims (code)"]
     V -->|"unsupported, first time"| R["regenerate (LLM)"]
     R --> V
     V -->|"supported"| F["final answer"]
@@ -310,7 +339,7 @@ Code: [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `PidAgent`.
 
 On top of that are seven generic tools: find entities, list, get entity, direct connections, traverse, find path, get properties. There is nothing question-specific, because the review uses unseen questions.
 
-The agent is a small LangGraph state machine. The model picks tools, the code runs them, and that repeats until the model answers. Then a deterministic check extracts every identifier and value from the answer and looks for it in the tool results. If something is unsupported the model gets one rewrite; after that the user gets the raw evidence instead.
+The agent is a small LangGraph state machine. The model picks tools, the code runs them, and that repeats until the model answers. The answer ends with structured claims, and a deterministic validator accepts each claim only if a typed fact from the tool results has the same subject, relation, value and unit. If something is unsupported the model gets one rewrite; after that the user gets the raw evidence instead.
 
 Two things I am most pleased with are the handling of the drawing's messiness: heat exchangers have two sides that must not be connected by a search, and some pipes leave the drawing with no destination, which I report as open ends without inventing where they go."
 
@@ -322,9 +351,9 @@ Add to the above:
 - **Direction** is DEXPI source-to-target, which I verified against the XML's `FromID`/`ToID` and the flow-arrow symbols. It is drawing direction, not live flow.
 - **Chamber-aware search**: the search state is (entity, chamber), so a path cannot enter one side of an exchanger and leave the other. The boundary is reported as evidence.
 - **Traversal results carry path facts**: distance, equipment passed through, real ends, and whether the search was cut off by its depth limit. Those exist because a real model misread a truncated search as "the line ends here".
-- **Grounding** treats only graph-derived fields as evidence, checks units and roles, and caught the model turning "800 mm" into "DN 800" in the evaluation.
+- **Grounding** is claim-level: the model lists structured claims, code matches each against typed facts derived from tool results (subject, relation, value, unit), and nothing is converted or chained. The earlier token-level check caught the model turning "800 mm" into "DN 800" in the evaluation; the claim validator makes that impossible to accept.
 - **Evaluation**: 15 questions with gold facts read from the graph, a deterministic scorer, no LLM judge, committed before the run. DeepSeek `deepseek-chat` scored 15 of 15. The intended open-weight model on Groq answered one question correctly before the free daily quota ran out, so I claim no score for it.
-- **Honest limits**: grounding is lexical; the model can make redundant calls; only C01 has been tested; one evaluation run.
+- **Honest limits**: claim-level grounding was added after the evaluation and is covered by deterministic tests only, not a live run; prose with nothing checkable is not detected; the model can make redundant calls; only C01 has been tested; one evaluation run.
 
 ### Questions you will be asked
 
@@ -341,7 +370,7 @@ One has the right shape for following flow, the other has the complete facts. Ne
 To map arbitrary wording onto graph operations and chain several of them. That is the part that has to work on questions nobody anticipated.
 
 **How do you prevent hallucinations?**
-The model has no plant knowledge to draw on, must call a tool first, and its answer is checked against tool results with one rewrite and then an evidence-only fallback. That reduces hallucination; it does not make it impossible.
+The model has no plant knowledge to draw on and must call a tool first. It has to state its facts as structured claims, and code accepts a claim only when a typed fact from the tool results has the same subject, relation, value and unit. Unsupported content gets one rewrite and is then withheld. That reduces hallucination; it does not make it impossible: a sentence with nothing checkable in it gets through.
 
 **What does downstream mean?**
 Following pipes in the direction they are drawn, source to target. It does not mean fluid is currently flowing; valve positions are not in a P&ID.
@@ -356,7 +385,7 @@ It is reported as missing: absent properties, unknown tags, pipes with no destin
 Fifteen questions with graph-derived expected facts and a deterministic scorer, frozen before the run. I also say plainly that a perfect score on fifteen questions I wrote mostly shows the set is too easy.
 
 **What are the biggest current limitations?**
-No complete evaluation on the open-weight model; the grounding check is text matching; instrumentation chains cost one call per hop; only one drawing has been tried.
+No complete evaluation on the open-weight model; claim-level grounding has not been measured on a live model; instrumentation chains cost one call per hop; only one drawing has been tried.
 
 **What would you build next in production?**
 Many drawings joined across sheets through the off-page connectors, a persistent graph store behind the same tool interface, stored traces for audit, and evaluation sets written by plant engineers.

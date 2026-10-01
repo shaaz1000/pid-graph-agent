@@ -24,7 +24,7 @@ and a few optional items are listed at the end.
 | Requirement | Status | Where implemented | How to verify | Known limitation |
 |---|---|---|---|---|
 | Workflow visible: tool calls and what they returned, plus the answer | Met | CLI: `format_transcript` in `agent/workflow.py`. UI: "Tool calls", "Graph evidence", "Grounding" sections in `ui/app.py` | Run any question in the CLI or `uv run pid-agent-ui` | The trace shows operations, not model reasoning (by design) |
-| Answers grounded in the graph | Met, with stated limits | `agent/grounding.py` → `check_grounding`; one regeneration; evidence-only fallback | `tests/test_grounding.py`; evaluation transcripts for questions 1 and 10 show rejected drafts | Lexical check: a wrong sentence built only from real values can pass; general-knowledge glosses are not detectable |
+| Answers grounded in the graph | Met, with stated limits | `agent/claims.py` → `check_answer`: structured claims validated against typed facts (subject, relation, value, unit); token-level second layer in `agent/grounding.py`; one regeneration; evidence-only fallback | `tests/test_claims.py` (20 adversarial cases plus positives, no model); evaluation transcripts for questions 1 and 10 show drafts rejected by the earlier token-level check | Claim-level grounding was added after the evaluation and has not been run against a live model. Prose with no identifier, value or claim is not checked |
 | Say so when the data does not contain something | Met | `missing` in `get_properties`; `not_found` in resolution; `open_end` connections | Evaluation questions 11 (weight), 14 (nonexistent valve), 15 (false premise) | None known |
 | Open-source LLM | Partly demonstrated | Default: `openai/gpt-oss-20b` (open-weight) on Groq | README "Which model was actually used" | The only complete evaluation run is on DeepSeek `deepseek-chat`, a hosted alias whose weights and licence I have not verified. On `gpt-oss-20b` one evaluation question was answered before the provider's free daily quota ran out |
 | Open-source framework | Met | LangGraph for the agent; pyDEXPI and NetworkX for the graph | `pyproject.toml` | pyDEXPI is AGPL-3.0 |
@@ -69,7 +69,8 @@ and a few optional items are listed at the end.
 
 The evaluation ran against the agent at commit `a8d56b3`. Since then:
 
-- No existing file under `src/pid_agent/` has changed (`git diff a8d56b3 -- src` shows only the new `ui/` package).
+- The chat UI was added as a new `ui/` package.
+- Claim-level grounding was added: new `agent/claims.py`, with changes to `agent/workflow.py`, `agent/state.py` and `agent/prompts.py` (the model is now asked for a claims block), and one added field in `graph/service.py`. The agent that produced the saved evaluation answers is therefore not the current agent.
 - The chat UI, its tests, and the documents under `docs/` were added. None of this was part of the 15-question run, and the evaluation was not re-run.
 - The UI shows no confidence score, because the agent does not compute one.
 
@@ -80,7 +81,7 @@ The evaluation ran against the agent at commit `a8d56b3`. Since then:
 **Important** (not required, but affects how the submission reads):
 
 1. *No complete evaluation on the open-weight model.* The assignment asks for an open-source LLM. `openai/gpt-oss-20b` is the default and works, but the reported score is from `deepseek-chat`. Completing the run needs only a Groq key with quota: `LLM_PROVIDER=groq uv run python evals/evaluator.py --run` asks just the unanswered questions.
-2. *The grounding check is lexical.* Documented, not fixed.
+2. *Claim-level grounding has no live measurement.* It replaced lexical matching as the primary mechanism after the evaluation and is verified by deterministic tests only. If a model does not fill the claims block, answers are labelled `limited` and checked token by token as before. Asking a few live questions before sending would show how often that happens.
 
 **Optional** (not built, on purpose): hosting; conversation memory between questions; multi-hop instrumentation traversal in one call; a second DEXPI file; highlighting on the drawing.
 
@@ -92,7 +93,7 @@ Run from a new clone of this repository, without an API key:
 |---|---|
 | `uv sync` | installs |
 | `uv run pid-agent tool find_entities '{"query": "P4711"}'` | returns `CentrifugalPump-1` |
-| `uv run pytest` | 440 passed, 4 deselected |
+| `uv run pytest` | 499 passed, 4 deselected |
 | `uv run python evals/evaluator.py` | re-scores both saved runs |
 | `uv run pid-agent-ui` | page loads and shows the graph |
 | `uv run pid-agent "..."` without a key | one-line error naming the variable to set |

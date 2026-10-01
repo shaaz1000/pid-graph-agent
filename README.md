@@ -37,7 +37,7 @@ Without any API key you can still call the graph tools directly and run the test
 
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
-uv run pytest                                    # 440 deterministic tests, no network
+uv run pytest                                    # 499 deterministic tests, no network
 uv run python evals/evaluator.py                 # re-score the saved evaluation runs
 ```
 
@@ -50,8 +50,8 @@ uv run pid-agent-ui
 Opens a local [Streamlit](https://streamlit.io) page (installed by `uv sync`). It is a
 presentation layer over the same agent: it calls `PidAgent.ask` and shows the answer, then, in
 expandable sections, the tool calls with their inputs and results, the graph evidence, the
-grounding outcome and any graph notes (ambiguity, missing properties, open ends, truncated
-searches). Each question is an independent agent run; earlier messages stay on screen but are
+grounding status with each validated claim and the graph fact behind it, and any graph notes
+(ambiguity, missing properties, open ends, truncated searches). Each question is an independent agent run; earlier messages stay on screen but are
 not sent to the model. The UI was added after the evaluation below and played no part in it.
 
 ![Local chat UI showing a saved evaluation answer](docs/images/chat-ui.jpeg)
@@ -119,17 +119,25 @@ suggestions.
 graph objects.
 
 **Agent.** A LangGraph state machine:
-plan -> execute tools -> plan again if needed -> draft answer -> grounding check ->
-(one regeneration from evidence only) -> final answer, or a cautious answer assembled directly
-from evidence. The model chooses tools and words the answer. Budgets (8 planning turns, 16
+plan -> execute tools -> plan again if needed -> draft answer with structured claims ->
+claim validation -> (one regeneration from evidence only) -> final answer, or a cautious answer
+assembled directly from evidence. The model chooses tools and words the answer. Budgets (8 planning turns, 16
 tool calls, repeated-call detection) guarantee termination.
 
-**Grounding.** After drafting, plant-specific claims in the answer (identifiers, line numbers,
-DN values, numbers with units, type names) are extracted and checked against the tool
-results. Tool inputs and warning text are not evidence, because they can echo the user. An
-identifier must also fit the role the sentence gives it ("segment C3" fails when C3 is a
-component number), and a value must not be attributed to a different property than the one
-that carries it.
+**Grounding.** The model ends its answer with a block of structured claims (subject,
+predicate, object or value, qualifiers) from a small fixed vocabulary that mirrors the tools:
+`has_property`, `connected_to`, `reachable`, `path`, `operates`, `open_end`, `not_found` and
+so on. Code turns the tool results into typed facts and accepts a claim only if one fact
+entails it: the same subject, the same relation or property, the same value and unit. "DN 80"
+on one line does not support "DN 80" on another, and `800.0 mm` never supports `DN 800`; no
+unit is converted. No model judges the answer. Tool inputs, messages and warnings never become
+facts, so a value the user typed cannot ground anything. A second, token-level pass then
+checks that every identifier and value in the answer text is covered by a supported claim; it
+can only reject. An answer whose claims all hold is `grounded`; one that passes only the
+token-level pass (for example because the model supplied no claims) is shown as `limited`;
+anything unsupported gets one rewrite and is then withheld. Each supported claim is returned
+with the fact, evidence id and DEXPI objects it rests on
+([agent/claims.py](src/pid_agent/agent/claims.py)).
 
 **Visible workflow.** The trace lists the actual tool calls, inputs and results. It contains
 no model reasoning.
@@ -279,6 +287,12 @@ boundaries are now structured evidence (`db563eb`).
   is not on the route). `score = max(0, required found - forbidden found) / required`.
   Matching ignores case, markdown, dash style and spacing inside identifiers. An answer the
   agent withheld scores 0; provider failures are reported separately.
+- **This evaluation predates claim-level grounding.** Both runs used the earlier token-level
+  check. The structured-claim validation described in the design note was added afterwards
+  and is covered by deterministic tests ([tests/test_claims.py](tests/test_claims.py): 20
+  adversarial cases and the corresponding positive cases, with no model involved). The
+  evaluation was not re-run, so these scores say nothing about how a live model performs with
+  the claims format.
 - **Runs:** each question asked once, no retries of answers, no changes between questions.
   The questions and scorer were committed (`407d6ba`) before the first run and are identical
   for both runs. The agent code is the same frozen commit (`a8d56b3`) in both.
@@ -336,9 +350,15 @@ hard enough to separate good from excellent:
   `47126/C5`; the agent says when an identifier is derived.
 - **`find_path` returns only the shortest route.**
 - **Instrumentation is one call per hop**; there is no multi-hop instrumentation traversal.
-- **Grounding is lexical.** It can miss a wrong statement made only of supported tokens, and
-  it cannot catch general-knowledge glosses (the model expanding an instrument code such as
-  "TICSA"). Slash-joined names like `N1/N2` are rejected and cost a regeneration.
+- **Claim-level grounding is new and untested on a live model.** It is exercised only by
+  deterministic tests with scripted model output. If a model omits or under-fills the claims
+  block, the answer is still checked token by token and labelled `limited`, which is the old
+  behaviour.
+- **What claim validation cannot prove.** It checks the claims the model lists; a sentence
+  with no identifier, number or claim (a general-knowledge gloss such as expanding the
+  instrument code "TICSA") is not detected. A claim is only as right as the graph: errors or
+  omissions in the source P&ID pass through, and "not in the graph" does not mean "not in the
+  plant". Facts outside the fixed predicates cannot be stated at all.
 - **No "enough evidence" detector.** The model may make redundant calls; budgets bound it.
 - **Provider and model variance**, and Groq's free daily limit covers roughly one and a half
   15-question runs.

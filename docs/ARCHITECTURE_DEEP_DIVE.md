@@ -28,7 +28,7 @@ This document describes the code at the frozen implementation commit `a8d56b3` (
 2. [Two graph views](#two-graph-views)
 3. [The seven graph tools](#the-seven-graph-tools), especially [adjacency, reachability, path](#adjacency-reachability-and-path)
 4. [Agent workflow](#agent-workflow)
-5. [Grounding](#grounding)
+5. [Claim-level grounding](#claim-level-grounding)
 6. [Evaluation](#evaluation)
 7. [Known limitations](#known-limitations)
 
@@ -55,7 +55,7 @@ For study before a conversation: [what went wrong and what I changed](#what-went
 | Entity resolution | Names and descriptions to entities; ambiguity | Yes | [`graph/entity_resolver.py`](../src/pid_agent/graph/entity_resolver.py) → `EntityResolver.resolve` |
 | Graph operations | Seven generic tools; traversal | Yes | [`graph/service.py`](../src/pid_agent/graph/service.py) → `GraphService`; [`graph/traversal.py`](../src/pid_agent/graph/traversal.py) → `FlowGraph.bfs` |
 | LLM planning | Choose tools, decide when to stop, word the answer | **No** | [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `PidAgent._plan`; [`llm/`](../src/pid_agent/llm/) |
-| Grounding | Check the draft's plant-specific claims against tool results | Yes | [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) → `check_grounding` |
+| Grounding | Validate the answer's structured claims against typed facts from tool results | Yes | [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `check_answer`; token-level second layer in [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) |
 | Presentation | Trace, evidence, transcript, CLI | Yes | [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `format_transcript`; [`main.py`](../src/pid_agent/main.py) |
 | Evaluation | 15 questions, gold facts, scorer | Yes (the scorer) | [`evals/evaluator.py`](../evals/evaluator.py), [`evals/questions.json`](../evals/questions.json) |
 
@@ -227,7 +227,7 @@ Totals: 3 model calls, 3 tool calls, 8,411 tokens, 2.4 s.
 | Deterministic entity resolution with ambiguity | Semantic or embedding search |
 | Seven generic graph tools | Multi-hop instrumentation traversal as one call |
 | LangGraph agent with budgets and a visible trace | A deterministic "enough evidence" detector |
-| Grounding check, one regeneration, evidence-only fallback | A grounding check that understands sentence meaning |
+| Claim-level grounding, one regeneration, evidence-only fallback | Checking prose that contains no identifier, value or claim |
 | Three provider adapters behind one interface | Automatic provider failover |
 | 15-question evaluation with a deterministic scorer | A complete evaluation run on `openai/gpt-oss-20b` |
 | CLI and a local chat UI (added after the evaluation; presentation only, [`ui/`](../src/pid_agent/ui/)) | OCR, image input, visual highlighting, hosting |
@@ -289,7 +289,8 @@ Eight files explain most of the system. Suggested reading order:
 | [`agent/prompts.py`](../src/pid_agent/agent/prompts.py) | `SYSTEM_PROMPT` and three auxiliary prompts |
 | [`agent/state.py`](../src/pid_agent/agent/state.py) | `AgentState`, `TraceStep`, `AgentResult` |
 | [`agent/compact.py`](../src/pid_agent/agent/compact.py) | `compact_result` (model-facing view), `render_evidence` |
-| [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) | `check_grounding`, `EvidenceCorpus`, `extract_claims` |
+| [`agent/claims.py`](../src/pid_agent/agent/claims.py) | `build_facts`, `validate_claim`, `check_answer`: claim-level grounding |
+| [`agent/grounding.py`](../src/pid_agent/agent/grounding.py) | `check_grounding`, `EvidenceCorpus`, `extract_claims`: the token-level layer |
 | [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) | `PidAgent`, `AgentLimits`, `format_transcript` |
 
 ### LLM provider adapters
@@ -1138,9 +1139,120 @@ Every tool returns a `ToolResult` ([`models.py`](../src/pid_agent/models.py)).
 
 ---
 
-## Grounding
+## Claim-level grounding
+
+Added after the evaluation. This is the primary grounding mechanism; the token-level check in the next section is a second, purely restrictive layer.
 
 ### Why
+
+A token check asks "does this string occur somewhere in the tool results?". That cannot tell `DN 80` on one line from `DN 80` on another, or a neighbouring valve from the valve an actuator operates. Claim-level grounding asks "is there a graph fact with this subject, this relation and this value?".
+
+### The contract
+
+```text
+tool results (structured)   ->  typed facts          build_facts
+answer text + claims block  ->  structured claims    split_answer
+claim x facts               ->  supported/rejected   validate_claim   (no model involved)
+whole answer                ->  ClaimReport          check_answer
+```
+
+All in [`agent/claims.py`](../src/pid_agent/agent/claims.py).
+
+### Fact schema
+
+`Fact` is a typed view over the existing tool results; it does not replace the `Evidence` model, it points at it.
+
+| Field | Meaning |
+|---|---|
+| `id` | `F1`, `F2`, ... within one answer |
+| `predicate` | The relation (see vocabulary below) |
+| `subject` | A stable id: entity, connection or sub-object |
+| `object` | The other entity, for relations |
+| `value` | The literal, for properties, types and identifiers. Units stay inside the value as returned |
+| `qualifiers` | Property name, direction, distance, line and pipe attributes, nozzles, chambers, route |
+| `tool` | Which tool returned it |
+| `evidence_id` | The id of the `Evidence` item in that tool result (for example a connection id) |
+| `source_graph`, `source_object_ids` | Provenance, copied from that `Evidence` item |
+
+Facts are built from `entities`, `connections`, `paths`, `properties`, `boundaries` and three `meta` fields. Tool inputs, messages and warnings are not read. One exception is inherent: "this query was not found" or "was ambiguous" is a fact about the query.
+
+### Claim schema
+
+The model ends its answer with one fenced block:
+
+```json
+[{"predicate": "connected_to", "subject": "CentrifugalPump-1", "object": "PlateHeatExchanger-1",
+  "qualifiers": {"direction": "downstream", "lineNumber": "47122"}}]
+```
+
+Fields: `predicate`, `subject`, `object`, `property`, `value`, `qualifiers`.
+
+### Vocabulary
+
+Eighteen predicates, each tied to something a tool returns (`PREDICATES`).
+
+| Predicate | Supported when |
+|---|---|
+| `is_a` | The subject has that type (or supertype) in a result |
+| `identified_as` | The subject carries that tag, name or identifier |
+| `has_property` | A property fact has that subject (or is a part of it), a matching property name, and an equal typed value |
+| `lacks_property` | The property is listed under `missing` for that subject |
+| `connected_to` | A piping connection joins the two entities; `direction` and any pipe qualifier must match that same connection |
+| `operates`, `sends_signal_to`, `senses_at`, `measurement_input_to` | An instrumentation link of exactly that kind runs from subject to object |
+| `reachable` | A traversal or path result starting at the subject reached the object, in the claimed direction and distance |
+| `path` | A path result joins the two; the listed entities are on it in that order |
+| `no_path` | A path search between them came back empty |
+| `open_end` | The subject has an open-ended pipe (with the claimed line, if given) |
+| `terminal`, `continues_beyond_depth` | The traversal marked the subject so |
+| `chamber_boundary` | The traversal reported that boundary with those chambers |
+| `not_found`, `ambiguous` | A lookup of that identifier returned that status |
+
+### Validation rules
+
+- **Subjects resolve through tool results only** (`FactIndex.resolve`). A fuzzy suggestion is not an alias. An identifier shared by several entities is rejected as a subject.
+- **Typed values** (`parse_value`): a DN designation, a number with a unit, a bare number and text are four different kinds. `60 kW` equals `60.0 kW`; `800 mm` never equals `DN 800`, `0.8 m` or `800`. No unit conversion exists.
+- **Property names** (`names_match`): equal, or equal after dropping generic suffix words (`nominal diameter` matches `nominalDiameterRepresentation`; `tagName` does not match `tagNamePrefix`).
+- **No chaining.** The validator never combines two facts. Reachability must have been computed by `traverse` or `find_path`, which respect chambers.
+- **Unknown predicates, unknown qualifiers and malformed claims are rejected.**
+
+### The text is checked as well
+
+After the claims, `check_answer` runs the token extractor over the prose. A token must be covered by a supported claim (its own fields, or another name of an entity it names). Otherwise:
+
+| Token | Outcome |
+|---|---|
+| Not in any tool result | Problem: the draft is rejected |
+| In the tool results, but not in a supported claim | Gap: the answer can be at most `limited` |
+| Only in the question, in a sentence that disclaims it | Allowed |
+
+Two more guards run on the prose: an assertion about current operating state ("is currently open") is rejected, and so is text that reproduces the agent's instructions.
+
+### Status
+
+`AgentResult.grounding_level`, set by code:
+
+| Level | Meaning |
+|---|---|
+| `grounded` | Every claim supported and every token in the text covered by one |
+| `ambiguous` | As above, and the answer reports an ambiguous lookup |
+| `limited` | Nothing unsupported, but some text passed only the token-level check (no claims block, or values without a claim) |
+| `insufficient_evidence` | Unsupported content remained after one rewrite, or no graph-supported statement was produced; the model's text is withheld |
+| `not_validated` | No answer was produced (provider failure) |
+
+`AgentResult.claims` holds each supported claim with its facts; `rejected_claims` and `grounding_gaps` hold the rest.
+
+### Limits
+
+- The claims the model lists are checked; whether it listed everything it said is enforced only for tokens (identifiers, numbers, units). A sentence with none is not checked.
+- Meaning outside the eighteen predicates cannot be expressed, so it cannot be validated either.
+- A claim is as right as the graph. Errors in the source P&ID pass through, and absence from the graph is not absence from the plant.
+- The claims format is exercised only by deterministic tests with scripted model output. How reliably a live model fills it has not been measured; an answer without claims degrades to `limited`.
+
+---
+
+## Token-level check (second layer)
+
+### What it is for
 
 Prompting a model not to invent facts is not enforcement. The grounding check is: after the model drafts an answer, code extracts the plant-specific claims in it and looks each one up in what the tools returned.
 
@@ -1237,7 +1349,7 @@ Every rejected draft is kept in `rejected_drafts` for inspection.
 | Entity resolution | Deterministic **[code]** | Same input, same result; ambiguity is reported |
 | Tool execution | Deterministic **[code]** | Same input, same result; tested against C01 |
 | Graph facts | Source-derived | Come from the DEXPI file through pyDEXPI; correct to the extent the file and pyDEXPI are |
-| Grounding | Deterministic checks **[code]** | Catches unsupported identifiers and values; has documented false positives and negatives |
+| Grounding | Deterministic checks **[code]** | A claim is accepted only when a typed fact entails it; the text is checked token by token as well |
 | Final wording | **[LLM]**, constrained by evidence | Plant-specific tokens were checked; the sentences around them were not |
 | Trace and evidence | Deterministic **[code]** | An exact record of what was executed |
 
@@ -1251,7 +1363,7 @@ It is reduced, not eliminated.
 |---|---|---|---|
 | Entity interpretation | The model picks the wrong item for a vague description | Deterministic resolver; ambiguity returned, never guessed; fuzzy matches only suggested | The model can still choose one candidate after seeing an ambiguous list |
 | Tool planning | Adjacency used where reachability was needed; too small a depth | Tool descriptions state the three concepts; results mark `terminal`, `continues_beyond_max_depth`, `through_equipment`, `endpoints` | The model can ignore those fields |
-| Answer synthesis | An invented id, line number or value | Grounding check on identifiers, numbers, units, DN values | A wrong sentence made only of real tokens |
+| Answer synthesis | An invented id, line number or value, or a real value on the wrong subject | Claim validation (subject, relation, value, unit) plus the token check | A statement with nothing checkable in it |
 | Semantic glosses | Expanding "TICSA" from general knowledge | None | Not detectable: no checkable token |
 | Property attribution | A real value attached to the wrong property or role | Attribution and role checks | Keyword-based; misses other phrasings |
 | User assumptions | "Assume DN100" restated as fact | Question-only terms need a disclaimer sentence | A disclaimer word present for another reason |
@@ -1521,7 +1633,7 @@ All from the DeepSeek run.
 
 ## Testing strategy
 
-440 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
+499 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
 
 | Layer | File | Tests | What it pins down |
 |---|---|---|---|
@@ -1538,7 +1650,8 @@ All from the DeepSeek run.
 | Agent | `test_agent.py` | 59 | The workflow with a scripted model: tools, ambiguity, not found, missing data, loops, limits, malformed output, provider failure, grounding failure |
 | Providers | `test_llm.py`, `test_openrouter.py`, `test_deepseek.py` | 51 | Adapters against mocks: requests, parsing, usage, error categories, no key leakage, no failover |
 | Evaluation | `test_eval.py` | 26 | Gold facts re-derived from the graph; scorer behaviour |
-| Chat UI adapter | `test_ui_adapter.py` | 16 | Result-to-display mapping: steps, evidence, grounding, ambiguity, not found, provider error, missing fields; one scripted run of the page |
+| Claim-level grounding | `test_claims.py` | 57 | Twenty adversarial cases that must not become supported, the matching positive cases, guardrails (scope, injection, tool allowlist, operating state), and the agent loop with scripted claims |
+| Chat UI adapter | `test_ui_adapter.py` | 18 | Result-to-display mapping: steps, evidence, grounding, ambiguity, not found, provider error, missing fields; one scripted run of the page |
 
 **What the tests give confidence in.**
 
@@ -1678,7 +1791,7 @@ The method each time: reproduce the failure, classify the cause (planning, tool 
 | Seven generic tools | Generalizes to unseen questions; small surface to test | The model must compose them; some questions take many calls | Add generic composites where calls are wasted |
 | LLM as planner only | Handles phrasing; cannot corrupt facts | Planning quality depends on the model; not repeatable | Add planning evaluations; a cheaper router for simple questions |
 | Deterministic execution | Testable, repeatable, explainable | Every capability must be coded | Same |
-| Lexical grounding check | Catches invented values with no second model | False positives and blind spots | Structured claim extraction, still checked deterministically |
+| Claims stated by the model, validated by code | Role-aware grounding with no second model | Depends on the model filling the claims block; otherwise `limited` | Measure claim compliance per model |
 | No vector database | Nothing to maintain; exact lookups | No semantic search over descriptions | Retrieval only for free-text documents |
 | No OCR | The XML is authoritative | Cannot ingest a scanned drawing | OCR for entity discovery only, never for topology |
 | Thin local UI only | The UI renders the existing result; no agent logic lives in it | No hosting, no conversation memory | A trace viewer with the drawing highlighted |
@@ -1697,9 +1810,10 @@ The method each time: reproduce the failure, classify the cause (planning, tool 
 
 **Grounding**
 
-- **Lexical.** It can pass a wrong statement made of real tokens.
-- **Slash-joined identifiers.** "N1/N2" is rejected as one token; costs a regeneration.
-- **Attribution false positives.** See failure 7.
+- **Not measured live.** Claim-level grounding was added after the evaluation and is covered only by deterministic tests.
+- **Uncheckable prose.** A sentence with no identifier, number or claim is not validated.
+- **Fixed vocabulary.** Facts outside the eighteen predicates cannot be claimed.
+- **Token-level layer.** When the model lists no claims, only this layer applies (status `limited`), with the false positive described in failure 7.
 
 **Graph**
 
@@ -1879,7 +1993,7 @@ Start from the transcript (`uv run pid-agent "..."`, or `--json`). The trace sho
 6. **Adjacency, reachability and path are three different operations**: `get_connections`, `traverse`, `find_path`.
 7. **Chamber-aware traversal prevents false paths across a heat exchanger**, and reports the boundary as evidence.
 8. **Missing data is surfaced, not invented**: `missing` properties, `not_found` entities, open ends with a null destination.
-9. **Every drafted answer is checked against tool results**; one regeneration, then an evidence-only fallback.
+9. **The answer's facts are structured claims, validated by code against typed graph facts**; one regeneration, then an evidence-only fallback.
 10. **The evaluation uses graph-derived gold facts and a deterministic scorer**, committed before the run. The complete run is on DeepSeek `deepseek-chat`; no score is claimed for `gpt-oss-20b`.
 
 [Back to Start here](#start-here)
