@@ -3,15 +3,17 @@
 The instructions that shaped this project, in the order they were given. Files are kept as
 written; later prompts never overwrite earlier ones.
 
-| File | What it is | Provenance |
+| File | What it is | Status |
 |---|---|---|
-| `00-original-assignment.md` | The assignment from Intuigence AI | **Unavailable** — placeholder only |
-| `01-implementation-spec.md` | Initial implementation specification | Exact file, previously `PROMPT.md` |
-| `02-deterministic-graph-layer.md` | Go-ahead and clarifications for the deterministic graph layer | Exact file, previously `ImplementationPrompt.md` |
-| `03-git-milestone-workflow.md` | Git milestone workflow and attribution rules | Exact file, previously `Git_Commit.md` |
-| `04-llm-agent-implementation.md` | LLM adapter and LangGraph agent instructions | **Unavailable** — placeholder only |
-| `05-agent-stabilization.md` | Agent stabilization (M2.1) and the prompt-history rule | Saved from the instruction as given |
+| `00-original-assignment.md` | The assignment from Intuigence AI | Exact text, as received |
+| `01-implementation-spec.md` | Initial implementation specification | Preserved development instruction (exact file, previously `PROMPT.md`) |
+| `02-deterministic-graph-layer.md` | Go-ahead and clarifications for the deterministic graph layer | Preserved development instruction (exact file, previously `ImplementationPrompt.md`) |
+| `03-git-milestone-workflow.md` | Git milestone workflow and attribution rules | Preserved development instruction (exact file, previously `Git_Commit.md`) |
+| `04-llm-agent-implementation.md` | LLM adapter and LangGraph agent instructions | **Original exact instruction unavailable** — placeholder only, not reconstructed |
+| `05-agent-stabilization.md` | Agent stabilization and the prompt-history rule | Preserved development instruction |
+| `06-pre-evaluation-provider-verification.md` | Prompt-history repair, second LLM provider, live verification | Preserved development instruction |
 
-`00` is the requirement; everything else is our own direction of the implementation.
-The prompt-history organisation started with `05`; earlier files were moved here at that
-point and were not part of commits `331dd62` and `c0a881c` under these names.
+`00` is the requirement. `01` onward are our own instructions for building it.
+
+History of this directory: it was created with `05`; `01`-`03` were moved in at that point,
+and `00` held an "unavailable" placeholder until the assignment text was supplied with `06`.
