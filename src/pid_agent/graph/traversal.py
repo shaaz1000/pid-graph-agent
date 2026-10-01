@@ -53,6 +53,8 @@ class TraversalOutcome:
     cycle_detected: bool = False
     returns_to_start: bool = False
     truncated: bool = False
+    # Entities at the depth limit from which the graph continues: not ends, just unexplored.
+    frontier: set[str] = field(default_factory=set)
     stopped_at: list[str] = field(default_factory=list)
     chamber_skips: list[tuple[str, str, str, str]] = field(default_factory=list)
 
@@ -132,6 +134,7 @@ class FlowGraph:
                     continue
                 if depth[state] >= max_depth:
                     outcome.truncated = True
+                    outcome.frontier.add(node)
                     continue
                 outcome.states.add(next_state)
                 depth[next_state] = depth[state] + 1

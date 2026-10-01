@@ -26,7 +26,7 @@ from typing import Any
 
 from pid_agent.graph.entity_resolver import camel_tokens
 
-EVIDENCE_SECTIONS = ("entities", "connections", "paths", "properties", "resolution", "evidence")
+EVIDENCE_SECTIONS = ("entities", "connections", "paths", "boundaries", "properties", "resolution", "evidence")
 UNITS = (
     "m3/h", "m³/h", "kg/h", "l/min", "min-1", "mbar", "barg", "bar", "kPa", "MPa", "Pa", "psi",
     "°C", "°F", "kW", "MW", "m2", "m²", "m3", "m³", "mm", "cm", "km", "rpm", "kg", "%", "m",
@@ -53,9 +53,13 @@ ROLE_FIELDS = {
     "segment": ("segmentnumber", "segment_id"),
     "component": ("pipingcomponentnumber", "pipingcomponentname", "linecomponent"),
     "nozzle": ("sub_tag", "subtagname"),
+    "chamber": ("chamber_id", "chamber", "entered_chamber", "blocked_chamber"),
+    "connection": ("blocked_connection",),
 }
+# An object id may stand in a role only if it is that kind of object.
+ROLE_ID_PREFIX = {"line": "pipingnetworksystem-", "segment": "pipingnetworksegment-", "nozzle": "nozzle-", "chamber": "chamber-"}
 ROLE_REFERENCE = re.compile(
-    r"\b(line|segment|component|nozzle)s?\s+(?:number\s+|no\.?\s*|#\s*)?[*_`]*([A-Za-z0-9][\w.\-/]*)", re.IGNORECASE
+    r"\b(line|segment|component|nozzle|chamber|connection)s?\s+(?:number\s+|no\.?\s*|#\s*)?[*_`]*([A-Za-z0-9][\w.\-/]*)", re.IGNORECASE
 )
 # Words too common in property names to tell one property from another.
 GENERIC_PROPERTY_WORDS = {"design", "upper", "lower", "limit", "nominal", "representation", "numerical", "value", "type", "standard", "number", "code"}
@@ -116,11 +120,12 @@ class EvidenceCorpus:
         self.quantities: set[tuple[float, str]] = set()
         self.fields: dict[str, set[str]] = {}  # field name -> values seen under it
         self.ids: set[str] = set()
+        self.connection_ids: set[str] = set()
         self.quantity_fields: dict[tuple[float, str], set[str]] = {}  # value -> property names
         for result in observations:
             for section in EVIDENCE_SECTIONS:
                 self._walk(result.get(section))
-            for key in ("stopped_at", "endpoints"):
+            for key in ("stopped_at", "endpoints", "unexplored_beyond_max_depth"):
                 self._walk(result.get("meta", {}).get(key))
 
     def _walk(self, node: Any) -> None:
@@ -129,6 +134,8 @@ class EvidenceCorpus:
         if isinstance(node, dict):
             if "property" in node and "value" in node:  # a get_properties item
                 self._field(str(node["property"]), node["value"])
+            if "id" in node and ("connection_type" in node or node.get("kind") in ("connection", "open_end")):
+                self.connection_ids.add(_normalize(str(node["id"])))
             for key, value in node.items():
                 if isinstance(value, dict) and "error" in value:
                     continue  # e.g. an unknown id echoed back by get_properties
@@ -163,6 +170,16 @@ class EvidenceCorpus:
         elif role == "component":
             values |= {component for _, component in pairs}
         return values
+
+    def id_fits_role(self, role: str, key: str) -> bool:
+        """Whether ``key`` is the id of an object of the kind the role word names."""
+        if role == "connection":
+            return key in self.connection_ids
+        if key not in self.ids:
+            return False
+        if role == "component":
+            return "/" not in key and not key.startswith(tuple(ROLE_ID_PREFIX.values()))
+        return key.startswith(ROLE_ID_PREFIX[role]) and "/" not in key
 
     def _add(self, text: str) -> None:
         self.terms.add(_normalize(text))
@@ -222,7 +239,8 @@ def _role_problems(answer: str, corpus: EvidenceCorpus) -> list[dict[str, Any]]:
             if not any(ch.isdigit() for ch in token) or key not in corpus.terms:
                 continue  # prose ("line number"), or already reported as unsupported
             allowed = corpus.role_values(role)
-            if key in allowed or key.split("/")[0] in allowed or key in corpus.ids:
+            named = _normalize(role + token) in corpus.terms  # e.g. a sub-tag "Chamber 1"
+            if key in allowed or key.split("/")[0] in allowed or named or corpus.id_fits_role(role, key):
                 continue
             problems.append({
                 "claim": f"{role} {token}",

@@ -85,8 +85,9 @@ def _traverse_view(result: dict[str, Any]) -> dict[str, Any]:
     for e in result["entities"]:
         row = {"id": e["id"], "name": e["name"], "type": e["type"], "category": e["category"], "distance": e["distance"], "via": e["path_entities"][-2]}
         row["through_equipment"] = e["through_equipment"]
-        if e.get("terminal"):
-            row["terminal"] = True
+        for key in ("terminal", "continues_beyond_max_depth"):
+            if key in e:
+                row[key] = e[key]
         entities.append(row)
     connections = []
     for connection in result["connections"]:
@@ -164,13 +165,16 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
             }
             for path in result["paths"]
         ]
+    if result.get("boundaries"):
+        out["boundaries"] = [{k: v for k, v in b.items() if k != "reason"} for b in result["boundaries"]]
     if result.get("properties"):
         out["properties"] = _compact_properties(result["properties"])
     if result.get("warnings"):
         out["warnings"] = result["warnings"]
     meta = {k: result["meta"][k] for k in META_KEEP if result.get("meta", {}).get(k) not in (None, [], False)}
-    if result.get("meta", {}).get("endpoints"):
-        meta["endpoints"] = result["meta"]["endpoints"]
+    for key in ("endpoints", "unexplored_beyond_max_depth"):
+        if result.get("meta", {}).get(key):
+            meta[key] = result["meta"][key]
     if meta:
         out["meta"] = meta
     return out

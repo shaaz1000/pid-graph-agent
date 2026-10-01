@@ -109,7 +109,7 @@ def test_multi_step_resolution_traversal_filter_and_properties(tools):
     assert result.grounding_status == "grounded"
     traverse_seen = llm.tool_messages()[1]
     assert [(e["id"], e["distance"]) for e in traverse_seen["entities"]] == [("SpringLoadedGlobeSafetyValve-1", 3)]
-    assert {e["kind"] for e in result.evidence} == {"entity", "path", "connection", "property"}
+    assert {e["kind"] for e in result.evidence} == {"entity", "path", "connection", "property", "boundary"}
 
 
 # ------------------------------------------------------ 4. ambiguity

@@ -36,6 +36,9 @@ operating state are not in the P&ID.
 drawing. Report that it exists and that its other end is not shown; never name a destination.
 - Warnings about separate chambers mean a path was not continued between the two sides of a \
 piece of equipment. Mention it when it affects the answer.
+- When a traversal was cut off by max_depth, the entities where it stopped are not final \
+destinations unless they are marked terminal; the result does not establish what lies beyond \
+them. Say so, or traverse further.
 - The plant has recycle loops, so a traversal can reach most of the plant. Use distance, \
 entity_types, max_depth and stop_at_types to return what the question actually asks for.
 - Properties listed under "missing" do not exist in the P&ID for that object. A "partial \

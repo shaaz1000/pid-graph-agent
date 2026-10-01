@@ -97,8 +97,11 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "in one call ('downstream' = drawn flow direction, 'upstream', or 'both'). Each result "
         "has its distance, the entity it was reached via, through_equipment (equipment lying "
         "between it and the start; empty = reached through pipes, valves and fittings only) "
-        "and terminal (nothing further is drawn in that direction). meta.endpoints lists all "
-        "terminal entities even when entity_types filters them out. Safe on recycle loops."
+        "and terminal (nothing further is drawn in that direction). An entity with "
+        "continues_beyond_max_depth is not an end: the search stopped there because of "
+        "max_depth and what lies beyond was not explored. meta.endpoints lists all terminal "
+        "entities even when entity_types filters them out. boundaries lists chamber boundaries "
+        "that were not crossed. Safe on recycle loops."
     ),
     "find_path": (
         "PATH: the shortest piping route between two known entities, with line and nominal "

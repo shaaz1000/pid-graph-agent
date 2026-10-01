@@ -209,6 +209,10 @@ class GraphService:
             row["through_equipment"] = [i for i in reach.entity_path[1:-1] if self._index.entities[i].category == "equipment"]
             if terminal:
                 row["terminal"] = True
+            elif reach.entity_id in outcome.frontier:
+                # Cut off by max_depth, not an end: the graph goes on from here.
+                row["terminal"] = False
+                row["continues_beyond_max_depth"] = True
             result.entities.append(row)
             result.evidence.append(self._path_evidence(start.id, reach))
             for connection_id in reach.connection_path:
@@ -221,6 +225,8 @@ class GraphService:
         # Entities where nothing further is drawn in the travel direction; listed even when
         # entity_types filters them out of the main result.
         result.meta["endpoints"] = endpoints
+        # Entities where the search stopped only because of max_depth (also unfiltered).
+        result.meta["unexplored_beyond_max_depth"] = sorted(outcome.frontier - {start.id})
         if not result.entities:
             result.status = "empty"
             what = f" of type {entity_types}" if entity_types else ""
@@ -252,7 +258,7 @@ class GraphService:
                 opposite = "upstream" if direction == "downstream" else "downstream"
                 if target.id in self._flow.bfs(source.id, opposite, self._max_depth_limit).reached:  # type: ignore[arg-type]
                     result.warnings.append(f"A path does exist in the {opposite} direction.")
-            self._chamber_warnings(outcome, result)
+            self._chamber_boundaries(outcome, direction, result)
             return result
         steps = []
         for step in reach.steps:
@@ -449,11 +455,34 @@ class GraphService:
             result.evidence.append(self._connection_evidence(connection))
         self._warn_open_ends(result)
 
-    def _chamber_warnings(self, outcome: TraversalOutcome, result: ToolResult) -> None:
+    def _chamber_boundaries(self, outcome: TraversalOutcome, direction: str, result: ToolResult) -> None:
+        """Record each chamber boundary the traversal respected: as a structured, graph-derived
+        fact with evidence, and as a readable warning."""
         for entity_id, entered, other, connection_id in outcome.chamber_skips:
-            message = f"Did not continue through {entity_id} from {entered} to {other} via {connection_id}: these are separate chambers (sides) of the equipment."
-            if message not in result.warnings:
-                result.warnings.append(message)
+            boundary = {
+                "type": "chamber_boundary",
+                "equipment": entity_id,
+                "entered_chamber": entered,
+                "blocked_chamber": other,
+                "blocked_connection": connection_id,
+                "direction": direction,
+                "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)",
+            }
+            if boundary in result.boundaries:
+                continue
+            result.boundaries.append(boundary)
+            result.evidence.append(
+                Evidence(
+                    kind="boundary",
+                    id=f"{entity_id}:{entered}|{other}",
+                    fact=boundary,
+                    source_graph="plant_graph",
+                    source_object_ids=[entity_id, entered, other, connection_id],
+                )
+            )
+            result.warnings.append(
+                f"Did not continue through {entity_id} from {entered} to {other} via {connection_id}: these are separate chambers (sides) of the equipment."
+            )
 
     def _traversal_meta(self, outcome: TraversalOutcome, depth: int, result: ToolResult) -> None:
         result.meta.update({"visited_entities": outcome.visited_count, "max_depth": depth, "cycle_detected": outcome.cycle_detected, "start_is_in_cycle": outcome.returns_to_start, "truncated_by_max_depth": outcome.truncated, "stopped_at": outcome.stopped_at})
@@ -461,7 +490,7 @@ class GraphService:
             result.warnings.append("The traversal met a recycle loop; each entity is reported once, at its shortest distance.")
         if outcome.truncated:
             result.warnings.append(f"Traversal stopped at max_depth={depth}; entities further away are not included.")
-        self._chamber_warnings(outcome, result)
+        self._chamber_boundaries(outcome, str(result.input.get("direction")), result)
 
     def _property_sources(self, object_id: str, result: ToolResult) -> tuple[str, list[tuple[str, Any, str, str]]] | None:
         """Return (resolved id, [(property, value, source_object_id, scope)])."""
