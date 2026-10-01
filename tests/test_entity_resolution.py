@@ -211,3 +211,29 @@ def test_every_non_source_identifier_has_an_origin(index):
                 assert key not in entity.identifier_origins
             else:
                 assert entity.identifier_origins[key].kind in ("derived_identifier", "alias")
+
+
+# --------------------------------------------- type + line number phrases
+def test_type_on_a_line_names_the_items_of_that_type_on_it(resolve):
+    r = resolve("globe valve on line 47127")
+    assert r.entity_ids == ["GlobeValve-1"] and not r.ambiguous
+    assert resolve("line 47127", entity_type="valve").entity_ids == ["GlobeValve-1"]
+
+
+def test_type_on_a_line_with_several_items_is_ambiguous(resolve):
+    r = resolve("ball valves on line 47126")
+    assert r.entity_ids == ["BallValve-2", "BallValve-3", "BallValve-4", "BallValve-5"] and r.ambiguous
+    assert all(m.identifier_kind == "derived_identifier" for m in r.matches)
+
+
+def test_line_alone_is_still_the_line(resolve):
+    assert resolve("line 47127").entity_ids == ["PipingNetworkSystem-7"]
+    assert resolve("pump on line 47127").entity_ids == ["PipingNetworkSystem-7"]  # no pump is an item of a line
+
+
+def test_connection_and_sub_object_ids_are_explained_not_guessed(service):
+    link = service.find_entities("OperatedValveReference-1")
+    assert link.status == "not_found" and "instrumentation connection" in link.message
+    assert "ActuatingFunction-1" in link.message and "GlobeValve-1" in link.message
+    part = service.find_entities("Chamber-2")
+    assert part.status == "not_found" and "sub-object of PlateHeatExchanger-1" in part.message

@@ -67,6 +67,18 @@ class GraphService:
         if not resolution.matches:
             result.status = "not_found"
             result.message = f"No entity in the P&ID graph matches '{query}'."
+            text = (query or "").strip()
+            if text in self._index.connections:
+                link = self._index.connections[text]
+                result.message = (
+                    f"'{text}' is a {link.relationship} connection ({link.connection_type}) from "
+                    f"{link.source} to {link.target}, not an entity. Use get_connections on either "
+                    "end, or get_properties with this id."
+                )
+            elif text in self._index.objects and text not in self._index.entities:
+                record = self._index.objects[text]
+                owner = f" of {record.owner_entity_id}" if record.owner_entity_id else ""
+                result.message = f"'{text}' is a {record.type} sub-object{owner}, not an entity. Use get_properties with this id."
             if resolution.suggestions:
                 result.message += " Similar identifiers exist (see resolution.suggestions); none was selected."
         elif resolution.ambiguous:

@@ -238,8 +238,35 @@ class EntityResolver:
         matches = {m.entity_id: m for term in item_terms + line_terms for m in term}
         resolution.matches = list(matches.values())
         resolution.ambiguous = any(len(term) > 1 for term in item_terms + line_terms)
+        if not item_terms and self._items_on_lines(tokens, consumed, resolution):
+            return consumed
         self._narrow_by_type_words(tokens, consumed, resolution, used_line_context)
         return consumed
+
+    def _items_on_lines(self, tokens: list[str], consumed: set[int], resolution: Resolution) -> bool:
+        """"<type> on line <n>": a line number plus a type names the items of that type on it."""
+        spare = set(consumed)
+        wanted: set[str] = set()
+        for _, ids in self._type_phrases_in(tokens, spare):
+            wanted |= {i for i in ids if not self._is_line(i)}
+        if not wanted:
+            return False
+        consumed.update(spare)
+        return self._replace_lines_with_items(resolution, wanted)
+
+    def _replace_lines_with_items(self, resolution: Resolution, wanted: set[str]) -> bool:
+        lines = {self._entities[m.entity_id].identifiers.get("lineNumber") for m in resolution.matches}
+        items = [i for i in self._entities if i in wanted and self._line_of(i) in lines]
+        if not items:
+            return False
+        resolution.matches = [
+            self._match(i, "embedded_identifier", "lineComponent", self._entities[i].identifiers.get("lineComponent", self._line_of(i) or ""))
+            if "lineComponent" in self._entities[i].identifiers
+            else Match(i, "embedded_identifier", TIER_CONFIDENCE["embedded_identifier"], "owning line", str(self._line_of(i)), "derived_identifier", "located through the lineNumber of the line that owns this item")
+            for i in items
+        ]
+        resolution.ambiguous = len(items) > 1
+        return True
 
     def _narrow_by_type_words(
         self, tokens: list[str], consumed: set[int], resolution: Resolution, used_line: bool
@@ -320,6 +347,9 @@ class EntityResolver:
             ]
             return
         kept = [m for m in resolution.matches if m.entity_id in ids]
+        if resolution.matches and not kept and all(self._is_line(m.entity_id) for m in resolution.matches):
+            if self._replace_lines_with_items(resolution, ids):
+                return
         if resolution.matches and not kept:
             found = ", ".join(f"{m.entity_id} ({self._entities[m.entity_id].type})" for m in resolution.matches)
             if by_identifier:

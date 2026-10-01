@@ -463,7 +463,10 @@ class _Normalizer:
                 valve.identifiers["operatedValveReference"] = str(properties["subTagName"])
                 valve.identifier_origins["operatedValveReference"] = IdentifierOrigin(
                     kind="alias",
-                    origin=f"subTagName of {connection_id}, which references this valve",
+                    origin=(
+                        f"subTagName of the instrumentation connection {connection_id}, which "
+                        f"links {source_id} to this valve"
+                    ),
                 )
 
     # -------------------------------------------------------------- objects
