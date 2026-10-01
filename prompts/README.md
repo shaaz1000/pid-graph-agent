@@ -22,6 +22,7 @@ written; later prompts never overwrite earlier ones.
 | `14-final-pre-submission-milestone.md` | Short visual explainer, local chat UI over the existing agent, and a requirement audit against the assignment | Preserved development instruction |
 | `15-structured-claim-grounding.md` | Post-publication hardening: claim-level structured grounding, typed evidence validation and focused guardrails | Preserved development instruction |
 | `16-final-release-readiness.md` | Release audit, live smoke test of claim-level grounding, licensing, stale-document fixes, freeze | Preserved development instruction |
+| `17-nvidia-provider-migration.md` | Switch the hosted LLM provider to NVIDIA's OpenAI-compatible API with an open-weight model | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 
