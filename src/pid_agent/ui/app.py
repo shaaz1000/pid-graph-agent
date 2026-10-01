@@ -136,13 +136,13 @@ def _render(view: AnswerView) -> None:
                 if e.fact:
                     st.caption(e.fact)
     if g is not None:
-        with st.expander(f"Grounding · {g.level.replace('_', ' ')}" + (f" · {len(g.claims)} validated claims" if g.claims else "")):
+        with st.expander(f"Grounding · {g.level.replace('_', ' ')}" + (f" · {len(g.claims)} grounded statements" if g.claims else "")):
             st.markdown(f"**{g.label}.** {g.detail}")
             if g.claims:
-                st.markdown('<div class="pid-label">Validated claims and their evidence</div>', unsafe_allow_html=True)
+                st.markdown('<div class="pid-label">Grounded statements and their evidence</div>', unsafe_allow_html=True)
             for claim in g.claims:
                 with st.container(border=True):
-                    st.markdown(f"**Claim** `{claim.text}`")
+                    st.markdown(f"**Statement** {claim.text}")
                     for fact in claim.facts:
                         st.markdown(
                             f"Evidence `{fact.id}`: {fact.statement}  \n"
@@ -150,7 +150,7 @@ def _render(view: AnswerView) -> None:
                             unsafe_allow_html=True,
                         )
             if g.gaps:
-                st.markdown('<div class="pid-label">Found in tool results but not matched to a claim</div>', unsafe_allow_html=True)
+                st.markdown('<div class="pid-label">Supported only by evidence the answer did not cite</div>', unsafe_allow_html=True)
                 for gap in g.gaps:
                     st.markdown(f"- {gap}")
             for claims in g.rejected:
@@ -158,7 +158,7 @@ def _render(view: AnswerView) -> None:
             for claim in g.unsupported:
                 st.markdown(f"- Unsupported: {claim}")
             st.caption(
-                "Code compares each structured claim with typed facts from the tool results: subject, relation or property, value and unit. "
+                "Code resolves each evidence id to typed graph facts and checks every sentence against them: the value must belong to the item named and a stated relation must be shown by a tool result. "
                 "No model judges the answer, and this status is not a confidence score."
             )
     if view.notices or view.warnings:

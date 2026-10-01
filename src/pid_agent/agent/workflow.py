@@ -22,10 +22,11 @@ from typing import Any
 from langgraph.graph import END, START, StateGraph
 
 from pid_agent.agent.compact import compact_result, render_evidence
-from pid_agent.agent.claims import check_answer
+from pid_agent.agent.evidence_refs import annotate_refs, check_answer
 from pid_agent.agent.prompts import (
     FORCED_ANSWER_NOTE,
     MALFORMED_OUTPUT_NOTE,
+    TRUNCATED_OUTPUT_NOTE,
     REGENERATION_SYSTEM_PROMPT,
     REGENERATION_USER_TEMPLATE,
     SYSTEM_PROMPT,
@@ -95,6 +96,7 @@ class PidAgent:
             "grounding_gaps": [],
             "retry_reasons": [],
             "anchored": False,
+            "truncated_outputs": 0,
             "failure_reason": None,
             "failure_category": None,
             "usage": {"llm_calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
@@ -114,6 +116,7 @@ class PidAgent:
             claims=final["claims"],
             rejected_claims=final["rejected_claims"],
             grounding_gaps=final["grounding_gaps"],
+            truncated_outputs=final["truncated_outputs"],
             claims_checked=final["claims_checked"],
             unsupported_claims=final["unsupported_claims"],
             rejected_drafts=final["rejected_drafts"],
@@ -167,6 +170,18 @@ class PidAgent:
         if response.tool_calls:
             update["messages"] = [*state["messages"], assistant_message(response)]
             update["pending_calls"] = response.tool_calls
+        elif response.truncated:
+            # Cut off at the output limit: incomplete text is never parsed as an answer.
+            update["truncated_outputs"] = state["truncated_outputs"] + 1
+            update["malformed_streak"] = state["malformed_streak"] + 1
+            update["messages"] = [*state["messages"], {"role": "user", "content": TRUNCATED_OUTPUT_NOTE}]
+            update["trace"] = [
+                *state["trace"],
+                TraceStep(
+                    step=len(state["trace"]) + 1, tool="(truncated model output)", status="truncated", executed=False,
+                    result={"message": "The model's output was cut off at its output-token limit (finish_reason=length); it was not used and a shorter answer was requested."},
+                ),
+            ]
         elif response.malformed_output is None and (response.content or "").strip():
             update["messages"] = [*state["messages"], assistant_message(response)]
             update["draft"] = response.content.strip()
@@ -210,7 +225,8 @@ class PidAgent:
                 payload = {"status": "error", "message": "Tool call budget for this question is exhausted."}
                 trace.append(TraceStep(step=step, tool=call.name, input=call.arguments, status="skipped", result=payload, executed=False))
             else:
-                result = self._tools.call(call.name, call.arguments).to_dict()
+                # Every row gets an evidence id (E<step>.<n>) the answer can cite; ids come from code.
+                result = annotate_refs(self._tools.call(call.name, call.arguments).to_dict(), step)
                 made += 1
                 malformed = 0
                 earlier[key] = step
@@ -232,7 +248,10 @@ class PidAgent:
         except LLMError as exc:
             return {**update, "failure_reason": f"llm_error: {exc}", "failure_category": exc.category}
         update["usage"] = self._add_usage(state["usage"], response)
-        if (response.content or "").strip() and not response.tool_calls:
+        if response.truncated:
+            update["truncated_outputs"] = state["truncated_outputs"] + 1
+            update["failure_reason"] = "answer_truncated: the forced answer was cut off at the output-token limit"
+        elif (response.content or "").strip() and not response.tool_calls:
             update["draft"] = response.content.strip()
         else:
             update["failure_reason"] = f"no_answer_generated: {reason}"
@@ -274,6 +293,8 @@ class PidAgent:
             return {**update, "failure_reason": f"llm_error: {exc}", "failure_category": exc.category, "draft": None}
         update["usage"] = self._add_usage(state["usage"], response)
         text = (response.content or "").strip()
+        if response.truncated:
+            return {**update, "truncated_outputs": state["truncated_outputs"] + 1, "failure_reason": "answer_truncated: the rewritten answer was cut off at the output-token limit", "draft": None}
         if not text:
             return {**update, "failure_reason": "no_answer_generated: empty regeneration", "draft": None}
         return {**update, "draft": text}
@@ -357,6 +378,8 @@ class PidAgent:
         total["llm_calls"] += 1
         for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
             total[key] += response.usage.get(key, 0)
+        if "reasoning_tokens" in response.usage:
+            total["reasoning_tokens"] = total.get("reasoning_tokens", 0) + response.usage["reasoning_tokens"]
         return total
 
     @staticmethod
@@ -377,6 +400,8 @@ class PidAgent:
                 f"({state['failure_category']}: {failure.split(': ', 1)[1]}). This is an infrastructure "
                 "failure, not a statement about the P&ID."
             )
+        elif failure and failure.startswith("answer_truncated"):
+            head = f"{NO_ANSWER} The model's answer was cut off at its output limit and was withheld; an incomplete answer is not shown."
         elif unsupported:
             head = f"{NO_ANSWER} A drafted answer was withheld because {len(unsupported)} of its claims were not supported by the graph evidence."
         elif state["draft"]:
@@ -405,7 +430,7 @@ def format_transcript(result: AgentResult, show_results: bool = True) -> str:
     out.append(f"GROUNDING: {result.grounding_status} ({result.claims_checked} plant-specific claims checked, {len(result.unsupported_claims)} unsupported)")
     out.append(f"GROUNDING LEVEL: {result.grounding_level}")
     for item in result.claims:
-        out.append(f"  supported claim: {item['text']}")
+        out.append(f"  grounded statement: {item['text']}")
         for fact in item["facts"]:
             out.append(f"      <- {fact['id']} {fact['predicate']} [{fact.get('evidence_id', '')}] {fact.get('source_graph', '')}: {', '.join(fact.get('source_object_ids', []))}")
     for gap in result.grounding_gaps:

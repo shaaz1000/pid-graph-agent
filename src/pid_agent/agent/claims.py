@@ -24,15 +24,7 @@ import re
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-from pid_agent.agent.grounding import (
-    DISCLAIMER,
-    SENTENCE_SPLIT,
-    TYPOGRAPHY,
-    EvidenceCorpus,
-    _attribution_problem,
-    _role_problems,
-    extract_claims,
-)
+from pid_agent.agent.grounding import TYPOGRAPHY
 
 INSTRUMENT_PREDICATES = {
     "operated_valve_reference": "operates",
@@ -125,6 +117,8 @@ class Fact:
     evidence_id: str = ""
     source_graph: str = ""
     source_object_ids: list[str] = field(default_factory=list)
+    # Evidence rows (E<step>.<n>) of the tool results this fact was read from.
+    refs: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in asdict(self).items() if v not in (None, "", [], {})}
@@ -139,15 +133,32 @@ class FactIndex:
         self._canonical: dict[str, str] = {}
 
     def add(self, predicate: str, subject: str, *, object: str | None = None, value: Any = None, qualifiers: dict[str, Any] | None = None,
-            tool: str = "", evidence: dict[str, Any] | None = None, source_graph: str = "", evidence_id: str = "") -> Fact:  # fmt: skip
+            tool: str = "", evidence: dict[str, Any] | None = None, source_graph: str = "", evidence_id: str = "", ref: str | None = None) -> Fact:  # fmt: skip
         fact = Fact(
             id=f"F{len(self.facts) + 1}", predicate=predicate, subject=subject, object=object, value=value,
             qualifiers={k: v for k, v in (qualifiers or {}).items() if v not in (None, "", [], {})}, tool=tool,
             evidence_id=(evidence or {}).get("id", evidence_id), source_graph=(evidence or {}).get("source_graph", source_graph),
-            source_object_ids=list((evidence or {}).get("source_object_ids", [])),
+            source_object_ids=list((evidence or {}).get("source_object_ids", [])), refs=[ref] if ref else [],
         )  # fmt: skip
         self.facts.append(fact)
         return fact
+
+    def cite(self, facts: list[Fact], ref: str | None) -> None:
+        """Record that these already-known facts also appear in evidence row ``ref``."""
+        for fact in facts:
+            if ref and ref not in fact.refs:
+                fact.refs.append(ref)
+
+    def by_ref(self, ref: str) -> list[Fact]:
+        """Facts of one row (E2.3) or of a whole tool result (R2)."""
+        if ref.startswith("R"):
+            prefix = f"E{ref[1:]}."
+            return [f for f in self.facts if any(r.startswith(prefix) for r in f.refs)]
+        return [f for f in self.facts if ref in f.refs]
+
+    def known_refs(self) -> set[str]:
+        rows = {r for f in self.facts for r in f.refs}
+        return rows | {"R" + r[1:].split(".")[0] for r in rows}
 
     def alias(self, text: Any, entity_id: str) -> None:
         if text not in (None, ""):
@@ -190,17 +201,21 @@ def _evidence_map(result: dict[str, Any]) -> dict[tuple[str, str], dict[str, Any
     return {(e["kind"], e["id"]): e for e in result.get("evidence", [])}
 
 
-def _entity_facts(index: FactIndex, entity: dict[str, Any], tool: str, evidence: dict) -> None:
+def _entity_facts(index: FactIndex, entity: dict[str, Any], tool: str, evidence: dict, ref: str | None = None) -> None:
     eid = entity.get("id")
     if not eid or "type" not in entity:
         return
+    ref = entity.get("ref") or ref
     ev = evidence.get(("entity", eid)) or {"id": eid, "source_graph": "plant_graph", "source_object_ids": [eid]}
-    seen = {(f.predicate, key(f.value)) for f in index.facts if f.subject == eid and f.predicate in ("is_a", "identified_as")}
+    seen = {(f.predicate, key(f.value)): f for f in index.facts if f.subject == eid and f.predicate in ("is_a", "identified_as")}
 
     def once(predicate: str, value: Any, **qualifiers: Any) -> None:
-        if value not in (None, "") and (predicate, key(value)) not in seen:
-            seen.add((predicate, key(value)))
-            index.add(predicate, eid, value=value, qualifiers=qualifiers, tool=tool, evidence=ev)
+        if value in (None, ""):
+            return
+        if (predicate, key(value)) in seen:
+            index.cite([seen[(predicate, key(value))]], ref)
+        else:
+            seen[(predicate, key(value))] = index.add(predicate, eid, value=value, qualifiers=qualifiers, tool=tool, evidence=ev, ref=ref)
 
     for label, value in (("id", eid), ("name", entity.get("name")), ("tag", entity.get("tag")), *(entity.get("identifiers") or {}).items()):
         once("identified_as", value, field=label)
@@ -209,13 +224,13 @@ def _entity_facts(index: FactIndex, entity: dict[str, Any], tool: str, evidence:
         once("is_a", type_name)
     for scope in ("properties", "piping_context"):
         for name, value in (entity.get(scope) or {}).items():
-            index.add("has_property", eid, value=value, qualifiers={"property": name, "scope": scope}, tool=tool, evidence=ev)
+            index.add("has_property", eid, value=value, qualifiers={"property": name, "scope": scope}, tool=tool, evidence=ev, ref=ref)
     for child in entity.get("children") or []:
         index.known_object(child["id"])
         child_ev = {"id": child["id"], "source_graph": "plant_graph", "source_object_ids": [child["id"]]}
-        index.add("is_a", child["id"], value=child["type"], qualifiers={"part_of": eid}, tool=tool, evidence=child_ev)
+        index.add("is_a", child["id"], value=child["type"], qualifiers={"part_of": eid}, tool=tool, evidence=child_ev, ref=ref)
         for name, value in (child.get("properties") or {}).items():
-            index.add("has_property", child["id"], value=value, qualifiers={"property": name, "owner": eid}, tool=tool, evidence=child_ev)
+            index.add("has_property", child["id"], value=value, qualifiers={"property": name, "owner": eid}, tool=tool, evidence=child_ev, ref=ref)
 
 
 def _nozzle(nozzle: dict[str, Any] | None) -> dict[str, Any]:
@@ -226,9 +241,15 @@ def _nozzle(nozzle: dict[str, Any] | None) -> dict[str, Any]:
     return {"nozzle": [label, nozzle.get("id"), f"{label} [{chamber}]", f"{label} ({chamber})"] if chamber else [label, nozzle.get("id")], "chamber": chamber}
 
 
-def _connection_facts(index: FactIndex, connection: dict[str, Any], tool: str, evidence: dict) -> None:
+def _connection_facts(index: FactIndex, connection: dict[str, Any], tool: str, evidence: dict, ref: str | None = None) -> None:
     cid = connection["id"]
-    if any(f.qualifiers.get("connection") == cid for f in index.facts):
+    ref = connection.get("ref") or ref
+    existing = [f for f in index.facts if f.qualifiers.get("connection") == cid or (f.subject == cid and f.predicate == "has_property")]
+    if existing:
+        index.cite(existing, ref)
+        for end in (connection.get("source"), connection.get("target")):
+            if end:
+                _entity_facts(index, end, tool, evidence, ref)
         return
     kind = "open_end" if connection.get("open_end") else "connection"
     provenance = connection.get("provenance", {})
@@ -236,11 +257,11 @@ def _connection_facts(index: FactIndex, connection: dict[str, Any], tool: str, e
     index.known_object(cid)
     properties = connection.get("properties") or {}
     source, target = connection.get("source"), connection.get("target")
-    for ref in (source, target):
-        if ref:
-            _entity_facts(index, ref, tool, evidence)
+    for end in (source, target):
+        if end:
+            _entity_facts(index, end, tool, evidence, ref)
     for name, value in properties.items():
-        index.add("has_property", cid, value=value, qualifiers={"property": name, "scope": "connection"}, tool=tool, evidence=ev)
+        index.add("has_property", cid, value=value, qualifiers={"property": name, "scope": "connection"}, tool=tool, evidence=ev, ref=ref)
     if properties.get("lineNumber"):
         index.line_aliases.setdefault(key(properties["lineNumber"]), set()).add(cid)
     start, end = _nozzle(connection.get("source_nozzle")), _nozzle(connection.get("target_nozzle"))
@@ -253,11 +274,11 @@ def _connection_facts(index: FactIndex, connection: dict[str, Any], tool: str, e
         qualifiers["missing_end"] = "source" if connection["open_end"] == "source" else "destination"
         # A pipe whose source is off the drawing arrives at the entity, so it is on its upstream side.
         qualifiers["direction"] = "upstream" if connection["open_end"] == "source" else "downstream"
-        index.add("open_end", known["id"], qualifiers=qualifiers, tool=tool, evidence=ev)
+        index.add("open_end", known["id"], qualifiers=qualifiers, tool=tool, evidence=ev, ref=ref)
     elif connection["relationship"] == "piping":
-        index.add("flows_to", source["id"], object=target["id"], qualifiers=qualifiers, tool=tool, evidence=ev)
+        index.add("flows_to", source["id"], object=target["id"], qualifiers=qualifiers, tool=tool, evidence=ev, ref=ref)
     else:
-        index.add(INSTRUMENT_PREDICATES[connection["connection_type"]], source["id"], object=target["id"], qualifiers=qualifiers, tool=tool, evidence=ev)
+        index.add(INSTRUMENT_PREDICATES[connection["connection_type"]], source["id"], object=target["id"], qualifiers=qualifiers, tool=tool, evidence=ev, ref=ref)
 
 
 def build_facts(observations: list[dict[str, Any]]) -> FactIndex:
@@ -267,24 +288,25 @@ def build_facts(observations: list[dict[str, Any]]) -> FactIndex:
         tool, evidence = result.get("tool", ""), _evidence_map(result)
         origin = f"{tool}#{number}"
         direction = (result.get("input") or {}).get("direction") or "downstream"
+        status_ref = result.get("status_ref")
         for entity in result.get("entities") or []:
             _entity_facts(index, entity, tool, evidence)
         for (kind, entity_id), item in evidence.items():
             # An identifier the tool resolved while executing (recorded as entity evidence).
             fact = item["fact"]
             if kind == "entity" and isinstance(fact.get("type"), str) and fact.get("name") and entity_id not in index.objects:
-                _entity_facts(index, {"id": entity_id, "type": fact["type"], "name": fact["name"], "tag": fact.get("tagName")}, tool, evidence)
+                _entity_facts(index, {"id": entity_id, "type": fact["type"], "name": fact["name"], "tag": fact.get("tagName")}, tool, evidence, status_ref)
         for connection in result.get("connections") or []:
             _connection_facts(index, connection, tool, evidence)
 
         for path in result.get("paths") or []:
             ids = [e["id"] for e in path["entities"]]
-            for ref in path["entities"]:
-                _entity_facts(index, ref, tool, evidence)
+            for member in path["entities"]:
+                _entity_facts(index, member, tool, evidence, path.get("ref"))
             for step in path.get("steps", []):
-                _connection_facts(index, step["connection"], tool, evidence)
+                _connection_facts(index, step["connection"], tool, evidence, path.get("ref"))
             ev = evidence.get(("path", f"{ids[0]}->{ids[-1]}"))
-            index.add("path", ids[0], object=ids[-1], qualifiers={"entities": ids, "direction": path.get("direction"), "length": path.get("length")}, tool=tool, evidence=ev, source_graph="conceptual_graph", evidence_id=origin)
+            index.add("path", ids[0], object=ids[-1], qualifiers={"entities": ids, "direction": path.get("direction"), "length": path.get("length")}, tool=tool, evidence=ev, source_graph="conceptual_graph", evidence_id=origin, ref=path.get("ref"))
 
         if tool == "traverse":
             for entity in result.get("entities") or []:
@@ -292,26 +314,30 @@ def build_facts(observations: list[dict[str, Any]]) -> FactIndex:
                 if not route:
                     continue
                 ev = evidence.get(("path", f"{route[0]}->{entity['id']}"))
-                index.add("reaches", route[0], object=entity["id"], tool=tool, evidence=ev, source_graph="conceptual_graph", evidence_id=origin,
+                index.add("reaches", route[0], object=entity["id"], tool=tool, evidence=ev, source_graph="conceptual_graph", evidence_id=origin, ref=entity.get("ref"),
                           qualifiers={"direction": direction, "distance": entity.get("distance"), "entities": route, "through_equipment": entity.get("through_equipment")})  # fmt: skip
                 for flag, predicate in (("terminal", "terminal"), ("continues_beyond_max_depth", "continues_beyond_depth")):
                     if entity.get(flag):
-                        index.add(predicate, entity["id"], qualifiers={"direction": direction}, tool=tool, source_graph="conceptual_graph", evidence_id=origin)
+                        index.add(predicate, entity["id"], qualifiers={"direction": direction}, tool=tool, source_graph="conceptual_graph", evidence_id=origin, ref=entity.get("ref"))
             meta = result.get("meta") or {}
+            kinds = {d["id"]: d for d in meta.get("endpoint_details") or []}
             for field_name, predicate in (("endpoints", "terminal"), ("unexplored_beyond_max_depth", "continues_beyond_depth")):
                 for entity_id in meta.get(field_name) or []:
                     index.known_object(entity_id)
-                    index.add(predicate, entity_id, qualifiers={"direction": direction}, tool=tool, source_graph="conceptual_graph", evidence_id=f"{origin}:meta.{field_name}")
+                    detail = kinds.get(entity_id) if predicate == "terminal" else None
+                    if detail:  # the ends are named in the result even when a type filter hides their rows
+                        _entity_facts(index, {"id": entity_id, "name": detail["name"], "type": detail["type"]}, tool, evidence, status_ref)
+                    index.add(predicate, entity_id, qualifiers={"direction": direction, "kind": (detail or {}).get("kind")}, tool=tool, source_graph="conceptual_graph", evidence_id=f"{origin}:meta.{field_name}", ref=status_ref)
 
         missing = (result.get("meta") or {}).get("no_path")
         if missing:
             for entity_id in (missing["source"], missing["target"]):
                 index.known_object(entity_id)
-            index.add("no_path", missing["source"], object=missing["target"], qualifiers={"direction": missing["direction"]}, tool=tool, source_graph="conceptual_graph", evidence_id=origin)
+            index.add("no_path", missing["source"], object=missing["target"], qualifiers={"direction": missing["direction"]}, tool=tool, source_graph="conceptual_graph", evidence_id=origin, ref=status_ref)
 
         for boundary in result.get("boundaries") or []:
             ev = next((e for (kind, _), e in evidence.items() if kind == "boundary" and e["fact"].get("blocked_connection") == boundary.get("blocked_connection")), None)
-            index.add("chamber_boundary", boundary["equipment"], tool=tool, evidence=ev, source_graph="plant_graph", evidence_id=origin,
+            index.add("chamber_boundary", boundary["equipment"], tool=tool, evidence=ev, source_graph="plant_graph", evidence_id=origin, ref=boundary.get("ref"),
                       qualifiers={k: boundary.get(k) for k in ("entered_chamber", "blocked_chamber", "blocked_connection", "direction")})  # fmt: skip
 
         for object_id, report in (result.get("properties") or {}).items():
@@ -322,17 +348,17 @@ def build_facts(observations: list[dict[str, Any]]) -> FactIndex:
                 owner = item["source_object_id"]
                 index.known_object(owner)
                 ev = evidence.get(("property", f"{owner}.{item['property']}")) or {"id": f"{owner}.{item['property']}", "source_graph": "plant_graph", "source_object_ids": [owner]}
-                index.add("has_property", owner, value=item["value"], qualifiers={"property": item["property"], "owner": object_id, "scope": item.get("scope")}, tool=tool, evidence=ev)
+                index.add("has_property", owner, value=item["value"], qualifiers={"property": item["property"], "owner": object_id, "scope": item.get("scope")}, tool=tool, evidence=ev, ref=item.get("ref"))
             for name in report.get("missing") or []:
-                index.add("lacks_property", object_id, qualifiers={"property": name}, tool=tool, source_graph="plant_graph", evidence_id=f"{origin}:missing")
+                index.add("lacks_property", object_id, qualifiers={"property": name}, tool=tool, source_graph="plant_graph", evidence_id=f"{origin}:missing", ref=report.get("missing_ref"))
 
         if tool == "find_entities" and result.get("status") in ("not_found", "ambiguous"):
             query = (result.get("input") or {}).get("query")
             if result["status"] == "not_found":
-                index.add("not_found", "query", value=query, tool=tool, source_graph="entity_index", evidence_id=f"{origin}:resolution")
+                index.add("not_found", "query", value=query, tool=tool, source_graph="entity_index", evidence_id=f"{origin}:resolution", ref=status_ref)
             else:
                 candidates = [e["id"] for e in result.get("entities") or []]
-                index.add("ambiguous", "query", value=query, qualifiers={"candidates": candidates}, tool=tool, source_graph="entity_index", evidence_id=f"{origin}:resolution")
+                index.add("ambiguous", "query", value=query, qualifiers={"candidates": candidates}, tool=tool, source_graph="entity_index", evidence_id=f"{origin}:resolution", ref=status_ref)
     return index
 
 
@@ -520,108 +546,3 @@ def validate_claim(claim: Any, index: FactIndex) -> tuple[bool, str, list[Fact]]
         if problem is None:
             return True, "", [fact]
     return False, problem or "not supported", routes[:1]
-
-
-# --------------------------------------------------------------------------- the whole answer
-@dataclass
-class ClaimReport:
-    answer: str = ""
-    has_claims: bool = False
-    supported: list[dict[str, Any]] = field(default_factory=list)    # claim, facts
-    rejected: list[dict[str, Any]] = field(default_factory=list)     # claim, reason
-    problems: list[dict[str, Any]] = field(default_factory=list)     # must not reach the user
-    gaps: list[dict[str, Any]] = field(default_factory=list)         # shown only as "limited"
-    checked: int = 0
-    anchored: bool = False  # the answer rests on at least one graph-derived statement
-
-    @property
-    def level(self) -> str:
-        if self.problems or not self.anchored:
-            return "insufficient_evidence"
-        if self.gaps:
-            return "limited"
-        return "ambiguous" if any(c["claim"].get("predicate") == "ambiguous" for c in self.supported) else "grounded"
-
-
-def _covered_strings(report: ClaimReport, index: FactIndex) -> list[str]:
-    """What the supported claims themselves state, plus other names of the entities they name."""
-    out: list[str] = []
-    for item in report.supported:
-        claim = item["claim"]
-        qualifiers = claim.get("qualifiers") or {}
-        values = [claim.get(k) for k in ("subject", "object", "value", "property")] + list(qualifiers.keys())
-        for value in qualifiers.values():
-            values += value if isinstance(value, list) else [value]
-        out += [str(v) for v in values if v not in (None, "")]
-        for name in ("subject", "object"):
-            for entity_id in index.resolve(claim.get(name))[0] if claim.get(name) else []:
-                out += [entity_id, *index.names_of(entity_id)]
-        out += [item for v in qualifiers.get("entities") or [] for entity_id in index.resolve(v)[0] for item in (entity_id, *index.names_of(entity_id))]
-    return [re.sub(r"[\[\]]", " ", text) for text in out]
-
-
-def _problem(claim: str, kind: str, reason: str, sentence: str = "") -> dict[str, Any]:
-    return {"claim": claim, "kind": kind, "reason": reason, **({"sentence": sentence} if sentence else {})}
-
-
-def check_answer(draft: str, question: str, observations: list[dict[str, Any]], protected_text: str = "") -> ClaimReport:
-    """Validate one drafted answer. Deterministic; no model call."""
-    prose, claims = split_answer(draft)
-    index = build_facts(observations)
-    report = ClaimReport(answer=prose, has_claims=claims is not None)
-
-    for claim in claims or []:
-        report.checked += 1
-        ok, reason, facts = validate_claim(claim, index)
-        if ok:
-            report.supported.append({"claim": claim, "text": render_claim(claim), "facts": [f.to_dict() for f in facts]})
-        else:
-            report.rejected.append({"claim": claim, "text": render_claim(claim), "reason": reason})
-            report.problems.append(_problem(render_claim(claim), "structured_claim", reason))
-
-    # Second layer: every plant-specific token in the prose. It can only restrict.
-    corpus = EvidenceCorpus(observations)
-    covered = EvidenceCorpus([{"evidence": _covered_strings(report, index)}])
-    question_terms = {c.key for c in extract_claims(question)}
-    seen: set[tuple[str, str]] = set()
-    anchors = len(report.supported)
-    for token in extract_claims(prose):
-        if (token.key, token.sentence) in seen:
-            continue
-        seen.add((token.key, token.sentence))
-        report.checked += 1
-        in_claims = covered.supports(token) or ("/" in token.text and all(key(p) in covered.terms for p in token.text.split("/")))
-        in_evidence = corpus.supports(token) or ("/" in token.text and all(key(p) in corpus.terms for p in token.text.split("/")))
-        if in_claims:
-            continue
-        if in_evidence:
-            attribution = _attribution_problem(token, corpus) if token.kind == "value_with_unit" else None
-            if attribution:
-                report.problems.append(attribution)
-            else:
-                anchors += 1
-                report.gaps.append(_problem(token.text, "unclaimed_value", "stated in the answer text without a structured claim", token.sentence))
-        elif token.key in question_terms and DISCLAIMER.search(token.sentence):
-            anchors += 1  # the user's own term, reported as not found / not confirmed
-        else:
-            reason = "appears only in the question and is stated as if it were a graph fact" if token.key in question_terms else "not found in any tool result"
-            report.problems.append(_problem(token.text, token.kind, reason, token.sentence))
-    claimed_keys = {key(s) for s in _covered_strings(report, index)}
-    report.problems += [p for p in _role_problems(prose, corpus) if key(p["claim"].split(" ", 1)[1]) not in claimed_keys]
-
-    for sentence in filter(None, (s.strip() for s in SENTENCE_SPLIT.split(prose.translate(TYPOGRAPHY)))):
-        match = LIVE_STATE.search(sentence)
-        if match and not DISCLAIMER.search(sentence):
-            report.problems.append(_problem(match.group(0), "operating_state", "a P&ID does not contain current operating state; topology does not show what is open, running or flowing now", sentence))
-    if protected_text and _quotes(prose, protected_text):
-        report.problems.append(_problem("(instructions)", "prompt_disclosure", "the answer reproduces the agent's instructions"))
-
-    if claims is None:
-        report.gaps.append(_problem("(no claims block)", "missing_claims", "the answer did not include structured claims, so only the token-level check applied"))
-    report.anchored = anchors > 0
-    return report
-
-
-def _quotes(text: str, protected: str) -> bool:
-    squeezed, source = re.sub(r"\s+", " ", text), re.sub(r"\s+", " ", protected)
-    return any(source[i : i + PROMPT_LEAK_LENGTH] in squeezed for i in range(0, max(len(source) - PROMPT_LEAK_LENGTH, 0), PROMPT_LEAK_LENGTH // 2))

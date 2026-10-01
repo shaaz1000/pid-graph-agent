@@ -27,7 +27,7 @@ def test_assistant_message_round_trip():
 
 def test_missing_api_key_is_a_clear_config_error():
     with pytest.raises(ConfigError, match="GROQ_API_KEY"):
-        create_llm(Settings(llm_api_key=None))
+        create_llm(Settings(llm_provider="groq", llm_api_key=None))
 
 
 def test_unsupported_provider():

@@ -89,7 +89,9 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "get_connections": (
         "ADJACENCY: only the immediate neighbours of one entity, one hop. For piping: the "
         "connecting pipe (line, segment, nominal diameter, fluid) and whether the neighbour is "
-        "upstream or downstream; the neighbour is often a tee, valve or other fitting. For "
+        "upstream or downstream. neighbor_category says what the neighbour is: a "
+        "piping_component (tee, valve, reducer, connector) is an intermediate item the piping "
+        "passes through, not the equipment at the far end; use traverse to go beyond it. For "
         "instrumentation: the linked instrument function and what the link means. open_end = "
         "the pipe exists but its other end is not on this drawing."
     ),
@@ -102,7 +104,12 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "continues_beyond_max_depth is not an end: the search stopped there because of "
         "max_depth and what lies beyond was not explored. meta.endpoints lists all terminal "
         "entities even when entity_types filters them out. boundaries lists chamber boundaries "
-        "that were not crossed. Safe on recycle loops."
+        "that were not crossed. Safe on recycle loops. The search follows the piping through "
+        "intermediate tees, valves and fittings. With stop_at_types it stops on each branch at "
+        "the first entity of those types, which gives the nearest such items in that direction. "
+        "meta.endpoint_details says for every terminal entity whether it is a drawing_end (an "
+        "off-page connector: the piping continues on another drawing, destination not shown) "
+        "or simply end_of_drawn_piping."
     ),
     "find_path": (
         "PATH: the shortest piping route between two known entities, with line and nominal "

@@ -297,10 +297,10 @@ def _grounding(data: dict[str, Any]) -> GroundingView:
         # A result saved before claim-level grounding existed: only the token-level check ran.
         return GroundingView(status, True, "Token-level check passed", f"This run predates structured claims. {checked} identifiers and values were found in the tool results.{rewrite}", level="limited", **extra)
     if level == "grounded":
-        return GroundingView(status, True, "Grounded: every claim matched graph evidence", f"{len(claims)} structured claims, each entailed by a typed graph fact.{rewrite}", level=level, **extra)
+        return GroundingView(status, True, "Grounded: every claim matched graph evidence", f"{len(claims)} statements, each supported by the graph facts it cites.{rewrite}", level=level, **extra)
     if level == "ambiguous":
-        return GroundingView(status, True, "Ambiguous: the graph returned several matches", f"{len(claims)} structured claims validated; no single entity was selected.{rewrite}", level=level, **extra)
-    return GroundingView(status, False, "Partially grounded (limited)", f"{len(claims)} structured claims validated; {len(gaps)} item(s) in the text were only found in the tool results, not matched to a claim.{rewrite}", level="limited", **extra)
+        return GroundingView(status, True, "Ambiguous: the graph returned several matches", f"{len(claims)} statements validated; no single entity was selected.{rewrite}", level=level, **extra)
+    return GroundingView(status, False, "Partially grounded (limited)", f"{len(claims)} statements validated; {len(gaps)} item(s) were supported only by evidence the answer did not cite.{rewrite}", level="limited", **extra)
 
 
 def build_view(result: AgentResult | dict[str, Any]) -> AnswerView:

@@ -50,6 +50,7 @@ class AgentState(TypedDict, total=False):
     grounding_gaps: list[dict[str, Any]]  # text that passed only the token-level check
     retry_reasons: list[dict[str, Any]]
     anchored: bool
+    truncated_outputs: int
     failure_reason: str | None
     failure_category: str | None
     usage: dict[str, int]
@@ -68,6 +69,8 @@ class AgentResult(BaseModel):
     claims: list[dict[str, Any]] = Field(default_factory=list)
     rejected_claims: list[dict[str, Any]] = Field(default_factory=list)
     grounding_gaps: list[dict[str, Any]] = Field(default_factory=list)
+    # Model outputs that hit the output-token limit (finish_reason=length) and were discarded.
+    truncated_outputs: int = 0
     claims_checked: int = 0
     unsupported_claims: list[dict[str, Any]] = Field(default_factory=list)
     # Drafts that failed validation and were replaced, with the claims that failed.

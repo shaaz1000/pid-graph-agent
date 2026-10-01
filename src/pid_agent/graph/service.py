@@ -150,6 +150,9 @@ class GraphService:
             view = self._connection_view(connection)
             neighbour = connection.target if is_source else connection.source
             view["neighbor"] = self._entity_ref(neighbour)
+            if neighbour is not None:
+                # equipment, piping_component (valve, fitting, connector) or instrumentation
+                view["neighbor_category"] = self._index.entities[neighbour].category
             if connection.relationship == "piping":
                 side = "downstream" if is_source else "upstream"
                 if direction not in ("both", side):
@@ -225,6 +228,12 @@ class GraphService:
         # Entities where nothing further is drawn in the travel direction; listed even when
         # entity_types filters them out of the main result.
         result.meta["endpoints"] = endpoints
+        # What kind of end each one is: an off-page connector is where the piping leaves this
+        # drawing; anything else is simply the last item drawn on that branch.
+        result.meta["endpoint_details"] = [
+            {**self._entity_ref(i), "category": self._index.entities[i].category, "kind": "drawing_end" if "OffPageConnector" in self._index.entities[i].type else "end_of_drawn_piping"}
+            for i in endpoints
+        ]
         # Entities where the search stopped only because of max_depth (also unfiltered).
         result.meta["unexplored_beyond_max_depth"] = sorted(outcome.frontier - {start.id})
         if not result.entities:

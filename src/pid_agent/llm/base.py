@@ -79,12 +79,20 @@ class LLMResponse:
     usage: dict[str, int] = field(default_factory=dict)
     model: str | None = None
     duration_ms: float = 0.0
+    # Why generation ended, as the provider reported it: "stop", "tool_calls", "length", ...
+    finish_reason: str | None = None
+
+    @property
+    def truncated(self) -> bool:
+        """The output hit the token limit and is incomplete. Such text must not be parsed as an answer."""
+        return self.finish_reason == "length"
 
 
 def response_from_chat_completion(payload: Any, duration_ms: float = 0.0) -> LLMResponse:
     """Normalise an OpenAI-style chat-completion body. Raises LLMError if it is not one."""
     try:
-        message = payload["choices"][0]["message"]
+        choice = payload["choices"][0]
+        message = choice["message"]
         calls = [
             ToolCall.from_raw(str(call.get("id") or f"call_{index}"), call["function"]["name"], call["function"].get("arguments"))
             for index, call in enumerate(message.get("tool_calls") or [])
@@ -92,13 +100,19 @@ def response_from_chat_completion(payload: Any, duration_ms: float = 0.0) -> LLM
     except (KeyError, IndexError, TypeError, AttributeError) as exc:
         raise LLMError("The provider returned a response that is not a chat completion.", "output_parse_failed") from exc
     usage = payload.get("usage") or {}
+    counts = {key: int(usage.get(key) or 0) for key in ("prompt_tokens", "completion_tokens", "total_tokens")}
+    # Hidden reasoning counts against the output limit; keep the figure when the provider reports it.
+    reasoning = (usage.get("completion_tokens_details") or {}).get("reasoning_tokens")
+    if isinstance(reasoning, int):
+        counts["reasoning_tokens"] = reasoning
     return LLMResponse(
         # Only the answer text is kept; any reasoning field is ignored.
         content=message.get("content"),
         tool_calls=calls,
-        usage={key: int(usage.get(key) or 0) for key in ("prompt_tokens", "completion_tokens", "total_tokens")},
+        usage=counts,
         model=payload.get("model"),
         duration_ms=duration_ms,
+        finish_reason=choice.get("finish_reason") if isinstance(choice, dict) else None,
     )
 
 

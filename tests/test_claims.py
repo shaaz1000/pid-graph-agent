@@ -11,7 +11,8 @@ import json
 import pytest
 
 from fakes import ScriptedLLM, call
-from pid_agent.agent.claims import PREDICATES, build_facts, check_answer, parse_value, split_answer, validate_claim, values_match
+from pid_agent.agent.claims import PREDICATES, build_facts, parse_value, split_answer, validate_claim, values_match
+from pid_agent.agent.evidence_refs import check_answer
 from pid_agent.agent.prompts import SYSTEM_PROMPT
 from pid_agent.agent.tools import tool_specs
 from pid_agent.agent.workflow import OUT_OF_SCOPE, PidAgent, format_transcript
@@ -416,7 +417,7 @@ def test_agent_accepts_an_answer_whose_claims_are_all_supported(tools):
     supported_claim = result.claims[0]
     assert supported_claim["claim"]["predicate"] == "connected_to" and supported_claim["facts"][0]["source_graph"] == "conceptual_graph"
     transcript = format_transcript(result)
-    assert "GROUNDING LEVEL: grounded" in transcript and "supported claim: connected_to(" in transcript and "PipingNetworkSegment-2/connections/1" in transcript
+    assert "GROUNDING LEVEL: grounded" in transcript and "grounded statement: connected_to(" in transcript and "PipingNetworkSegment-2/connections/1" in transcript
 
 
 def test_agent_rewrites_once_when_a_claim_is_unsupported_then_accepts(tools):
@@ -444,13 +445,15 @@ def test_answer_without_claims_is_at_most_limited_never_grounded(tools):
 
 
 def test_fact_in_the_text_without_a_claim_is_flagged(tools):
+    # The claim only identifies the pump; the line and diameter are true but rest on a fact
+    # the answer never points at.
     partial = answer(
         "P4711 (CentrifugalPump-1) feeds H1007 (PlateHeatExchanger-1) through line 47122, DN 80.",
-        claim("connected_to", "CentrifugalPump-1", "PlateHeatExchanger-1", qualifiers={"direction": "downstream"}),
+        claim("identified_as", "CentrifugalPump-1", value="P4711"),
     )
     result, _ = run_agent(tools, "What does P4711 feed?", *LOOKUP, partial, partial)
     assert result.grounding_level == "limited" and len(result.claims) == 1
-    assert {g["claim"] for g in result.grounding_gaps} == {"47122", "DN 80"}
+    assert {"47122", "DN 80"} <= {g["claim"] for g in result.grounding_gaps}
 
 
 def test_claims_cannot_rescue_text_that_is_not_in_the_evidence(tools):
@@ -462,8 +465,8 @@ def test_claims_cannot_rescue_text_that_is_not_in_the_evidence(tools):
     assert result.grounding_status == "fallback" and "V-9001" not in result.answer
 
 
-@pytest.mark.parametrize("predicate", PREDICATES)
-def test_the_prompt_describes_every_predicate_and_names_no_plant_item(predicate):
-    assert f"{predicate}" in SYSTEM_PROMPT
+def test_the_prompt_asks_for_evidence_ids_not_restated_facts_and_names_no_plant_item():
+    assert "result_ref" in SYSTEM_PROMPT and "never make one up" in SYSTEM_PROMPT
+    assert "```claims" not in SYSTEM_PROMPT and not any(f"- {p}:" in SYSTEM_PROMPT for p in PREDICATES)
     for plant_term in ("P4711", "H1007", "T4750", "47122", "CentrifugalPump"):
         assert plant_term not in SYSTEM_PROMPT

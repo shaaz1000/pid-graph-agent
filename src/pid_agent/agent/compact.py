@@ -56,7 +56,7 @@ def compact_connection(connection: dict[str, Any]) -> dict[str, Any]:
         "type": connection["connection_type"],
         "relationship": connection["relationship"],
     }
-    for key in ("neighbor_is", "open_end"):
+    for key in ("ref", "neighbor_is", "neighbor_category", "open_end"):
         if connection.get(key):
             out[key] = connection[key]
     if connection["relationship"] == "instrumentation":
@@ -84,6 +84,8 @@ def _traverse_view(result: dict[str, Any]) -> dict[str, Any]:
     entities = []
     for e in result["entities"]:
         row = {"id": e["id"], "name": e["name"], "type": e["type"], "category": e["category"], "distance": e["distance"], "via": e["path_entities"][-2]}
+        if e.get("ref"):
+            row = {"ref": e["ref"], **row}
         row["through_equipment"] = e["through_equipment"]
         for key in ("terminal", "continues_beyond_max_depth"):
             if key in e:
@@ -92,7 +94,7 @@ def _traverse_view(result: dict[str, Any]) -> dict[str, Any]:
     connections = []
     for connection in result["connections"]:
         full = compact_connection(connection)
-        slim = {k: full[k] for k in ("from", "to", "lineNumber", "nominalDiameterRepresentation", "open_end", "note") if k in full}
+        slim = {k: full[k] for k in ("ref", "from", "to", "lineNumber", "nominalDiameterRepresentation", "open_end", "note") if k in full}
         connections.append(slim)
     return {"entities": entities, "connections": connections}
 
@@ -123,6 +125,8 @@ def _compact_properties(properties: dict[str, Any]) -> dict[str, Any]:
         found = []
         for item in report["found"]:
             entry = {"property": item["property"], "value": item["value"]}
+            if item.get("ref"):
+                entry = {"ref": item["ref"], **entry}
             if item["source_object_id"] != object_id:
                 entry["on"] = item["source_object_id"]
             if item["scope"] not in ("own", "object", "connection"):
@@ -131,6 +135,8 @@ def _compact_properties(properties: dict[str, Any]) -> dict[str, Any]:
                 entry["match"] = item["match"]
             found.append(entry)
         out[object_id] = {"found": found, "missing": report["missing"]}
+        if report.get("missing_ref"):
+            out[object_id]["missing_ref"] = report["missing_ref"]
         if report["missing"]:
             out[object_id]["available"] = report["available"]
     return out
@@ -139,6 +145,11 @@ def _compact_properties(properties: dict[str, Any]) -> dict[str, Any]:
 def compact_result(result: dict[str, Any]) -> dict[str, Any]:
     """The model-facing view of a ToolResult dict."""
     out: dict[str, Any] = {"status": result["status"]}
+    # Evidence ids, assigned by the agent: R<step> is this whole result, E<step>.0 its status
+    # facts (not found, ambiguous, no path, where a traversal ended); rows carry their own "ref".
+    for name in ("result_ref", "status_ref"):
+        if result.get(name):
+            out[name] = result[name]
     if result.get("message"):
         out["message"] = result["message"]
     resolution = result.get("resolution")
@@ -155,6 +166,7 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
     if result.get("paths"):
         out["paths"] = [
             {
+                **({"ref": path["ref"]} if path.get("ref") else {}),
                 "length": path["length"],
                 "direction": path["direction"],
                 "entities": [_ref(e) for e in path["entities"]],
@@ -172,7 +184,7 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
     if result.get("warnings"):
         out["warnings"] = result["warnings"]
     meta = {k: result["meta"][k] for k in META_KEEP if result.get("meta", {}).get(k) not in (None, [], False)}
-    for key in ("endpoints", "unexplored_beyond_max_depth"):
+    for key in ("endpoints", "endpoint_details", "unexplored_beyond_max_depth"):
         if result.get("meta", {}).get(key):
             meta[key] = result["meta"][key]
     if meta:

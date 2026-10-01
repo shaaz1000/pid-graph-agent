@@ -14,3 +14,11 @@ BASE_URL = "https://integrate.api.nvidia.com/v1"
 class NvidiaProvider(OpenAICompatibleProvider):
     name = "NVIDIA"
     base_url = BASE_URL
+    # Observed live: a call usually returns in 2-30 s, but the hosted endpoint at times takes
+    # 90-145 s even for a small request. A timeout is a provider failure; it is unrelated to
+    # truncated output. Override with LLM_TIMEOUT_SECONDS.
+    timeout_seconds = 240.0
+    # Documented by NVIDIA for this model family: low-effort reasoning via the chat template.
+    # Used only for calls that write up evidence already collected (rewrites, forced answers);
+    # planning and tool selection keep the default reasoning.
+    synthesis_options = {"chat_template_kwargs": {"enable_thinking": True, "low_effort": True}}

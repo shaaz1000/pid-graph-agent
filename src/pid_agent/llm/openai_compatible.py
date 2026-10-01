@@ -30,6 +30,10 @@ MAX_ERROR_TEXT = 200
 class OpenAICompatibleProvider:
     name = "provider"
     base_url = ""
+    # How long one model call may take. Subclasses raise it for slower endpoints.
+    timeout_seconds = 60.0
+    # Extra request fields for answer-only calls (no tools). Empty = same as planning calls.
+    synthesis_options: dict[str, Any] = {}
 
     def __init__(
         self,
@@ -37,7 +41,7 @@ class OpenAICompatibleProvider:
         model: str,
         temperature: float = 0.0,
         max_output_tokens: int = 4096,
-        timeout_seconds: float = 60.0,
+        timeout_seconds: float | None = None,
         http_client: httpx.Client | None = None,
         base_url: str | None = None,
     ) -> None:
@@ -46,7 +50,7 @@ class OpenAICompatibleProvider:
         self._temperature = temperature
         self._max_output_tokens = max_output_tokens
         # The client is injectable so tests can run against a mock transport, offline.
-        self._http = http_client or httpx.Client(base_url=base_url or self.base_url, timeout=timeout_seconds)
+        self._http = http_client or httpx.Client(base_url=base_url or self.base_url, timeout=timeout_seconds or self.timeout_seconds)
 
     def complete(
         self,
@@ -63,6 +67,8 @@ class OpenAICompatibleProvider:
         if tools:
             body["tools"] = [{"type": "function", "function": tool} for tool in tools]
             body["tool_choice"] = tool_choice
+        if tool_choice == "none":
+            body.update(self.synthesis_options)
         started = time.perf_counter()
         try:
             reply = self._http.post("/chat/completions", json=body, headers={"Authorization": f"Bearer {self._api_key}"})
@@ -76,8 +82,8 @@ class OpenAICompatibleProvider:
             raise self._error(reply.status_code, error)
         response = response_from_chat_completion(payload, duration)
         logger.info(
-            "llm_call provider=%s model=%s duration_ms=%.0f tool_calls=%d total_tokens=%d",
-            self.name, self._model, duration, len(response.tool_calls), response.usage["total_tokens"],
+            "llm_call provider=%s model=%s duration_ms=%.0f tool_calls=%d total_tokens=%d finish_reason=%s",
+            self.name, self._model, duration, len(response.tool_calls), response.usage["total_tokens"], response.finish_reason,
         )
         return response
 

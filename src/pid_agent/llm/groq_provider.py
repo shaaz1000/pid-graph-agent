@@ -78,6 +78,7 @@ class GroqProvider:
             },
             model=completion.model,
             duration_ms=duration,
+            finish_reason=getattr(completion.choices[0], "finish_reason", None),
         )
         logger.info(
             "llm_call model=%s duration_ms=%.0f tool_calls=%d total_tokens=%d",

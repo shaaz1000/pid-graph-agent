@@ -79,7 +79,7 @@ def test_prose_without_claims_is_shown_as_limited_not_grounded(tools):
     view = view_for(tools, "q", [call("find_entities", query="P4711")], "P4711 is CentrifugalPump-1.")
     g = view.grounding
     assert (g.status, g.level, g.ok, g.label) == ("grounded", "limited", False, "Partially grounded (limited)")
-    assert g.claims == [] and any("no claims block" in gap for gap in g.gaps)
+    assert g.claims == [] and any("no evidence references" in gap for gap in g.gaps)
 
 
 def test_result_saved_before_claim_grounding_is_labelled_as_token_level_only():

@@ -20,7 +20,7 @@ pytestmark = pytest.mark.live
 def agent(tools):
     settings = load_settings()
     if not settings.llm_api_key:
-        pytest.skip("GROQ_API_KEY is not configured")
+        pytest.skip("no API key is configured for the selected provider")
     return PidAgent(create_llm(settings), tools)
 
 

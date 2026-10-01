@@ -29,5 +29,5 @@ def create_llm(settings: Settings) -> LLMClient:
                 "available from that provider. No default is assumed."
             )
         adapter = {"nvidia": NvidiaProvider, "openrouter": OpenRouterProvider, "deepseek": DeepSeekProvider}[provider]
-        return adapter(api_key=settings.require_api_key(), model=settings.llm_model, base_url=settings.llm_base_url)
+        return adapter(api_key=settings.require_api_key(), model=settings.llm_model, base_url=settings.llm_base_url, timeout_seconds=settings.llm_timeout_seconds)
     raise ConfigError(f"Unsupported LLM_PROVIDER '{settings.llm_provider}'. Supported: groq, nvidia, openrouter, deepseek.")

@@ -9,7 +9,7 @@ import pytest
 
 from pid_agent.agent.tools import tool_specs
 from pid_agent.agent.workflow import PidAgent
-from pid_agent.config import Settings, load_settings
+from pid_agent.config import DEFAULT_MODELS, Settings, load_settings
 from pid_agent.errors import ConfigError
 from pid_agent.llm import create_llm
 from pid_agent.llm.base import LLMError
@@ -45,7 +45,25 @@ def test_selected_only_by_explicit_configuration(monkeypatch, tmp_path):
     monkeypatch.delenv("LLM_MODEL", raising=False)
     settings = load_settings(empty)
     assert settings.llm_api_key == "nvidia-key"  # its own key, never another provider's
-    assert settings.llm_model == ""  # no model is assumed
+    assert settings.llm_model == DEFAULT_MODELS["nvidia"]
+
+
+def test_nvidia_is_the_default_provider_and_the_model_stays_configurable(monkeypatch, tmp_path):
+    empty = tmp_path / ".env"
+    empty.write_text("")
+    for name in ("LLM_PROVIDER", "LLM_MODEL", "LLM_BASE_URL"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("NVIDIA_API_KEY", "nvidia-key")
+    settings = load_settings(empty)
+    assert (settings.llm_provider, settings.llm_model) == ("nvidia", DEFAULT_MODELS["nvidia"])
+    assert isinstance(create_llm(settings), NvidiaProvider) and create_llm(settings)._model == DEFAULT_MODELS["nvidia"]
+    monkeypatch.setenv("LLM_MODEL", "some/other-model")
+    assert create_llm(load_settings(empty))._model == "some/other-model"
+    # the other adapters stay selectable, each with its own key
+    monkeypatch.delenv("LLM_MODEL")
+    monkeypatch.setenv("LLM_PROVIDER", "groq")
+    monkeypatch.setenv("GROQ_API_KEY", "groq-key")
+    assert load_settings(empty).llm_model == DEFAULT_MODELS["groq"] and load_settings(empty).llm_api_key == "groq-key"
 
 
 def test_missing_key_and_missing_model_are_clear_errors():
