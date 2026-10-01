@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import hashlib
 import subprocess
 import time
 from pathlib import Path
@@ -84,10 +85,16 @@ def run_questions(questions: list[dict[str, Any]], pause: float) -> Path:
     settings = load_settings()
     agent = PidAgent(create_llm(settings), GraphTools(GraphService.from_file(settings.data_file)))
     commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=HERE).stdout.strip()
+    # A run is reproducible from its commit only if the working tree was clean; record that,
+    # and a hash of any uncommitted changes to tracked files.
+    diff = subprocess.run(["git", "diff", "HEAD"], capture_output=True, cwd=HERE).stdout
+    untracked = subprocess.run(["git", "ls-files", "--others", "--exclude-standard", "src", "evals/evaluator.py", "evals/questions.json"], capture_output=True, text=True, cwd=HERE).stdout.split()
+    dirty = bool(diff) or bool(untracked)
+    provenance = {"dirty": dirty, "diff_sha256": hashlib.sha256(diff).hexdigest() if diff else None, "untracked_source_files": untracked}
     directory = run_directory(settings.llm_provider, settings.llm_model)
     (directory / "transcripts").mkdir(parents=True, exist_ok=True)
     run_file = directory / "run.json"
-    run = {"provider": settings.llm_provider, "model": settings.llm_model, "commit": commit, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "results": []}
+    run = {"provider": settings.llm_provider, "model": settings.llm_model, "commit": commit, **provenance, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "results": []}
     if run_file.exists():  # resume: keep every answer already given
         run = json.loads(run_file.read_text())
         run["results"] = [r for r in run["results"] if not r.get("failure_category")]

@@ -1,0 +1,107 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1fb4106
+
+QUESTION [eval-03]
+What sits directly on either side of the pipe reducer, and what size is the pipe on each side?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "reducer"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R1",
+  "status_ref": "E1.0",
+  "entities": [
+    {
+      "id": "PipeReducer-1",
+      "name": "PipeReducer 47124/C3",
+      "type": "PipeReducer",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C3",
+        "lineComponent": "47124/C3"
+      },
+      "match_tier": "type",
+      "match_reason": "type = 'reducer'",
+      "identifier_kind": "type",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1
+      },
+      "ref": "E1.1"
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_connections
+Input:  {"entity_id": "PipeReducer-1", "direction": "both", "relationship": "piping"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "connections": [
+    {
+      "id": "PipingNetworkSegment-5/connections/1",
+      "from": "SwingCheckValve-1 (SwingCheckValve 47124/C2)",
+      "to": "PipeReducer-1 (PipeReducer 47124/C3)",
+      "type": "pipe",
+      "relationship": "piping",
+      "ref": "E2.2",
+      "neighbor_is": "upstream",
+      "neighbor_category": "piping_component",
+      "lineNumber": "47124",
+      "segmentNumber": "S2",
+      "nominalDiameterRepresentation": "DN 80",
+      "nominalDiameterStandard": "DN 80 (DIN 2448)",
+      "fluidCode": "MNc",
+      "pipingClassCode": "73HG12"
+    },
+    {
+      "id": "PipingNetworkSegment-6/connections/1",
+      "from": "PipeReducer-1 (PipeReducer 47124/C3)",
+      "to": "BallValve-1 (BallValve 47124/C4)",
+      "type": "pipe",
+      "relationship": "piping",
+      "ref": "E2.3",
+      "neighbor_is": "downstream",
+      "neighbor_category": "piping_component",
+      "lineNumber": "47124",
+      "segmentNumber": "S3",
+      "nominalDiameterRepresentation": "DN 50",
+      "nominalDiameterStandard": "DN 50 (DIN 2448)",
+      "fluidCode": "MNc",
+      "pipingClassCode": "73HG12"
+    }
+  ]
+}
+
+FINAL ANSWER
+The pipe reducer (PipeReducer-1) has an upstream connection to SwingCheckValve-1 (SwingCheckValve 47124/C2) via pipe segment S2 on line 47124 with nominal diameter DN 80 [E2.2].  
+It has a downstream connection to BallValve-1 (BallValve 47124/C4) via pipe segment S3 on line 47124 with nominal diameter DN 50 [E2.3].
+
+GROUNDING: grounded (13 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  grounded statement: The pipe reducer (PipeReducer-1) has an upstream connection to SwingCheckValve-1 (SwingCheckValve 47124/C2) via pipe segment S2 on line 47124 with nominal diameter DN 80  . [E2.2]
+      <- F1 identified_as [PipeReducer-1] plant_graph: PipeReducer-1
+      <- F2 identified_as [PipeReducer-1] plant_graph: PipeReducer-1
+      <- F7 identified_as [SwingCheckValve-1] plant_graph: SwingCheckValve-1
+      <- F8 identified_as [SwingCheckValve-1] plant_graph: SwingCheckValve-1
+      <- F13 has_property [PipingNetworkSegment-5/connections/1] conceptual_graph: PipingNetworkSegment-5/connections/1, PipingNetworkSegment-5, PipingNetworkSystem-4
+      <- F20 flows_to [PipingNetworkSegment-5/connections/1] conceptual_graph: PipingNetworkSegment-5/connections/1, PipingNetworkSegment-5, PipingNetworkSystem-4
+      <- F18 has_property [PipingNetworkSegment-5/connections/1] conceptual_graph: PipingNetworkSegment-5/connections/1, PipingNetworkSegment-5, PipingNetworkSystem-4
+  grounded statement: It has a downstream connection to BallValve-1 (BallValve 47124/C4) via pipe segment S3 on line 47124 with nominal diameter DN 50  . [E2.3]
+      <- F21 identified_as [BallValve-1] plant_graph: BallValve-1
+      <- F22 identified_as [BallValve-1] plant_graph: BallValve-1
+      <- F27 has_property [PipingNetworkSegment-6/connections/1] conceptual_graph: PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6, PipingNetworkSystem-4
+      <- F34 flows_to [PipingNetworkSegment-6/connections/1] conceptual_graph: PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6, PipingNetworkSystem-4
+      <- F32 has_property [PipingNetworkSegment-6/connections/1] conceptual_graph: PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6, PipingNetworkSystem-4
+      <- F33 has_property [PipingNetworkSegment-6/connections/1] conceptual_graph: PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6, PipingNetworkSystem-4
+
+EVIDENCE (3 graph facts)
+  [entity] PipeReducer-1  <- plant_graph: PipeReducer-1
+  [connection] PipingNetworkSegment-5/connections/1  <- conceptual_graph: PipingNetworkSegment-5/connections/1, PipingNetworkSegment-5, PipingNetworkSystem-4
+  [connection] PipingNetworkSegment-6/connections/1  <- conceptual_graph: PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6, PipingNetworkSystem-4
+
+USAGE: 3 model calls, 11292 tokens, 19373 ms

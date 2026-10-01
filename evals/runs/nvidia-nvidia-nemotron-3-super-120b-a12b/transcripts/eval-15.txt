@@ -1,0 +1,184 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1fb4106
+
+QUESTION [eval-15]
+Since H1008 is rated for 500 kW, which line feeds it?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "H1008"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R1",
+  "status_ref": "E1.0",
+  "entities": [
+    {
+      "id": "TubularHeatExchanger-1",
+      "name": "H1008",
+      "type": "TubularHeatExchanger",
+      "category": "equipment",
+      "tag": "H1008",
+      "identifiers": {
+        "tagName": "H1008"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'H1008'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 2,
+        "open_ended_pipes": 1
+      },
+      "ref": "E1.1"
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_entity
+Input:  {"entity_id": "TubularHeatExchanger-1"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "entities": [
+    {
+      "id": "TubularHeatExchanger-1",
+      "type": "TubularHeatExchanger",
+      "type_hierarchy": [
+        "TubularHeatExchanger",
+        "HeatExchanger",
+        "Equipment"
+      ],
+      "category": "equipment",
+      "tag": "H1008",
+      "name": "H1008",
+      "identifiers": {
+        "tagName": "H1008"
+      },
+      "properties": {
+        "tagName": "H1008",
+        "tagNamePrefix": "H",
+        "tagNameSequenceNumber": "1008",
+        "tagNameSuffix": "",
+        "designHeatFlowRate": "313.0 kW",
+        "designHeatTransferArea": "46.8 m2"
+      },
+      "children_available": [
+        {
+          "id": "Nozzle-10",
+          "type": "Nozzle"
+        },
+        {
+          "id": "Nozzle-11",
+          "type": "Nozzle"
+        },
+        {
+          "id": "Nozzle-16",
+          "type": "Nozzle"
+        },
+        {
+          "id": "Nozzle-15",
+          "type": "Nozzle"
+        },
+        {
+          "id": "Chamber-3",
+          "type": "Chamber"
+        },
+        {
+          "id": "Chamber-4",
+          "type": "Chamber"
+        },
+        {
+          "id": "TubeBundle-1",
+          "type": "TubeBundle"
+        }
+      ],
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 2,
+        "open_ended_pipes": 1
+      },
+      "ref": "E2.1"
+    }
+  ]
+}
+
+STEP 3
+Tool:   get_connections
+Input:  {"entity_id": "TubularHeatExchanger-1", "direction": "upstream", "relationship": "piping"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R3",
+  "status_ref": "E3.0",
+  "connections": [
+    {
+      "id": "PipingNetworkSegment-15/connections/1",
+      "from": "PipeTee-4 (PipeTee 47126/C8)",
+      "to": "TubularHeatExchanger-1 (H1008)",
+      "type": "pipe",
+      "relationship": "piping",
+      "ref": "E3.2",
+      "neighbor_is": "upstream",
+      "neighbor_category": "piping_component",
+      "lineNumber": "47126",
+      "segmentNumber": "S7",
+      "nominalDiameterRepresentation": "DN 50",
+      "nominalDiameterStandard": "DN 50 (DIN 2448)",
+      "fluidCode": "MNc",
+      "pipingClassCode": "75HB13",
+      "to_nozzle": "N1 [Chamber-3]"
+    },
+    {
+      "id": "PipingNetworkSegment-22/connections/1",
+      "from": null,
+      "to": "TubularHeatExchanger-1 (H1008)",
+      "type": "open_end",
+      "relationship": "piping",
+      "ref": "E3.3",
+      "neighbor_is": "upstream",
+      "open_end": "source",
+      "lineNumber": "47140",
+      "segmentNumber": "S1",
+      "nominalDiameterRepresentation": "DN 50",
+      "nominalDiameterStandard": "DN 50 (DIN 2448)",
+      "fluidCode": "QSa",
+      "pipingClassCode": "75HB13",
+      "insulationType": "Q",
+      "insulationThickness": "80.0 mm",
+      "to_nozzle": "N4 [Chamber-4]",
+      "note": "This pipe exists in the DEXPI model but has no source item on this drawing, so pyDEXPI's conceptual graph omits it. Where it comes from is not represented."
+    }
+  ],
+  "warnings": [
+    "1 connection(s) are open-ended: the pipe exists in the DEXPI model but its other end is not represented on this drawing, so no neighbour can be stated."
+  ]
+}
+
+FINAL ANSWER
+H1008 (TubularHeatExchanger-1) is fed by line 47126 (DN 50) from PipeTee-4 and line 47140 (DN 50, open end) [E3.2, E3.3]. The P&ID shows a design heat flow rate of 313.0 kW for H1008, not 500 kW [E2.1].
+
+GROUNDING: grounded (9 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  grounded statement: H1008 (TubularHeatExchanger-1) is fed by line 47126 (DN 50) from PipeTee-4 and line 47140 (DN 50, open end)  . [E3.2, E3.3]
+      <- F1 identified_as [TubularHeatExchanger-1] plant_graph: TubularHeatExchanger-1
+      <- F2 identified_as [TubularHeatExchanger-1] plant_graph: TubularHeatExchanger-1
+      <- F12 identified_as [PipeTee-4] plant_graph: PipeTee-4
+      <- F13 identified_as [PipeTee-4] plant_graph: PipeTee-4
+      <- F18 has_property [PipingNetworkSegment-15/connections/1] conceptual_graph: PipingNetworkSegment-15/connections/1, PipingNetworkSegment-15, PipingNetworkSystem-6
+      <- F25 flows_to [PipingNetworkSegment-15/connections/1] conceptual_graph: PipingNetworkSegment-15/connections/1, PipingNetworkSegment-15, PipingNetworkSystem-6
+      <- F24 has_property [PipingNetworkSegment-15/connections/1] conceptual_graph: PipingNetworkSegment-15/connections/1, PipingNetworkSegment-15, PipingNetworkSystem-6
+      <- F30 has_property [PipingNetworkSegment-22/connections/1] plant_graph: PipingNetworkSegment-22/connections/1, PipingNetworkSegment-22, PipingNetworkSystem-10
+      <- F38 open_end [PipingNetworkSegment-22/connections/1] plant_graph: PipingNetworkSegment-22/connections/1, PipingNetworkSegment-22, PipingNetworkSystem-10
+  grounded statement: The P&ID shows a design heat flow rate of 313.0 kW for H1008, not 500 kW  . [E2.1]
+      <- F1 identified_as [TubularHeatExchanger-1] plant_graph: TubularHeatExchanger-1
+      <- F2 identified_as [TubularHeatExchanger-1] plant_graph: TubularHeatExchanger-1
+      <- F10 has_property [TubularHeatExchanger-1] plant_graph: TubularHeatExchanger-1
+
+EVIDENCE (3 graph facts)
+  [entity] TubularHeatExchanger-1  <- plant_graph: TubularHeatExchanger-1
+  [connection] PipingNetworkSegment-15/connections/1  <- conceptual_graph: PipingNetworkSegment-15/connections/1, PipingNetworkSegment-15, PipingNetworkSystem-6
+  [open_end] PipingNetworkSegment-22/connections/1  <- plant_graph: PipingNetworkSegment-22/connections/1, PipingNetworkSegment-22, PipingNetworkSystem-10
+
+USAGE: 4 model calls, 16656 tokens, 21938 ms

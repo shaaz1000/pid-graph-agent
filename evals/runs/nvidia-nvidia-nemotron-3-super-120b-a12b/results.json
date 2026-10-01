@@ -1,0 +1,569 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1fb41062f0dea4d5b4eead4e1b28b6b64d4aed37",
+  "questions": 15,
+  "scored_questions": 15,
+  "mean_score": 0.894,
+  "outcomes": {
+    "correct": 12,
+    "partially_correct": 3
+  },
+  "totals": {
+    "model_calls": 52,
+    "tool_calls": 33,
+    "tokens": 204225
+  },
+  "rows": [
+    {
+      "id": "eval-01",
+      "category": "entity resolution",
+      "question": "What kind of equipment is H1008, and how large is its heat transfer area?",
+      "expected": [
+        "it is a tubular heat exchanger",
+        "design heat transfer area 46.8 m2"
+      ],
+      "answer": "H1008 is a TubularHeatExchanger. [E2.1]  \nIts design heat transfer area is 46.8 m². [E2.1]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "it is a tubular heat exchanger",
+          "found": true
+        },
+        {
+          "fact": "design heat transfer area 46.8 m2",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 10978,
+      "latency_ms": 109379.0,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-02",
+      "category": "ambiguity",
+      "question": "What is the nominal diameter at component C1?",
+      "expected": [
+        "says that C1 does not identify a single component",
+        "candidate on line 47123",
+        "candidate on line 47124",
+        "candidate on line 47126",
+        "candidate on line 47127",
+        "candidate on line 47141"
+      ],
+      "answer": "The supplied P&ID does not contain a single nominal diameter for component C1 because the identifier “C1” matches multiple entities (GlobeValve‑2, ButterflyValve‑1, PipeTee‑2, GlobeValve‑1, GlobeValve‑3) that have different nominal diameters, and the graph does not select one of them.",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "says that C1 does not identify a single component",
+          "found": true
+        },
+        {
+          "fact": "candidate on line 47123",
+          "found": true
+        },
+        {
+          "fact": "candidate on line 47124",
+          "found": true
+        },
+        {
+          "fact": "candidate on line 47126",
+          "found": true
+        },
+        {
+          "fact": "candidate on line 47127",
+          "found": true
+        },
+        {
+          "fact": "candidate on line 47141",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 2,
+      "tokens": 17453,
+      "latency_ms": 242528.0,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-03",
+      "category": "adjacency",
+      "question": "What sits directly on either side of the pipe reducer, and what size is the pipe on each side?",
+      "expected": [
+        "upstream neighbour is the swing check valve",
+        "downstream neighbour is a ball valve",
+        "DN 80 on the upstream side",
+        "DN 50 on the downstream side"
+      ],
+      "answer": "The pipe reducer (PipeReducer-1) has an upstream connection to SwingCheckValve-1 (SwingCheckValve 47124/C2) via pipe segment S2 on line 47124 with nominal diameter DN 80 [E2.2].  \nIt has a downstream connection to BallValve-1 (BallValve 47124/C4) via pipe segment S3 on line 47124 with nominal diameter DN 50 [E2.3].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "upstream neighbour is the swing check valve",
+          "found": true
+        },
+        {
+          "fact": "downstream neighbour is a ball valve",
+          "found": true
+        },
+        {
+          "fact": "DN 80 on the upstream side",
+          "found": true
+        },
+        {
+          "fact": "DN 50 on the downstream side",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11292,
+      "latency_ms": 19373.0,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-04",
+      "category": "reachability",
+      "question": "Which pumps are upstream of the tubular heat exchanger?",
+      "expected": [
+        "P4712 is upstream",
+        "P4711 is upstream"
+      ],
+      "answer": "The pumps upstream of the tubular heat exchanger (H1008) are ReciprocatingPump-1 (P4712) and CentrifugalPump-1 (P4711). [E1.1, E2.1, E2.2]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "P4712 is upstream",
+          "found": true
+        },
+        {
+          "fact": "P4711 is upstream",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 12827,
+      "latency_ms": 15672.6,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-05",
+      "category": "reachability",
+      "question": "If I follow the piping downstream from the swing check valve, where does the drawing end?",
+      "expected": [
+        "the off-page connector",
+        "blind flange BlindFlange-1",
+        "blind flange BlindFlange-2",
+        "the dead-end ball valve BallValve-2"
+      ],
+      "answer": "The drawing ends at the FlowOutPipeOffPageConnector-1 (FlowOutPipeOffPageConnector-1). [E2.18, R2]",
+      "score": 0.25,
+      "required": [
+        {
+          "fact": "the off-page connector",
+          "found": true
+        },
+        {
+          "fact": "blind flange BlindFlange-1",
+          "found": false
+        },
+        {
+          "fact": "blind flange BlindFlange-2",
+          "found": false
+        },
+        {
+          "fact": "the dead-end ball valve BallValve-2",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "outcome": "partially_correct",
+      "model_calls": 4,
+      "tool_calls": 2,
+      "tokens": 19584,
+      "latency_ms": 21422.1,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-06",
+      "category": "reachability",
+      "question": "Looking only two pipe connections downstream of pump P4711, what do you reach, and is that where the line ends?",
+      "expected": [
+        "H1007 at one connection",
+        "a globe valve at two connections",
+        "says the line does not end there"
+      ],
+      "answer": "Two pipe connections downstream of pump P4711 lead to GlobeValve 47123/C1 (GlobeValve-2) [E2.2].  \nThe first connection is from P4711 to the plate heat exchanger H1007 on line 47122, DN 80 [E2.3].  \nThe second connection is from H1007 to GlobeValve 47123/C1 on line 47123, DN 80 [E2.4].  \nGlobeValve 47123/C1 is not marked as terminal and the traversal indicates the piping continues beyond this point [E2.2].  \nTherefore, after two pipe connections downstream of P4711 you reach GlobeValve 47123/C1, and the line does not end there. [E2.2, E2.3, E2.4]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "H1007 at one connection",
+          "found": true
+        },
+        {
+          "fact": "a globe valve at two connections",
+          "found": true
+        },
+        {
+          "fact": "says the line does not end there",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 2,
+      "tokens": 13316,
+      "latency_ms": 47895.1,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-07",
+      "category": "path",
+      "question": "Trace the route from heat exchanger H1007 to tank T4750 and give the line number and pipe size along it.",
+      "expected": [
+        "the route passes a globe valve",
+        "line 47123",
+        "DN 80"
+      ],
+      "answer": "The route from heat exchanger H1007 to tank T4750 follows line 47123 with a pipe size of DN 80. [E3.1]",
+      "score": 0.667,
+      "required": [
+        {
+          "fact": "the route passes a globe valve",
+          "found": false
+        },
+        {
+          "fact": "line 47123",
+          "found": true
+        },
+        {
+          "fact": "DN 80",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "partially_correct",
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tokens": 15058,
+      "latency_ms": 13742.6,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-08",
+      "category": "path",
+      "question": "Going from pump P4712 to heat exchanger H1008, which valves do I pass through?",
+      "expected": [
+        "ball valve BallValve-4"
+      ],
+      "answer": "You pass through BallValve 47126/C7 (BallValve‑4) on the line 47126, DN 50, fluid MNc. [R3]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "ball valve BallValve-4",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "a valve that is not on the route",
+          "found": false
+        }
+      ],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tokens": 15814,
+      "latency_ms": 18553.3,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-09",
+      "category": "property",
+      "question": "What fluid code and piping class does line 47125 carry?",
+      "expected": [
+        "fluid code MNc",
+        "piping class 73HG12"
+      ],
+      "answer": "Line 47125 carries fluid code MNc [E2.1].  \nIts piping class is 73HG12 [E2.4].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "fluid code MNc",
+          "found": true
+        },
+        {
+          "fact": "piping class 73HG12",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11175,
+      "latency_ms": 50410.5,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-10",
+      "category": "property",
+      "question": "What design pressure limits apply to each chamber of tank T4750?",
+      "expected": [
+        "an upper limit of 0.1 bar (Chamber-7)",
+        "an upper limit of 0.05 bar (Chamber-8)",
+        "a lower limit of -0.1 bar"
+      ],
+      "answer": "Chamber 1 (Chamber‑7, subTagName “Chamber 1”) of tank T4750 has a lower limit design pressure of –0.1 bar and an upper limit design pressure of 0.1 bar. [E2.1]  \nChamber 2 (Chamber‑8, subTagName “Chamber 2”) of tank T4750 has a lower limit design pressure of –0.1 bar and an upper limit design pressure of 0.05 bar. [E2.1]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "an upper limit of 0.1 bar (Chamber-7)",
+          "found": true
+        },
+        {
+          "fact": "an upper limit of 0.05 bar (Chamber-8)",
+          "found": true
+        },
+        {
+          "fact": "a lower limit of -0.1 bar",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 2,
+      "tokens": 13735,
+      "latency_ms": 140757.1,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-11",
+      "category": "missing data",
+      "question": "How much does heat exchanger H1007 weigh?",
+      "expected": [
+        "says the P&ID does not contain a weight"
+      ],
+      "answer": "The P&ID does not contain a weight property for heat exchanger H1007. [R2]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "says the P&ID does not contain a weight",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "an invented weight",
+          "found": false
+        }
+      ],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11898,
+      "latency_ms": 13782.4,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-12",
+      "category": "instrumentation",
+      "question": "Which valve does HV4750.01 operate, and on which line is that valve installed?",
+      "expected": [
+        "it operates GlobeValve-2",
+        "the valve is on line 47123"
+      ],
+      "answer": "HV4750.01 operates GlobeValve 47123/C1 (GlobeValve-2) [E2.3].  \nThat valve is installed on line 47123 [E3.2] (or equivalently [E3.3]).",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "it operates GlobeValve-2",
+          "found": true
+        },
+        {
+          "fact": "the valve is on line 47123",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tokens": 15925,
+      "latency_ms": 28475.4,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-13",
+      "category": "instrumentation",
+      "question": "For control loop 4712.02: where is the pressure sensed, and which valve does the loop end up acting on?",
+      "expected": [
+        "the transmitter PT4712.02",
+        "sensed at BlindFlange-2",
+        "through actuating function PV4712.02",
+        "acting on GlobeValve-1"
+      ],
+      "answer": "Pressure is sensed by PT4712.02 [E2.3]. The control loop acts on valve PV4712.02 [E2.2].",
+      "score": 0.5,
+      "required": [
+        {
+          "fact": "the transmitter PT4712.02",
+          "found": true
+        },
+        {
+          "fact": "sensed at BlindFlange-2",
+          "found": false
+        },
+        {
+          "fact": "through actuating function PV4712.02",
+          "found": true
+        },
+        {
+          "fact": "acting on GlobeValve-1",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "outcome": "partially_correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11431,
+      "latency_ms": 16576.0,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-14",
+      "category": "robustness",
+      "question": "What is connected to valve V-9001?",
+      "expected": [
+        "says V-9001 is not in the P&ID"
+      ],
+      "answer": "The P&ID does not contain a valve tagged V-9001. [E1.0]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "says V-9001 is not in the P&ID",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "an invented connection",
+          "found": false
+        }
+      ],
+      "outcome": "correct",
+      "model_calls": 2,
+      "tool_calls": 1,
+      "tokens": 7083,
+      "latency_ms": 18514.0,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "eval-15",
+      "category": "robustness",
+      "question": "Since H1008 is rated for 500 kW, which line feeds it?",
+      "expected": [
+        "line 47126 feeds it",
+        "the graph gives 313.0 kW",
+        "does not accept the 500 kW premise"
+      ],
+      "answer": "H1008 (TubularHeatExchanger-1) is fed by line 47126 (DN 50) from PipeTee-4 and line 47140 (DN 50, open end) [E3.2, E3.3]. The P&ID shows a design heat flow rate of 313.0 kW for H1008, not 500 kW [E2.1].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "line 47126 feeds it",
+          "found": true
+        },
+        {
+          "fact": "the graph gives 313.0 kW",
+          "found": true
+        },
+        {
+          "fact": "does not accept the 500 kW premise",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tokens": 16656,
+      "latency_ms": 21938.3,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

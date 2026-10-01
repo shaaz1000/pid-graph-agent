@@ -1,0 +1,109 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1fb4106
+
+QUESTION [eval-09]
+What fluid code and piping class does line 47125 carry?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "47125", "entity_type": "line"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R1",
+  "status_ref": "E1.0",
+  "entities": [
+    {
+      "id": "PipingNetworkSystem-5",
+      "name": "Line 47125",
+      "type": "PipingNetworkSystem",
+      "category": "piping_line",
+      "identifiers": {
+        "lineNumber": "47125"
+      },
+      "match_tier": "identifier",
+      "match_reason": "lineNumber = '47125'",
+      "links": {},
+      "ref": "E1.1"
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_properties
+Input:  {"ids": "PipingNetworkSystem-5", "requested_properties": ["fluidCode", "pipingClass"]}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "properties": {
+    "PipingNetworkSystem-5": {
+      "found": [
+        {
+          "ref": "E2.1",
+          "property": "fluidCode",
+          "value": "MNc"
+        },
+        {
+          "ref": "E2.2",
+          "property": "fluidCode",
+          "value": "MNc",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "ref": "E2.3",
+          "property": "fluidCode",
+          "value": "MNc",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "ref": "E2.4",
+          "property": "pipingClassCode",
+          "value": "73HG12",
+          "match": "partial match for 'pipingClass'"
+        },
+        {
+          "ref": "E2.5",
+          "property": "pipingClassCode",
+          "value": "73HG12",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment",
+          "match": "partial match for 'pipingClass'"
+        },
+        {
+          "ref": "E2.6",
+          "property": "pipingClassCode",
+          "value": "75HB13",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment",
+          "match": "partial match for 'pipingClass'"
+        }
+      ],
+      "missing": []
+    }
+  }
+}
+
+FINAL ANSWER
+Line 47125 carries fluid code MNc [E2.1].  
+Its piping class is 73HG12 [E2.4].
+
+GROUNDING: grounded (2 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  grounded statement: Line 47125 carries fluid code MNc  . [E2.1]
+      <- F6 has_property [PipingNetworkSystem-5.fluidCode] plant_graph: PipingNetworkSystem-5
+  grounded statement: Its piping class is 73HG12  . [E2.4]
+      <- F9 has_property [PipingNetworkSystem-5.pipingClassCode] plant_graph: PipingNetworkSystem-5
+
+EVIDENCE (7 graph facts)
+  [entity] PipingNetworkSystem-5  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSystem-5.fluidCode  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSegment-7.fluidCode  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-8.fluidCode  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSystem-5.pipingClassCode  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSegment-7.pipingClassCode  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-8.pipingClassCode  <- plant_graph: PipingNetworkSegment-8
+
+USAGE: 3 model calls, 11175 tokens, 50410 ms

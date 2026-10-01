@@ -1,0 +1,359 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1fb4106
+
+QUESTION [eval-02]
+What is the nominal diameter at component C1?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "C1"}
+Status: ambiguous
+Result: {
+  "status": "ambiguous",
+  "result_ref": "R1",
+  "status_ref": "E1.0",
+  "message": "'C1' matches 5 entities and does not identify a single one. Use an entity id, or add line/type context.",
+  "resolution": {
+    "status": "multiple",
+    "ambiguous": true,
+    "match_count": 5,
+    "suggestions": []
+  },
+  "entities": [
+    {
+      "id": "GlobeValve-2",
+      "name": "GlobeValve 47123/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47123/C1",
+        "operatedValveReference": "HV4750.01_YV"
+      },
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-2, which links ActuatingFunction-2 to this valve"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1,
+        "instrumentation": 1
+      },
+      "ref": "E1.1"
+    },
+    {
+      "id": "ButterflyValve-1",
+      "name": "ButterflyValve 47124/C1",
+      "type": "ButterflyValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentName": "66KL21",
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47124/C1"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1
+      },
+      "ref": "E1.2"
+    },
+    {
+      "id": "PipeTee-2",
+      "name": "PipeTee 47126/C1",
+      "type": "PipeTee",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47126/C1"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 2
+      },
+      "ref": "E1.3"
+    },
+    {
+      "id": "GlobeValve-1",
+      "name": "GlobeValve 47127/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47127/C1",
+        "operatedValveReference": "PV4712.02_YV"
+      },
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-1, which links ActuatingFunction-1 to this valve"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1,
+        "instrumentation": 1
+      },
+      "ref": "E1.4"
+    },
+    {
+      "id": "GlobeValve-3",
+      "name": "GlobeValve 47141/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47141/C1",
+        "operatedValveReference": "TV4750.03_YV"
+      },
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-3, which links ActuatingFunction-3 to this valve"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "open_ended_pipes": 1,
+        "instrumentation": 1
+      },
+      "ref": "E1.5"
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_properties
+Input:  {"ids": ["GlobeValve-2", "ButterflyValve-1", "PipeTee-2", "GlobeValve-1", "GlobeValve-3"], "requested_properties": ["nominalDiameter"]}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "properties": {
+    "GlobeValve-2": {
+      "found": [
+        {
+          "ref": "E2.1",
+          "property": "nominalDiameterNumericalValueRepresentation",
+          "value": "80",
+          "on": "PipingNetworkSegment-3",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.2",
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 80",
+          "on": "PipingNetworkSegment-3",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.3",
+          "property": "nominalDiameterStandard",
+          "value": "DN 80 (DIN 2448)",
+          "on": "PipingNetworkSegment-3",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.4",
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN",
+          "on": "PipingNetworkSegment-3",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        }
+      ],
+      "missing": []
+    },
+    "ButterflyValve-1": {
+      "found": [
+        {
+          "ref": "E2.5",
+          "property": "nominalDiameterNumericalValueRepresentation",
+          "value": "80",
+          "on": "PipingNetworkSegment-4",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.6",
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 80",
+          "on": "PipingNetworkSegment-4",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.7",
+          "property": "nominalDiameterStandard",
+          "value": "DN 80 (DIN 2448)",
+          "on": "PipingNetworkSegment-4",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.8",
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN",
+          "on": "PipingNetworkSegment-4",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        }
+      ],
+      "missing": []
+    },
+    "PipeTee-2": {
+      "found": [
+        {
+          "ref": "E2.9",
+          "property": "nominalDiameterNumericalValueRepresentation",
+          "value": "50",
+          "on": "PipingNetworkSegment-9",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.10",
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 50",
+          "on": "PipingNetworkSegment-9",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.11",
+          "property": "nominalDiameterStandard",
+          "value": "DN 50 (DIN 2448)",
+          "on": "PipingNetworkSegment-9",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.12",
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN",
+          "on": "PipingNetworkSegment-9",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        }
+      ],
+      "missing": []
+    },
+    "GlobeValve-1": {
+      "found": [
+        {
+          "ref": "E2.13",
+          "property": "nominalDiameterNumericalValueRepresentation",
+          "value": "50",
+          "on": "PipingNetworkSegment-19",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.14",
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 50",
+          "on": "PipingNetworkSegment-19",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.15",
+          "property": "nominalDiameterStandard",
+          "value": "DN 50 (DIN 2448)",
+          "on": "PipingNetworkSegment-19",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.16",
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN",
+          "on": "PipingNetworkSegment-19",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        }
+      ],
+      "missing": []
+    },
+    "GlobeValve-3": {
+      "found": [
+        {
+          "ref": "E2.17",
+          "property": "nominalDiameterNumericalValueRepresentation",
+          "value": "50",
+          "on": "PipingNetworkSegment-23",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.18",
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 50",
+          "on": "PipingNetworkSegment-23",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.19",
+          "property": "nominalDiameterStandard",
+          "value": "DN 50 (DIN 2448)",
+          "on": "PipingNetworkSegment-23",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        },
+        {
+          "ref": "E2.20",
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN",
+          "on": "PipingNetworkSegment-23",
+          "scope": "owning_segment",
+          "match": "partial match for 'nominalDiameter'"
+        }
+      ],
+      "missing": []
+    }
+  }
+}
+
+FINAL ANSWER
+The supplied P&ID does not contain a single nominal diameter for component C1 because the identifier “C1” matches multiple entities (GlobeValve‑2, ButterflyValve‑1, PipeTee‑2, GlobeValve‑1, GlobeValve‑3) that have different nominal diameters, and the graph does not select one of them.
+
+GROUNDING: regenerated (6 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: limited
+  token-level only: The supplied P&ID does not contain a single nominal diameter for component C1 be (states plant facts without an evidence reference)
+  token-level only: (no evidence references) (the answer cited no evidence, so it was checked against all tool results and is at most limited)
+  a draft was rejected for unsupported claims: C1
+
+EVIDENCE (25 graph facts)
+  [entity] GlobeValve-2  <- plant_graph: GlobeValve-2
+  [entity] ButterflyValve-1  <- plant_graph: ButterflyValve-1
+  [entity] PipeTee-2  <- plant_graph: PipeTee-2
+  [entity] GlobeValve-1  <- plant_graph: GlobeValve-1
+  [entity] GlobeValve-3  <- plant_graph: GlobeValve-3
+  [property] PipingNetworkSegment-3.nominalDiameterNumericalValueRepresentation  <- plant_graph: PipingNetworkSegment-3
+  [property] PipingNetworkSegment-3.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSegment-3
+  [property] PipingNetworkSegment-3.nominalDiameterStandard  <- plant_graph: PipingNetworkSegment-3
+  [property] PipingNetworkSegment-3.nominalDiameterTypeRepresentation  <- plant_graph: PipingNetworkSegment-3
+  [property] PipingNetworkSegment-4.nominalDiameterNumericalValueRepresentation  <- plant_graph: PipingNetworkSegment-4
+  [property] PipingNetworkSegment-4.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSegment-4
+  [property] PipingNetworkSegment-4.nominalDiameterStandard  <- plant_graph: PipingNetworkSegment-4
+  [property] PipingNetworkSegment-4.nominalDiameterTypeRepresentation  <- plant_graph: PipingNetworkSegment-4
+  [property] PipingNetworkSegment-9.nominalDiameterNumericalValueRepresentation  <- plant_graph: PipingNetworkSegment-9
+  [property] PipingNetworkSegment-9.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSegment-9
+  [property] PipingNetworkSegment-9.nominalDiameterStandard  <- plant_graph: PipingNetworkSegment-9
+  [property] PipingNetworkSegment-9.nominalDiameterTypeRepresentation  <- plant_graph: PipingNetworkSegment-9
+  [property] PipingNetworkSegment-19.nominalDiameterNumericalValueRepresentation  <- plant_graph: PipingNetworkSegment-19
+  [property] PipingNetworkSegment-19.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSegment-19
+  [property] PipingNetworkSegment-19.nominalDiameterStandard  <- plant_graph: PipingNetworkSegment-19
+  [property] PipingNetworkSegment-19.nominalDiameterTypeRepresentation  <- plant_graph: PipingNetworkSegment-19
+  [property] PipingNetworkSegment-23.nominalDiameterNumericalValueRepresentation  <- plant_graph: PipingNetworkSegment-23
+  [property] PipingNetworkSegment-23.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSegment-23
+  [property] PipingNetworkSegment-23.nominalDiameterStandard  <- plant_graph: PipingNetworkSegment-23
+  [property] PipingNetworkSegment-23.nominalDiameterTypeRepresentation  <- plant_graph: PipingNetworkSegment-23
+
+USAGE: 4 model calls, 17453 tokens, 242528 ms
