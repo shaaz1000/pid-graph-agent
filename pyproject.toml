@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pid-agent"
+version = "0.1.0"
+description = "Graph-grounded question answering over DEXPI P&IDs (pyDEXPI + NetworkX)."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydexpi>=1.2.0",
+    "networkx>=3.2.1",
+    "pydantic>=2.11.7",
+    "python-dotenv>=1.0.1",
+    "langgraph>=1.2.12",
+    "groq>=1.7.0",
+]
+
+[project.scripts]
+pid-agent = "pid_agent.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.2.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pid_agent"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -m 'not live'"
+markers = ["live: calls the real hosted model (needs GROQ_API_KEY; run with -m live)"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning"]
