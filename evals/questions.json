@@ -1,0 +1,746 @@
+{
+  "description": "Formal evaluation set. Gold facts were read from the deterministic graph tools (the calls under 'gold'); tests/test_eval_gold.py re-derives them from the C01 graph.",
+  "questions": [
+    {
+      "id": "eval-01",
+      "category": "entity resolution",
+      "question": "What kind of equipment is H1008, and how large is its heat transfer area?",
+      "gold": [
+        {
+          "tool": "find_entities",
+          "args": {
+            "query": "H1008"
+          }
+        },
+        {
+          "tool": "get_properties",
+          "args": {
+            "ids": [
+              "TubularHeatExchanger-1"
+            ],
+            "requested_properties": [
+              "designHeatTransferArea"
+            ]
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "it is a tubular heat exchanger",
+          "any_of": [
+            "TubularHeatExchanger",
+            "tubular heat exchanger",
+            "tubular exchanger"
+          ],
+          "evidence": [
+            "TubularHeatExchanger"
+          ]
+        },
+        {
+          "fact": "design heat transfer area 46.8 m2",
+          "any_of": [
+            "re:46\\.8\\s*m\\s*(2|²)"
+          ],
+          "evidence": [
+            "46.8 m2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-02",
+      "category": "ambiguity",
+      "question": "What is the nominal diameter at component C1?",
+      "gold": [
+        {
+          "tool": "find_entities",
+          "args": {
+            "query": "C1"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "says that C1 does not identify a single component",
+          "any_of": [
+            "re:ambiguous|multiple|several|more than one|five|\\b5\\b|which one|not unique|does(n't| not) identify"
+          ],
+          "evidence": [
+            "\"status\": \"ambiguous\""
+          ]
+        },
+        {
+          "fact": "candidate on line 47123",
+          "any_of": [
+            "47123/C1",
+            "GlobeValve-2",
+            "47123"
+          ],
+          "evidence": [
+            "47123/C1"
+          ]
+        },
+        {
+          "fact": "candidate on line 47124",
+          "any_of": [
+            "47124/C1",
+            "ButterflyValve-1",
+            "47124"
+          ],
+          "evidence": [
+            "47124/C1"
+          ]
+        },
+        {
+          "fact": "candidate on line 47126",
+          "any_of": [
+            "47126/C1",
+            "PipeTee-2",
+            "47126"
+          ],
+          "evidence": [
+            "47126/C1"
+          ]
+        },
+        {
+          "fact": "candidate on line 47127",
+          "any_of": [
+            "47127/C1",
+            "GlobeValve-1",
+            "47127"
+          ],
+          "evidence": [
+            "47127/C1"
+          ]
+        },
+        {
+          "fact": "candidate on line 47141",
+          "any_of": [
+            "47141/C1",
+            "GlobeValve-3",
+            "47141"
+          ],
+          "evidence": [
+            "47141/C1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-03",
+      "category": "adjacency",
+      "question": "What sits directly on either side of the pipe reducer, and what size is the pipe on each side?",
+      "gold": [
+        {
+          "tool": "get_connections",
+          "args": {
+            "entity_id": "PipeReducer-1",
+            "relationship": "piping"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "upstream neighbour is the swing check valve",
+          "any_of": [
+            "SwingCheckValve-1",
+            "swing check valve",
+            "47124/C2",
+            "check valve"
+          ],
+          "evidence": [
+            "SwingCheckValve-1"
+          ]
+        },
+        {
+          "fact": "downstream neighbour is a ball valve",
+          "any_of": [
+            "BallValve-1",
+            "47124/C4",
+            "ball valve"
+          ],
+          "evidence": [
+            "BallValve-1"
+          ]
+        },
+        {
+          "fact": "DN 80 on the upstream side",
+          "any_of": [
+            "DN 80"
+          ],
+          "evidence": [
+            "DN 80"
+          ]
+        },
+        {
+          "fact": "DN 50 on the downstream side",
+          "any_of": [
+            "DN 50"
+          ],
+          "evidence": [
+            "DN 50"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-04",
+      "category": "reachability",
+      "question": "Which pumps are upstream of the tubular heat exchanger?",
+      "gold": [
+        {
+          "tool": "traverse",
+          "args": {
+            "start_entity_id": "TubularHeatExchanger-1",
+            "direction": "upstream",
+            "entity_types": [
+              "pump"
+            ]
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "P4712 is upstream",
+          "any_of": [
+            "P4712",
+            "ReciprocatingPump-1"
+          ],
+          "evidence": [
+            "ReciprocatingPump-1"
+          ]
+        },
+        {
+          "fact": "P4711 is upstream",
+          "any_of": [
+            "P4711",
+            "CentrifugalPump-1"
+          ],
+          "evidence": [
+            "CentrifugalPump-1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-05",
+      "category": "reachability",
+      "question": "If I follow the piping downstream from the swing check valve, where does the drawing end?",
+      "gold": [
+        {
+          "tool": "traverse",
+          "args": {
+            "start_entity_id": "SwingCheckValve-1",
+            "direction": "downstream"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "the off-page connector",
+          "any_of": [
+            "FlowOutPipeOffPageConnector",
+            "off-page connector",
+            "off page connector",
+            "offpage connector"
+          ],
+          "evidence": [
+            "FlowOutPipeOffPageConnector-1"
+          ]
+        },
+        {
+          "fact": "blind flange BlindFlange-1",
+          "any_of": [
+            "BlindFlange-1",
+            "47126/C6",
+            "re:(two|2|both) blind flanges"
+          ],
+          "evidence": [
+            "BlindFlange-1"
+          ]
+        },
+        {
+          "fact": "blind flange BlindFlange-2",
+          "any_of": [
+            "BlindFlange-2",
+            "47126/C11",
+            "re:(two|2|both) blind flanges"
+          ],
+          "evidence": [
+            "BlindFlange-2"
+          ]
+        },
+        {
+          "fact": "the dead-end ball valve BallValve-2",
+          "any_of": [
+            "BallValve-2",
+            "47126/C2"
+          ],
+          "evidence": [
+            "BallValve-2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-06",
+      "category": "reachability",
+      "question": "Looking only two pipe connections downstream of pump P4711, what do you reach, and is that where the line ends?",
+      "gold": [
+        {
+          "tool": "traverse",
+          "args": {
+            "start_entity_id": "CentrifugalPump-1",
+            "direction": "downstream",
+            "max_depth": 2
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "H1007 at one connection",
+          "any_of": [
+            "H1007",
+            "PlateHeatExchanger-1"
+          ],
+          "evidence": [
+            "PlateHeatExchanger-1"
+          ]
+        },
+        {
+          "fact": "a globe valve at two connections",
+          "any_of": [
+            "GlobeValve-2",
+            "47123/C1",
+            "globe valve"
+          ],
+          "evidence": [
+            "GlobeValve-2"
+          ]
+        },
+        {
+          "fact": "says the line does not end there",
+          "any_of": [
+            "re:not (the |an )?(end|terminal|final)|does(n't| not) end|continues|goes on|further|beyond|more (piping|pipe|equipment|entities)|not where"
+          ],
+          "evidence": [
+            "\"continues_beyond_max_depth\": true"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-07",
+      "category": "path",
+      "question": "Trace the route from heat exchanger H1007 to tank T4750 and give the line number and pipe size along it.",
+      "gold": [
+        {
+          "tool": "find_path",
+          "args": {
+            "source_entity_id": "PlateHeatExchanger-1",
+            "target_entity_id": "Tank-1"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "the route passes a globe valve",
+          "any_of": [
+            "GlobeValve-2",
+            "47123/C1",
+            "globe valve"
+          ],
+          "evidence": [
+            "GlobeValve-2"
+          ]
+        },
+        {
+          "fact": "line 47123",
+          "any_of": [
+            "47123"
+          ],
+          "evidence": [
+            "47123"
+          ]
+        },
+        {
+          "fact": "DN 80",
+          "any_of": [
+            "DN 80"
+          ],
+          "evidence": [
+            "DN 80"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-08",
+      "category": "path",
+      "question": "Going from pump P4712 to heat exchanger H1008, which valves do I pass through?",
+      "gold": [
+        {
+          "tool": "find_path",
+          "args": {
+            "source_entity_id": "ReciprocatingPump-1",
+            "target_entity_id": "TubularHeatExchanger-1"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "ball valve BallValve-4",
+          "any_of": [
+            "BallValve-4",
+            "47126/C7"
+          ],
+          "evidence": [
+            "BallValve-4"
+          ]
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "a valve that is not on the route",
+          "any_of": [
+            "BallValve-1",
+            "BallValve-2",
+            "BallValve-3",
+            "BallValve-5",
+            "GlobeValve",
+            "globe valve",
+            "SV 104.01",
+            "safety valve",
+            "47126/C2",
+            "47126/C5",
+            "47126/C10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-09",
+      "category": "property",
+      "question": "What fluid code and piping class does line 47125 carry?",
+      "gold": [
+        {
+          "tool": "get_properties",
+          "args": {
+            "ids": [
+              "PipingNetworkSystem-5"
+            ],
+            "requested_properties": [
+              "fluidCode",
+              "pipingClassCode"
+            ]
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "fluid code MNc",
+          "any_of": [
+            "MNc"
+          ],
+          "evidence": [
+            "MNc"
+          ]
+        },
+        {
+          "fact": "piping class 73HG12",
+          "any_of": [
+            "73HG12"
+          ],
+          "evidence": [
+            "73HG12"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-10",
+      "category": "property",
+      "question": "What design pressure limits apply to each chamber of tank T4750?",
+      "gold": [
+        {
+          "tool": "get_properties",
+          "args": {
+            "ids": [
+              "Tank-1"
+            ],
+            "requested_properties": [
+              "upperLimitDesignPressure",
+              "lowerLimitDesignPressure"
+            ]
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "an upper limit of 0.1 bar (Chamber-7)",
+          "any_of": [
+            "re:(?<![-\\d.])0\\.1\\s*bar"
+          ],
+          "evidence": [
+            "\"value\": \"0.1 bar\""
+          ]
+        },
+        {
+          "fact": "an upper limit of 0.05 bar (Chamber-8)",
+          "any_of": [
+            "re:(?<![-\\d.])0\\.05\\s*bar"
+          ],
+          "evidence": [
+            "0.05 bar"
+          ]
+        },
+        {
+          "fact": "a lower limit of -0.1 bar",
+          "any_of": [
+            "re:-\\s?0\\.1(\\s*bar)?"
+          ],
+          "evidence": [
+            "-0.1 bar"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-11",
+      "category": "missing data",
+      "question": "How much does heat exchanger H1007 weigh?",
+      "gold": [
+        {
+          "tool": "get_properties",
+          "args": {
+            "ids": [
+              "PlateHeatExchanger-1"
+            ],
+            "requested_properties": [
+              "weight",
+              "mass"
+            ]
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "says the P&ID does not contain a weight",
+          "any_of": [
+            "re:does(n't| not) (contain|include|provide|have|specify|record|list)|not (contain|available|present|included|specified|provided|recorded|given|in the)|no (weight|mass)|is(n't| not) (available|present|included|specified|recorded|given)"
+          ],
+          "evidence": [
+            "\"missing\": [\"weight\", \"mass\"]"
+          ]
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "an invented weight",
+          "any_of": [
+            "re:\\d+(\\.\\d+)?\\s*(kg|tonnes?|tons?|lbs?)\\b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-12",
+      "category": "instrumentation",
+      "question": "Which valve does HV4750.01 operate, and on which line is that valve installed?",
+      "gold": [
+        {
+          "tool": "get_connections",
+          "args": {
+            "entity_id": "ActuatingFunction-2",
+            "relationship": "instrumentation"
+          }
+        },
+        {
+          "tool": "get_entity",
+          "args": {
+            "entity_id": "GlobeValve-2"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "it operates GlobeValve-2",
+          "any_of": [
+            "GlobeValve-2",
+            "47123/C1"
+          ],
+          "evidence": [
+            "GlobeValve-2"
+          ]
+        },
+        {
+          "fact": "the valve is on line 47123",
+          "any_of": [
+            "47123"
+          ],
+          "evidence": [
+            "\"lineNumber\": \"47123\""
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-13",
+      "category": "instrumentation",
+      "question": "For control loop 4712.02: where is the pressure sensed, and which valve does the loop end up acting on?",
+      "gold": [
+        {
+          "tool": "get_connections",
+          "args": {
+            "entity_id": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation"
+          }
+        },
+        {
+          "tool": "get_connections",
+          "args": {
+            "entity_id": "ProcessSignalGeneratingFunction-2",
+            "relationship": "instrumentation"
+          }
+        },
+        {
+          "tool": "get_connections",
+          "args": {
+            "entity_id": "ActuatingFunction-1",
+            "relationship": "instrumentation"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "the transmitter PT4712.02",
+          "any_of": [
+            "PT4712.02",
+            "ProcessSignalGeneratingFunction-2"
+          ],
+          "evidence": [
+            "ProcessSignalGeneratingFunction-2"
+          ]
+        },
+        {
+          "fact": "sensed at BlindFlange-2",
+          "any_of": [
+            "BlindFlange-2",
+            "47126/C11"
+          ],
+          "evidence": [
+            "BlindFlange-2"
+          ]
+        },
+        {
+          "fact": "through actuating function PV4712.02",
+          "any_of": [
+            "PV4712.02",
+            "ActuatingFunction-1"
+          ],
+          "evidence": [
+            "ActuatingFunction-1"
+          ]
+        },
+        {
+          "fact": "acting on GlobeValve-1",
+          "any_of": [
+            "GlobeValve-1",
+            "47127/C1"
+          ],
+          "evidence": [
+            "GlobeValve-1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-14",
+      "category": "robustness",
+      "question": "What is connected to valve V-9001?",
+      "gold": [
+        {
+          "tool": "find_entities",
+          "args": {
+            "query": "V-9001"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "says V-9001 is not in the P&ID",
+          "any_of": [
+            "re:not found|no entity|no such|does(n't| not) (exist|contain|appear|include|have)|not (present|in the|exist)|could(n't| not) (find|locate)|no match|unable to (find|locate)"
+          ],
+          "evidence": [
+            "\"status\": \"not_found\""
+          ]
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "an invented connection",
+          "any_of": [
+            "re:line\\s*47\\d{3}",
+            "re:DN\\s?\\d+"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-15",
+      "category": "robustness",
+      "question": "Since H1008 is rated for 500 kW, which line feeds it?",
+      "gold": [
+        {
+          "tool": "get_properties",
+          "args": {
+            "ids": [
+              "TubularHeatExchanger-1"
+            ],
+            "requested_properties": [
+              "designHeatFlowRate"
+            ]
+          }
+        },
+        {
+          "tool": "get_connections",
+          "args": {
+            "entity_id": "TubularHeatExchanger-1",
+            "direction": "upstream",
+            "relationship": "piping"
+          }
+        }
+      ],
+      "required": [
+        {
+          "fact": "line 47126 feeds it",
+          "any_of": [
+            "47126"
+          ],
+          "evidence": [
+            "\"lineNumber\": \"47126\""
+          ]
+        },
+        {
+          "fact": "the graph gives 313.0 kW",
+          "any_of": [
+            "re:313(\\.0)?\\s*kW"
+          ],
+          "evidence": [
+            "313.0 kW"
+          ]
+        },
+        {
+          "fact": "does not accept the 500 kW premise",
+          "any_of": [
+            "re:(not|n't|instead|rather|contradict|differ|incorrect|no evidence|however|but|whereas|actual)[^.]{0,120}500|500[^.]{0,120}(not|n't|instead|rather|contradict|incorrect|no evidence|differ|however|but|whereas)"
+          ],
+          "evidence": [
+            "313.0 kW"
+          ]
+        }
+      ]
+    }
+  ]
+}
