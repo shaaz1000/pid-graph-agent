@@ -13,6 +13,7 @@ written; later prompts never overwrite earlier ones.
 | `05-agent-stabilization.md` | Agent stabilization and the prompt-history rule | Preserved development instruction |
 | `06-pre-evaluation-provider-verification.md` | Prompt-history repair, second LLM provider, live verification | Preserved development instruction |
 | `07-deepseek-diagnostic-verification.md` | Temporary diagnostic provider, diagnostic run rules, official verification procedure | Preserved development instruction |
+| `08-deepseek-configuration-and-diagnostic-run.md` | Key-variable name correction and the frozen eight-question diagnostic run | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 

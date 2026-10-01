@@ -16,7 +16,7 @@ DEFAULT_LLM_PROVIDER = "groq"
 DEFAULT_LLM_MODEL = "openai/gpt-oss-20b"
 # The environment variable holding the key for each supported provider. Only the key of the
 # selected provider is read; there is no fallback from one provider to another.
-API_KEY_VARIABLES = {"groq": "GROQ_API_KEY", "openrouter": "OPENROUTER_API_KEY", "deepseek": "DEEPSEEK_API_KEY"}
+API_KEY_VARIABLES = {"groq": "GROQ_API_KEY", "openrouter": "OPENROUTER_API_KEY", "deepseek": "DEEP_SEEK_API_KEY"}
 
 
 @dataclass(frozen=True)

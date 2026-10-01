@@ -40,7 +40,7 @@ def test_selected_only_by_explicit_configuration(monkeypatch, tmp_path):
     empty = tmp_path / ".env"
     empty.write_text("")
     monkeypatch.setenv("LLM_PROVIDER", "deepseek")
-    monkeypatch.setenv("DEEPSEEK_API_KEY", "deepseek-key")
+    monkeypatch.setenv("DEEP_SEEK_API_KEY", "deepseek-key")
     monkeypatch.setenv("GROQ_API_KEY", "groq-key")
     monkeypatch.delenv("LLM_MODEL", raising=False)
     settings = load_settings(empty)
@@ -49,7 +49,7 @@ def test_selected_only_by_explicit_configuration(monkeypatch, tmp_path):
 
 
 def test_missing_key_and_missing_model_are_clear_errors():
-    with pytest.raises(ConfigError, match="DEEPSEEK_API_KEY"):
+    with pytest.raises(ConfigError, match="DEEP_SEEK_API_KEY"):
         create_llm(Settings(llm_provider="deepseek", llm_model=MODEL, llm_api_key=None))
     with pytest.raises(ConfigError, match="LLM_MODEL"):
         create_llm(Settings(llm_provider="deepseek", llm_model="", llm_api_key=KEY))
