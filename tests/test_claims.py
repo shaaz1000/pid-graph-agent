@@ -300,7 +300,27 @@ def test_malformed_or_unknown_claims_fail_closed(tools):
         assert validate_claim(bad, index)[0] is False
     assert not supported(obs, claim("connected_to", "P4711", "P4711", qualifiers={"made_up_qualifier": 1}))
     assert split_answer("no block here") == ("no block here", None)
-    assert split_answer("text\n```claims\nnot json\n```")[1] is None
+    # a claims block that cannot be parsed yields no claims and is never shown as answer text
+    assert split_answer("text\n```claims\nnot json\n```") == ("text", None)
+    assert split_answer("text\n\n```claims\n[{\"predicate\": \"is_a\"") == ("text", None)
+
+
+def test_claims_written_one_per_line_are_accepted(tools):
+    """Seen in a live run: several JSON arrays, one per line, inside the claims block."""
+    lines = [json.dumps([claim("identified_as", "CentrifugalPump-1", value="P4711")]), json.dumps(claim("is_a", "CentrifugalPump-1", value="CentrifugalPump")) + ","]
+    prose, claims = split_answer("P4711 is CentrifugalPump-1.\n\n```claims\n" + "\n".join(lines) + "\n```")
+    assert prose == "P4711 is CentrifugalPump-1." and [c["predicate"] for c in claims] == ["identified_as", "is_a"]
+    assert check_answer("P4711 is CentrifugalPump-1.\n\n```claims\n" + "\n".join(lines) + "\n```", "q", observe(tools, find("P4711"))).level == "grounded"
+
+
+def test_open_end_side_and_empty_rewrite(tools):
+    obs = observe(tools, ("get_connections", {"entity_id": "TubularHeatExchanger-1", "relationship": "piping"}))
+    assert supported(obs, claim("open_end", "TubularHeatExchanger-1", qualifiers={"direction": "upstream", "lineNumber": "47140"}))
+    assert not supported(obs, claim("open_end", "TubularHeatExchanger-1", qualifiers={"direction": "downstream", "lineNumber": "47140"}))
+    # a rejected draft followed by an empty rewrite is insufficient evidence, not "not validated"
+    wrong = answer("P4711 feeds T4750.", claim("connected_to", "P4711", "T4750"))
+    result, _ = run_agent(tools, "q", [call("find_entities", query="P4711"), call("find_entities", query="T4750")], wrong, "")
+    assert (result.grounding_status, result.grounding_level) == ("fallback", "insufficient_evidence") and "feeds" not in result.answer
 
 
 # ============================================================ legitimate answers still pass

@@ -50,6 +50,7 @@ WITH_NAME = re.compile(r"^(.*?)\s*[\(\[](.*)[\)\]]$")
 DN = re.compile(r"^dn\s?(\d+(?:\.\d+)?)\s*(.*)$", re.IGNORECASE)
 QUANTITY = re.compile(r"^(-?\d+(?:\.\d+)?)\s*(.*)$")
 CLAIMS_BLOCK = re.compile(r"```[ \t]*(?:claims|json)?[ \t]*\n(.*?)```", re.DOTALL | re.IGNORECASE)
+UNPARSED_CLAIMS = re.compile(r"```[ \t]*claims[ \t]*\n.*?(?:```|$)", re.DOTALL | re.IGNORECASE)
 CLAIMS_HEADING = re.compile(r"(?:\n|^)[#*\s]*(?:structured\s+)?claims[*\s]*:?[*\s]*$", re.IGNORECASE)
 # Assertions about present operating state. A P&ID holds topology and design data, not state.
 LIVE_STATE = re.compile(
@@ -250,6 +251,8 @@ def _connection_facts(index: FactIndex, connection: dict[str, Any], tool: str, e
     if connection.get("open_end"):
         known = target if connection["open_end"] == "source" else source
         qualifiers["missing_end"] = "source" if connection["open_end"] == "source" else "destination"
+        # A pipe whose source is off the drawing arrives at the entity, so it is on its upstream side.
+        qualifiers["direction"] = "upstream" if connection["open_end"] == "source" else "downstream"
         index.add("open_end", known["id"], qualifiers=qualifiers, tool=tool, evidence=ev)
     elif connection["relationship"] == "piping":
         index.add("flows_to", source["id"], object=target["id"], qualifiers=qualifiers, tool=tool, evidence=ev)
@@ -338,16 +341,30 @@ def split_answer(draft: str) -> tuple[str, list[Any] | None]:
     """The prose and the structured claims of a draft. ``None`` when there is no usable claims block."""
     text = draft or ""
     for match in reversed(list(CLAIMS_BLOCK.finditer(text))):
-        try:
-            data = json.loads(match.group(1))
-        except ValueError:
-            continue
-        if isinstance(data, dict):
-            data = data.get("claims")
-        if isinstance(data, list):
+        data = _parse_claims(match.group(1))
+        if data is not None:
             prose = (text[: match.start()] + text[match.end():]).strip()
             return CLAIMS_HEADING.sub("", prose).strip(), data
-    return text.strip(), None
+    # A block labelled as claims that cannot be parsed is still not part of the answer text.
+    text = UNPARSED_CLAIMS.sub("", text)
+    return CLAIMS_HEADING.sub("", text.strip()).strip(), None
+
+
+def _parse_claims(body: str) -> list[Any] | None:
+    """A JSON array of claims; also accepts one claim (or one array) per line."""
+    try:
+        data = json.loads(body)
+    except ValueError:
+        data = []
+        for line in filter(None, (raw.strip().rstrip(",") for raw in body.splitlines())):
+            try:
+                item = json.loads(line)
+            except ValueError:
+                return None
+            data += item if isinstance(item, list) else [item]
+    if isinstance(data, dict):
+        data = data.get("claims")
+    return data if isinstance(data, list) else None
 
 
 def render_claim(claim: Any) -> str:

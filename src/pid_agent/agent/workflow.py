@@ -284,7 +284,7 @@ class PidAgent:
             status = "regenerated" if state["grounding_attempts"] else "grounded"
             return {"answer": state["answer_text"] or draft, "grounding_status": status}
         # Fail closed: nothing the model wrote is shown, and no claim is reported as supported.
-        level = "insufficient_evidence" if draft else "not_validated"
+        level = "insufficient_evidence" if draft or state["rejected_drafts"] else "not_validated"
         return {"answer": self._fallback_answer(state), "grounding_status": "fallback", "grounding_level": level, "claims": []}
 
     # ----------------------------------------------------------- routing

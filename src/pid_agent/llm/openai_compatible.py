@@ -36,7 +36,7 @@ class OpenAICompatibleProvider:
         api_key: str,
         model: str,
         temperature: float = 0.0,
-        max_output_tokens: int = 2048,
+        max_output_tokens: int = 4096,
         timeout_seconds: float = 60.0,
         http_client: httpx.Client | None = None,
     ) -> None:
