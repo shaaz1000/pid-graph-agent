@@ -19,6 +19,7 @@ written; later prompts never overwrite earlier ones.
 | `11-official-groq-verification-request.md` | Request to run the frozen five-question verification on the primary provider (superseded before it ran: quota) | Preserved development instruction |
 | `12-formal-evaluation-and-documentation.md` | Formal 15-question evaluation, scoring, transcripts and README requirements | Preserved development instruction |
 | `13-final-verification-gpt-oss-evaluation.md` | Preserve the first evaluation run and repeat the frozen evaluation on the open-weight model | Preserved development instruction |
+| `14-final-pre-submission-milestone.md` | Short visual explainer, local chat UI over the existing agent, and a requirement audit against the assignment | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 
