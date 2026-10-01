@@ -37,7 +37,7 @@ Without any API key you can still call the graph tools directly and run the test
 
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
-uv run pytest                                    # 499 deterministic tests, no network
+uv run pytest                                    # 501 deterministic tests, no network
 uv run python evals/evaluator.py                 # re-score the saved evaluation runs
 ```
 
@@ -70,7 +70,7 @@ failover.
 | `openrouter` | `OPENROUTER_API_KEY` | must be set to a tool-calling model id |
 
 **Which model was actually used.** The design target is the open-weight `openai/gpt-oss-20b`
-hosted on Groq, and all early development runs used it. Groq's free tier allows 200,000 tokens
+(weights published by OpenAI under Apache-2.0) hosted on Groq, and all early development runs used it. Groq's free tier allows 200,000 tokens
 per day, which ran out during development. The formal evaluation below therefore has one
 complete run on **DeepSeek, model `deepseek-chat`**, and a run on **Groq, model
 `openai/gpt-oss-20b`** that the quota stopped after the first question. `deepseek-chat` is a
@@ -293,6 +293,15 @@ boundaries are now structured evidence (`db563eb`).
   adversarial cases and the corresponding positive cases, with no model involved). The
   evaluation was not re-run, so these scores say nothing about how a live model performs with
   the claims format.
+- **Live smoke test after that change.** Seven questions were asked once each
+  ([examples/live-smoke/](examples/live-smoke/)); this is not a score. On Groq
+  `openai/gpt-oss-20b`: one answer fully grounded, one wrong draft correctly withheld, then
+  the daily quota stopped the run. The remaining five were asked on DeepSeek `deepseek-chat`
+  as a diagnostic: three grounded (two after one rewrite), one correctly reported as
+  ambiguous, one `limited` because of a claims-parsing bug. That run exposed four general
+  issues, since fixed: claims written one per line, a missing direction on open-end facts, a
+  mislabelled status after an empty rewrite, and an output-token limit too small for the
+  claims block.
 - **Runs:** each question asked once, no retries of answers, no changes between questions.
   The questions and scorer were committed (`407d6ba`) before the first run and are identical
   for both runs. The agent code is the same frozen commit (`a8d56b3`) in both.
@@ -350,10 +359,11 @@ hard enough to separate good from excellent:
   `47126/C5`; the agent says when an identifier is derived.
 - **`find_path` returns only the shortest route.**
 - **Instrumentation is one call per hop**; there is no multi-hop instrumentation traversal.
-- **Claim-level grounding is new and untested on a live model.** It is exercised only by
-  deterministic tests with scripted model output. If a model omits or under-fills the claims
-  block, the answer is still checked token by token and labelled `limited`, which is the old
-  behaviour.
+- **Claim-level grounding has only a small live smoke test**, not an evaluation: eight live
+  answers across two models, two of them on the open-weight model. If a model omits or
+  under-fills the claims block, the answer is still checked token by token and labelled
+  `limited`, which is the old behaviour. An answer in that state can contain values that are
+  in the tool results but were not matched to a claim.
 - **What claim validation cannot prove.** It checks the claims the model lists; a sentence
   with no identifier, number or claim (a general-knowledge gloss such as expanding the
   instrument code "TICSA") is not detected. A claim is only as right as the graph: errors or
@@ -374,7 +384,8 @@ hard enough to separate good from excellent:
   long, file-by-file reference.
 - [docs/SUBMISSION_AUDIT.md](docs/SUBMISSION_AUDIT.md) checks each requirement of the
   assignment; [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) is a five-minute demo.
-- pyDEXPI is AGPL-3.0.
+- Licence: AGPL-3.0, because the code builds on pyDEXPI, which is AGPL-3.0. See
+  [LICENSE](LICENSE) and [NOTICE](NOTICE). The C01 file is © DEXPI e.V.
 
 **Time spent.** Approximately 5–6 hours of hands-on work across understanding
 the pyDEXPI graph, designing the graph abstraction and agent workflow,

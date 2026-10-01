@@ -1,0 +1,89 @@
+PROVIDER groq  MODEL openai/gpt-oss-20b
+
+QUESTION [smoke-01]
+What is P4711 connected to, and through which pipes?
+
+STEP 1
+Tool:   find_entities
+Input:  {"entity_type": null, "query": "P4711"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "CentrifugalPump-1",
+      "name": "P4711",
+      "type": "CentrifugalPump",
+      "category": "equipment",
+      "tag": "P4711",
+      "identifiers": {
+        "tagName": "P4711"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'P4711'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1
+      }
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_connections
+Input:  {"direction": "both", "entity_id": "CentrifugalPump-1", "relationship": "piping"}
+Status: success
+Result: {
+  "status": "success",
+  "connections": [
+    {
+      "id": "PipingNetworkSegment-1/connections/1",
+      "from": "FlowInPipeOffPageConnector-1",
+      "to": "CentrifugalPump-1 (P4711)",
+      "type": "pipe",
+      "relationship": "piping",
+      "neighbor_is": "upstream",
+      "lineNumber": "47121",
+      "segmentNumber": "S1",
+      "nominalDiameterRepresentation": "DN 80",
+      "nominalDiameterStandard": "DN 80 (DIN 2448)",
+      "fluidCode": "MNb",
+      "pipingClassCode": "75HB13",
+      "to_nozzle": "N1"
+    },
+    {
+      "id": "PipingNetworkSegment-2/connections/1",
+      "from": "CentrifugalPump-1 (P4711)",
+      "to": "PlateHeatExchanger-1 (H1007)",
+      "type": "pipe",
+      "relationship": "piping",
+      "neighbor_is": "downstream",
+      "lineNumber": "47122",
+      "segmentNumber": "S1",
+      "nominalDiameterRepresentation": "DN 80",
+      "nominalDiameterStandard": "DN 80 (DIN 2448)",
+      "fluidCode": "MNb",
+      "pipingClassCode": "75HB13",
+      "from_nozzle": "N2",
+      "to_nozzle": "N1 [Chamber-1]"
+    }
+  ]
+}
+
+FINAL ANSWER
+P4711 is connected upstream to a Flow‑In pipe (FlowInPipeOffPageConnector‑1) via pipe line 47121, nominal diameter DN 80.  
+It is connected downstream to PlateHeatExchanger‑1 (H1007) via pipe line 47122, nominal diameter DN 80.
+
+GROUNDING: grounded (10 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  supported claim: connected_to(CentrifugalPump-1, -> FlowInPipeOffPageConnector-1, direction: upstream, lineNumber: 47121, nominalDiameter: DN 80)
+      <- F17 flows_to [PipingNetworkSegment-1/connections/1] conceptual_graph: PipingNetworkSegment-1/connections/1, PipingNetworkSegment-1, PipingNetworkSystem-1
+  supported claim: connected_to(CentrifugalPump-1, -> PlateHeatExchanger-1, direction: downstream, lineNumber: 47122, nominalDiameter: DN 80)
+      <- F31 flows_to [PipingNetworkSegment-2/connections/1] conceptual_graph: PipingNetworkSegment-2/connections/1, PipingNetworkSegment-2, PipingNetworkSystem-2
+
+EVIDENCE (3 graph facts)
+  [entity] CentrifugalPump-1  <- plant_graph: CentrifugalPump-1
+  [connection] PipingNetworkSegment-1/connections/1  <- conceptual_graph: PipingNetworkSegment-1/connections/1, PipingNetworkSegment-1, PipingNetworkSystem-1
+  [connection] PipingNetworkSegment-2/connections/1  <- conceptual_graph: PipingNetworkSegment-2/connections/1, PipingNetworkSegment-2, PipingNetworkSystem-2
+
+USAGE: 3 model calls, 8291 tokens, 4523 ms

@@ -1,0 +1,75 @@
+PROVIDER groq  MODEL openai/gpt-oss-20b
+
+QUESTION [smoke-03]
+Trace the route from H1007 to T4750 and give me the line number and pipe size.
+
+STEP 1
+Tool:   find_entities
+Input:  {"entity_type": null, "query": "H1007"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "PlateHeatExchanger-1",
+      "name": "H1007",
+      "type": "PlateHeatExchanger",
+      "category": "equipment",
+      "tag": "H1007",
+      "identifiers": {
+        "tagName": "H1007"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'H1007'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1,
+        "open_ended_pipes": 2
+      }
+    }
+  ]
+}
+
+STEP 2
+Tool:   find_entities
+Input:  {"entity_type": null, "query": "T4750"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "Tank-1",
+      "name": "T4750",
+      "type": "Tank",
+      "category": "equipment",
+      "tag": "T4750",
+      "identifiers": {
+        "tagName": "T4750"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'T4750'",
+      "links": {
+        "piping_upstream": 3,
+        "piping_downstream": 1,
+        "instrumentation": 1
+      }
+    }
+  ]
+}
+
+FINAL ANSWER
+I could not answer this question because the language model provider call failed (rate_limit: Groq API call failed: RateLimitError (HTTP 429): Rate limit reached for model `openai/gpt-oss-20b` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197626, Requested 2886. Please try again in 3m41.184s. Need more tokens? Upgrade). This is an infrastructure failure, not a statement about the P&ID.
+
+What the graph tools returned:
+- PlateHeatExchanger-1 (H1007, PlateHeatExchanger)
+- Tank-1 (T4750, Tank)
+
+GROUNDING: fallback (0 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: not_validated
+FAILURE [infrastructure: rate_limit]: llm_error: Groq API call failed: RateLimitError (HTTP 429): Rate limit reached for model `openai/gpt-oss-20b` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197626, Requested 2886. Please try again in 3m41.184s. Need more tokens? Upgrade
+
+EVIDENCE (2 graph facts)
+  [entity] PlateHeatExchanger-1  <- plant_graph: PlateHeatExchanger-1
+  [entity] Tank-1  <- plant_graph: Tank-1
+
+USAGE: 2 model calls, 5177 tokens, 46462 ms

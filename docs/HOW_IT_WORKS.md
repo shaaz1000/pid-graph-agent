@@ -288,7 +288,7 @@ The rules:
 
 The result carries a status that comes from this validation, not from the model: `grounded` (every claim held), `limited` (the text passed only the token-level pass, for example because the model listed no claims), `ambiguous`, or `insufficient evidence`. There is no confidence percentage.
 
-What it still cannot do: check a sentence that contains no identifier, number or claim; know whether the P&ID itself is right; or say anything about the physical plant beyond the drawing. This claim format has only been tested with scripted model output, not yet against a live model.
+What it still cannot do: check a sentence that contains no identifier, number or claim; know whether the P&ID itself is right; or say anything about the physical plant beyond the drawing. Beyond deterministic tests, this claim format has had only a seven-question live smoke test, not a scored evaluation.
 
 Code: [`agent/claims.py`](../src/pid_agent/agent/claims.py) → `build_facts`, `validate_claim`, `check_answer`. The token-level pass is [`agent/grounding.py`](../src/pid_agent/agent/grounding.py).
 
@@ -353,7 +353,7 @@ Add to the above:
 - **Traversal results carry path facts**: distance, equipment passed through, real ends, and whether the search was cut off by its depth limit. Those exist because a real model misread a truncated search as "the line ends here".
 - **Grounding** is claim-level: the model lists structured claims, code matches each against typed facts derived from tool results (subject, relation, value, unit), and nothing is converted or chained. The earlier token-level check caught the model turning "800 mm" into "DN 800" in the evaluation; the claim validator makes that impossible to accept.
 - **Evaluation**: 15 questions with gold facts read from the graph, a deterministic scorer, no LLM judge, committed before the run. DeepSeek `deepseek-chat` scored 15 of 15. The intended open-weight model on Groq answered one question correctly before the free daily quota ran out, so I claim no score for it.
-- **Honest limits**: claim-level grounding was added after the evaluation and is covered by deterministic tests only, not a live run; prose with nothing checkable is not detected; the model can make redundant calls; only C01 has been tested; one evaluation run.
+- **Honest limits**: claim-level grounding was added after the evaluation and has deterministic tests plus a small live smoke test, not a scored run; prose with nothing checkable is not detected; the model can make redundant calls; only C01 has been tested; one evaluation run.
 
 ### Questions you will be asked
 
@@ -385,7 +385,7 @@ It is reported as missing: absent properties, unknown tags, pipes with no destin
 Fifteen questions with graph-derived expected facts and a deterministic scorer, frozen before the run. I also say plainly that a perfect score on fifteen questions I wrote mostly shows the set is too easy.
 
 **What are the biggest current limitations?**
-No complete evaluation on the open-weight model; claim-level grounding has not been measured on a live model; instrumentation chains cost one call per hop; only one drawing has been tried.
+No complete evaluation on the open-weight model; claim-level grounding has only a small live smoke test; instrumentation chains cost one call per hop; only one drawing has been tried.
 
 **What would you build next in production?**
 Many drawings joined across sheets through the off-page connectors, a persistent graph store behind the same tool interface, stored traces for audit, and evaluation sets written by plant engineers.

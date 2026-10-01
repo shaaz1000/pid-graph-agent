@@ -1246,7 +1246,7 @@ Two more guards run on the prose: an assertion about current operating state ("i
 - The claims the model lists are checked; whether it listed everything it said is enforced only for tokens (identifiers, numbers, units). A sentence with none is not checked.
 - Meaning outside the eighteen predicates cannot be expressed, so it cannot be validated either.
 - A claim is as right as the graph. Errors in the source P&ID pass through, and absence from the graph is not absence from the plant.
-- The claims format is exercised only by deterministic tests with scripted model output. How reliably a live model fills it has not been measured; an answer without claims degrades to `limited`.
+- The claims format has deterministic tests and a seven-question live smoke test ([examples/live-smoke/](../examples/live-smoke/)), not a scored evaluation. An answer without usable claims degrades to `limited`.
 
 ---
 
@@ -1633,7 +1633,7 @@ All from the DeepSeek run.
 
 ## Testing strategy
 
-499 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
+501 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
 
 | Layer | File | Tests | What it pins down |
 |---|---|---|---|
@@ -1650,7 +1650,7 @@ All from the DeepSeek run.
 | Agent | `test_agent.py` | 59 | The workflow with a scripted model: tools, ambiguity, not found, missing data, loops, limits, malformed output, provider failure, grounding failure |
 | Providers | `test_llm.py`, `test_openrouter.py`, `test_deepseek.py` | 51 | Adapters against mocks: requests, parsing, usage, error categories, no key leakage, no failover |
 | Evaluation | `test_eval.py` | 26 | Gold facts re-derived from the graph; scorer behaviour |
-| Claim-level grounding | `test_claims.py` | 57 | Twenty adversarial cases that must not become supported, the matching positive cases, guardrails (scope, injection, tool allowlist, operating state), and the agent loop with scripted claims |
+| Claim-level grounding | `test_claims.py` | 59 | Twenty adversarial cases that must not become supported, the matching positive cases, guardrails (scope, injection, tool allowlist, operating state), and the agent loop with scripted claims |
 | Chat UI adapter | `test_ui_adapter.py` | 18 | Result-to-display mapping: steps, evidence, grounding, ambiguity, not found, provider error, missing fields; one scripted run of the page |
 
 **What the tests give confidence in.**
@@ -1810,7 +1810,7 @@ The method each time: reproduce the failure, classify the cause (planning, tool 
 
 **Grounding**
 
-- **Not measured live.** Claim-level grounding was added after the evaluation and is covered only by deterministic tests.
+- **No scored live run.** Claim-level grounding was added after the evaluation; it has deterministic tests and a small live smoke test.
 - **Uncheckable prose.** A sentence with no identifier, number or claim is not validated.
 - **Fixed vocabulary.** Facts outside the eighteen predicates cannot be claimed.
 - **Token-level layer.** When the model lists no claims, only this layer applies (status `limited`), with the false positive described in failure 7.
