@@ -68,3 +68,20 @@ def test_error_text_is_short_and_drops_account_identifiers():
     text = GroqProvider._describe(RateLimited())
     assert text.startswith("RateLimited (HTTP 429): Rate limit reached for model `m` service tier")
     assert "org_" not in text and len(text) < 240
+
+
+def test_groq_errors_carry_a_category():
+    provider = GroqProvider(api_key="not-a-real-key", model="m", timeout_seconds=2, max_retries=0)
+    provider._client = provider._groq.Groq(api_key="not-a-real-key", base_url="http://127.0.0.1:9", timeout=2, max_retries=0)
+    with pytest.raises(LLMError) as raised:
+        provider.complete([{"role": "user", "content": "hi"}])
+    assert raised.value.category == "provider_unavailable"
+
+    class WithStatus(Exception):
+        def __init__(self, status):
+            self.status_code = status
+
+    assert provider._category(WithStatus(429)) == "rate_limit"
+    assert provider._category(WithStatus(401)) == "authentication"
+    assert provider._category(WithStatus(503)) == "provider_unavailable"
+    assert LLMError("x").category == "unknown_provider_error"

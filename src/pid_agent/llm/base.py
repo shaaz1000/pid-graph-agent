@@ -17,8 +17,36 @@ ToolChoice = Literal["auto", "required", "none"]
 Message = dict[str, Any]
 
 
+ErrorCategory = Literal[
+    "rate_limit",
+    "authentication",
+    "provider_unavailable",
+    "invalid_request",
+    "output_parse_failed",
+    "unknown_provider_error",
+]
+
+
 class LLMError(PidAgentError):
-    """The model could not be called (network, authentication, rate limit, server error)."""
+    """The model could not be called. This is an infrastructure failure: it says nothing
+    about the plant, and must never be read as "not found" or as an abstention."""
+
+    def __init__(self, message: str, category: ErrorCategory = "unknown_provider_error") -> None:
+        super().__init__(message)
+        self.category: ErrorCategory = category
+
+
+def category_for_status(status: int | None) -> ErrorCategory:
+    """Map an HTTP status to an error category (shared by all HTTP-based providers)."""
+    if status == 429:
+        return "rate_limit"
+    if status in (401, 403):
+        return "authentication"
+    if status in (400, 404, 413, 422):
+        return "invalid_request"
+    if status is not None and status >= 500:
+        return "provider_unavailable"
+    return "unknown_provider_error"
 
 
 @dataclass(frozen=True)
@@ -51,6 +79,27 @@ class LLMResponse:
     usage: dict[str, int] = field(default_factory=dict)
     model: str | None = None
     duration_ms: float = 0.0
+
+
+def response_from_chat_completion(payload: Any, duration_ms: float = 0.0) -> LLMResponse:
+    """Normalise an OpenAI-style chat-completion body. Raises LLMError if it is not one."""
+    try:
+        message = payload["choices"][0]["message"]
+        calls = [
+            ToolCall.from_raw(str(call.get("id") or f"call_{index}"), call["function"]["name"], call["function"].get("arguments"))
+            for index, call in enumerate(message.get("tool_calls") or [])
+        ]
+    except (KeyError, IndexError, TypeError, AttributeError) as exc:
+        raise LLMError("The provider returned a response that is not a chat completion.", "output_parse_failed") from exc
+    usage = payload.get("usage") or {}
+    return LLMResponse(
+        # Only the answer text is kept; any reasoning field is ignored.
+        content=message.get("content"),
+        tool_calls=calls,
+        usage={key: int(usage.get(key) or 0) for key in ("prompt_tokens", "completion_tokens", "total_tokens")},
+        model=payload.get("model"),
+        duration_ms=duration_ms,
+    )
 
 
 class LLMClient(Protocol):

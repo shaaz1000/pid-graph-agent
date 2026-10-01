@@ -42,6 +42,7 @@ class AgentState(TypedDict, total=False):
     grounding_attempts: int
     grounding_status: GroundingStatus
     failure_reason: str | None
+    failure_category: str | None
     usage: dict[str, int]
 
 
@@ -59,6 +60,9 @@ class AgentResult(BaseModel):
     rejected_drafts: list[dict[str, Any]] = Field(default_factory=list)
     limit_reached: str | None = None
     failure_reason: str | None = None
+    # Set for infrastructure failures (rate_limit, authentication, ...): the question was not
+    # answered because the model could not be reached, not because of anything in the graph.
+    failure_category: str | None = None
     iterations: int = 0
     usage: dict[str, int] = Field(default_factory=dict)
     duration_ms: float = 0.0

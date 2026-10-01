@@ -69,7 +69,7 @@ def main() -> None:
               f"rejected_drafts={len(result.rejected_drafts)} limit={result.limit_reached} failure={result.failure_reason} "
               f"llm_calls={result.usage['llm_calls']} tokens={result.usage['total_tokens']} ms={result.duration_ms:.0f}")
         print("     " + result.answer.replace("\n", "\n     "))
-        args.output.write_text(json.dumps({"model": settings.llm_model, "results": results}, indent=2, ensure_ascii=False))
+        args.output.write_text(json.dumps({"provider": settings.llm_provider, "model": settings.llm_model, "results": results}, indent=2, ensure_ascii=False))
         time.sleep(args.pause)
 
 

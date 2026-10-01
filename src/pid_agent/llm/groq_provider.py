@@ -7,7 +7,7 @@ import re
 import time
 from typing import Any
 
-from pid_agent.llm.base import LLMError, LLMResponse, Message, ToolCall, ToolChoice
+from pid_agent.llm.base import ErrorCategory, LLMError, LLMResponse, Message, ToolCall, ToolChoice, category_for_status
 
 logger = logging.getLogger(__name__)
 MALFORMED_OUTPUT_CODES = {"tool_use_failed", "output_parse_failed"}
@@ -54,12 +54,12 @@ class GroqProvider:
         except self._groq.BadRequestError as exc:
             malformed = self._malformed_tool_output(exc)
             if malformed is None:
-                raise LLMError(f"Groq rejected the request: {self._describe(exc)}") from exc
+                raise LLMError(f"Groq rejected the request: {self._describe(exc)}", "invalid_request") from exc
             duration = (time.perf_counter() - started) * 1000
             logger.warning("llm_malformed_tool_call model=%s duration_ms=%.0f", self._model, duration)
             return LLMResponse(malformed_output=malformed, model=self._model, duration_ms=duration)
         except self._groq.APIError as exc:
-            raise LLMError(f"Groq API call failed: {self._describe(exc)}") from exc
+            raise LLMError(f"Groq API call failed: {self._describe(exc)}", self._category(exc)) from exc
 
         duration = (time.perf_counter() - started) * 1000
         message = completion.choices[0].message
@@ -95,6 +95,11 @@ class GroqProvider:
         if isinstance(error, dict) and error.get("code") in MALFORMED_OUTPUT_CODES:
             return str(error.get("failed_generation") or error.get("message") or "invalid tool call")
         return None
+
+    def _category(self, exc: Exception) -> ErrorCategory:
+        if isinstance(exc, (self._groq.APIConnectionError, self._groq.APITimeoutError)):
+            return "provider_unavailable"
+        return category_for_status(getattr(exc, "status_code", None))
 
     @staticmethod
     def _describe(exc: Exception) -> str:

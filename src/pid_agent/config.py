@@ -14,6 +14,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_FILE = PROJECT_ROOT / "data" / "C01V04-VER.EX01.xml"
 DEFAULT_LLM_PROVIDER = "groq"
 DEFAULT_LLM_MODEL = "openai/gpt-oss-20b"
+# The environment variable holding the key for each supported provider. Only the key of the
+# selected provider is read; there is no fallback from one provider to another.
+API_KEY_VARIABLES = {"groq": "GROQ_API_KEY", "openrouter": "OPENROUTER_API_KEY"}
 
 
 @dataclass(frozen=True)
@@ -27,8 +30,10 @@ class Settings:
 
     def require_api_key(self) -> str:
         if not self.llm_api_key:
+            variable = API_KEY_VARIABLES.get(self.llm_provider.lower(), "the provider's API key")
             raise ConfigError(
-                "No LLM API key configured. Set GROQ_API_KEY in your environment or .env file."
+                f"No API key configured for LLM_PROVIDER={self.llm_provider}. "
+                f"Set {variable} in your environment or .env file."
             )
         return self.llm_api_key
 
@@ -37,9 +42,12 @@ def load_settings(env_file: Path | None = None) -> Settings:
     """Build Settings from the process environment, optionally seeded from a .env file."""
     load_dotenv(env_file or PROJECT_ROOT / ".env", override=False)
     data_file = Path(os.environ.get("PID_DATA_FILE") or DEFAULT_DATA_FILE).expanduser()
+    provider = os.environ.get("LLM_PROVIDER") or DEFAULT_LLM_PROVIDER
+    key_variable = API_KEY_VARIABLES.get(provider.lower())
     return Settings(
         data_file=data_file,
-        llm_provider=os.environ.get("LLM_PROVIDER") or DEFAULT_LLM_PROVIDER,
-        llm_model=os.environ.get("LLM_MODEL") or DEFAULT_LLM_MODEL,
-        llm_api_key=os.environ.get("GROQ_API_KEY") or None,
+        llm_provider=provider,
+        # Only the default provider has a default model; for others LLM_MODEL must be set.
+        llm_model=os.environ.get("LLM_MODEL") or (DEFAULT_LLM_MODEL if provider.lower() == DEFAULT_LLM_PROVIDER else ""),
+        llm_api_key=(os.environ.get(key_variable) or None) if key_variable else None,
     )

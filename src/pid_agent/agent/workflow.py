@@ -83,6 +83,7 @@ class PidAgent:
             "grounding_attempts": 0,
             "grounding_status": "not_validated",
             "failure_reason": None,
+            "failure_category": None,
             "usage": {"llm_calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
         }
         # Each planning turn takes at most two graph steps; the rest is the answer tail.
@@ -101,6 +102,7 @@ class PidAgent:
             rejected_drafts=final["rejected_drafts"],
             limit_reached=final["limit_reached"],
             failure_reason=final["failure_reason"],
+            failure_category=final["failure_category"],
             iterations=final["iterations"],
             usage=final["usage"],
             duration_ms=round((time.perf_counter() - started) * 1000, 1),
@@ -142,7 +144,7 @@ class PidAgent:
             response = self._llm.complete(state["messages"], self._tool_specs, "required" if first_turn else "auto")
         except LLMError as exc:
             logger.error("llm_failed id=%s error=%s", state["question_id"], exc)
-            return {**update, "failure_reason": f"llm_error: {exc}"}
+            return {**update, "failure_reason": f"llm_error: {exc}", "failure_category": exc.category}
         update["usage"] = self._add_usage(state["usage"], response)
 
         if response.tool_calls:
@@ -211,7 +213,7 @@ class PidAgent:
         try:
             response = self._llm.complete(messages, self._tool_specs, "none")
         except LLMError as exc:
-            return {**update, "failure_reason": f"llm_error: {exc}"}
+            return {**update, "failure_reason": f"llm_error: {exc}", "failure_category": exc.category}
         update["usage"] = self._add_usage(state["usage"], response)
         if (response.content or "").strip() and not response.tool_calls:
             update["draft"] = response.content.strip()
@@ -243,7 +245,7 @@ class PidAgent:
         try:
             response = self._llm.complete(messages, None, "none")
         except LLMError as exc:
-            return {**update, "failure_reason": f"llm_error: {exc}", "draft": None}
+            return {**update, "failure_reason": f"llm_error: {exc}", "failure_category": exc.category, "draft": None}
         update["usage"] = self._add_usage(state["usage"], response)
         text = (response.content or "").strip()
         if not text:
@@ -342,7 +344,11 @@ class PidAgent:
         """A cautious answer assembled directly from structured evidence, with no model text."""
         failure, unsupported = state["failure_reason"], state["unsupported_claims"]
         if failure and failure.startswith("llm_error"):
-            head = f"I could not answer this question because the language model call failed ({failure.split(': ', 1)[1]})."
+            head = (
+                "I could not answer this question because the language model provider call failed "
+                f"({state['failure_category']}: {failure.split(': ', 1)[1]}). This is an infrastructure "
+                "failure, not a statement about the P&ID."
+            )
         elif unsupported:
             head = f"{NO_ANSWER} A drafted answer was withheld because {len(unsupported)} of its claims were not supported by the graph evidence."
         else:
@@ -375,7 +381,8 @@ def format_transcript(result: AgentResult, show_results: bool = True) -> str:
     if result.limit_reached:
         out.append(f"LIMIT REACHED: {result.limit_reached}")
     if result.failure_reason:
-        out.append(f"FAILURE: {result.failure_reason}")
+        kind = f" [infrastructure: {result.failure_category}]" if result.failure_category else ""
+        out.append(f"FAILURE{kind}: {result.failure_reason}")
     out.append("")
     out.append(f"EVIDENCE ({len(result.evidence)} graph facts)")
     for item in result.evidence:

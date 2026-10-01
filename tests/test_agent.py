@@ -416,10 +416,27 @@ def test_model_that_never_stops_calling_tools_still_terminates(tools):
 
 # ---------------------------------------------- 19. provider failure
 def test_provider_failure_before_any_tool_call(tools):
-    result, _ = run(tools, "What does P4711 feed?", LLMError("Groq API call failed: RateLimitError (HTTP 429)"))
+    result, _ = run(tools, "What does P4711 feed?", LLMError("Groq API call failed: RateLimitError (HTTP 429)", "rate_limit"))
     assert result.failure_reason.startswith("llm_error") and result.trace == []
+    assert result.failure_category == "rate_limit"
     assert result.grounding_status == "fallback"
-    assert "the language model call failed" in result.answer and "No graph evidence was collected" in result.answer
+    assert "the language model provider call failed (rate_limit:" in result.answer
+    assert "infrastructure failure, not a statement about the P&ID" in result.answer
+    assert "No graph evidence was collected" in result.answer
+
+
+def test_infrastructure_failure_is_not_reported_as_a_graph_result(tools):
+    """A provider outage must not look like 'not found' or like an abstention."""
+    result, _ = run(tools, "What does P4711 feed?", LLMError("OpenRouter could not be reached: ConnectTimeout", "provider_unavailable"))
+    assert result.failure_category == "provider_unavailable"
+    assert "not found" not in result.answer.lower()
+    assert "could not determine that from the supplied P&ID" not in result.answer
+    assert "[infrastructure: provider_unavailable]" in format_transcript(result)
+
+
+def test_successful_run_has_no_failure_category(tools):
+    result, _ = run(tools, "q", [call("find_entities", query="X9999")], "X9999 was not found in the supplied P&ID.")
+    assert result.failure_category is None and result.failure_reason is None
 
 
 def test_provider_failure_after_tools_keeps_the_evidence(tools):

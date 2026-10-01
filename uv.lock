@@ -719,6 +719,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "groq" },
+    { name = "httpx" },
     { name = "langgraph" },
     { name = "networkx" },
     { name = "pydantic" },
@@ -734,6 +735,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "groq", specifier = ">=1.7.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "langgraph", specifier = ">=1.2.12" },
     { name = "networkx", specifier = ">=3.2.1" },
     { name = "pydantic", specifier = ">=2.11.7" },
