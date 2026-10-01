@@ -1,0 +1,65 @@
+Provider: groq   Model: openai/gpt-oss-20b   Commit: cedf46b
+
+QUESTION [eval-01]
+What kind of equipment is H1008, and how large is its heat transfer area?
+
+STEP 1
+Tool:   find_entities
+Input:  {"entity_type": "equipment", "query": "H1008"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "TubularHeatExchanger-1",
+      "name": "H1008",
+      "type": "TubularHeatExchanger",
+      "category": "equipment",
+      "tag": "H1008",
+      "identifiers": {
+        "tagName": "H1008"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'H1008'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 2,
+        "open_ended_pipes": 1
+      }
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_properties
+Input:  {"ids": "TubularHeatExchanger-1", "requested_properties": ["heatTransferArea"]}
+Status: success
+Result: {
+  "status": "success",
+  "properties": {
+    "TubularHeatExchanger-1": {
+      "found": [
+        {
+          "property": "designHeatTransferArea",
+          "value": "46.8 m2",
+          "match": "partial match for 'heatTransferArea'"
+        }
+      ],
+      "missing": []
+    }
+  }
+}
+
+FINAL ANSWER
+**Equipment H1008**
+
+- **Type:** Tubular heat exchanger (tag H1008).  
+- **Heat‑transfer area:** 46.8 m² (design heat‑transfer area).
+
+GROUNDING: grounded (3 plant-specific claims checked, 0 unsupported)
+
+EVIDENCE (2 graph facts)
+  [entity] TubularHeatExchanger-1  <- plant_graph: TubularHeatExchanger-1
+  [property] TubularHeatExchanger-1.designHeatTransferArea  <- plant_graph: TubularHeatExchanger-1
+
+USAGE: 3 model calls, 6153 tokens, 4819 ms

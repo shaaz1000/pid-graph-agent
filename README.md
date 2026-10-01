@@ -28,7 +28,7 @@ Without any API key you can still call the graph tools directly and run the test
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
 uv run pytest                                    # 424 deterministic tests, no network
-uv run python evals/evaluator.py                 # re-score the saved evaluation run
+uv run python evals/evaluator.py                 # re-score the saved evaluation runs
 ```
 
 ### Configuration
@@ -44,11 +44,12 @@ failover.
 
 **Which model was actually used.** The design target is the open-weight `openai/gpt-oss-20b`
 hosted on Groq, and all early development runs used it. Groq's free tier allows 200,000 tokens
-per day, which ran out during development, so the formal evaluation below was run with
-**DeepSeek, model `deepseek-chat`**. That is a hosted API alias; I have not verified which
-released weights it serves and make no licensing claim for it. To run with the open-weight
-model, put a Groq key in `.env` and leave the defaults. The OpenRouter adapter is tested only
-against mocks.
+per day, which ran out during development. The formal evaluation below therefore has one
+complete run on **DeepSeek, model `deepseek-chat`**, and one run on **Groq, model
+`openai/gpt-oss-20b`** that the quota stopped after the first question. `deepseek-chat` is a
+hosted API alias; I have not verified which released weights it serves and make no licensing
+claim for it. To run with `openai/gpt-oss-20b`, put a Groq key in `.env` and leave the
+defaults. The OpenRouter adapter is tested only against mocks.
 
 ## Design note
 
@@ -124,7 +125,7 @@ flowchart TD
 
 All from real runs. Each block shows the actual tool calls; full transcripts with every tool
 result are in the linked files. The first six are from the evaluation run
-(DeepSeek `deepseek-chat`, commit `407d6ba`).
+(DeepSeek `deepseek-chat`, evaluation commit `407d6ba`).
 
 **1. Route with pipe properties** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-07.txt))
 
@@ -251,30 +252,43 @@ boundaries are now structured evidence (`db563eb`).
   is not on the route). `score = max(0, required found - forbidden found) / required`.
   Matching ignores case, markdown, dash style and spacing inside identifiers. An answer the
   agent withheld scores 0; provider failures are reported separately.
-- **Run:** each question once, no retries, questions and scorer committed (`407d6ba`) before
-  the run. Provider **DeepSeek**, model **`deepseek-chat`**.
+- **Runs:** each question asked once, no retries of answers, no changes between questions.
+  The questions and scorer were committed (`407d6ba`) before the first run and are identical
+  for both runs. The agent code is the same frozen commit (`a8d56b3`) in both.
 
-**Result: mean score 1.00 (15 of 15 correct, 41 of 41 required facts, no forbidden facts).**
+| | Groq `openai/gpt-oss-20b` | DeepSeek `deepseek-chat` |
+|---|---|---|
+| Status | **incomplete: 1 of 15 asked** | complete: 15 of 15 asked |
+| Mean score | not reportable (1 question) | **1.00** |
+| Outcomes | 1 correct, 14 not run (provider daily token limit) | 15 correct |
+| Required facts found | 2 of 2 on the one question | 41 of 41 |
+| Forbidden facts found | 0 | 0 |
+| Model calls / tool calls | 3 / 2 on the one question | 50 / 43 (3.3 / 2.9 per question) |
+| Tokens | 6,153 on the one question | 149,044 (about 9,900 per question) |
+| Drafts rejected by grounding, then regenerated | 0 | 3 (questions 1, 10, 15) |
+| Fallback answers, turn-limit hits | 0, 0 | 0, 0 |
 
-| Metric | Value |
-|---|---|
-| Model calls | 50 (3.3 per question) |
-| Tool calls | 43 (2.9 per question) |
-| Tokens | 149,044 (about 9,900 per question) |
-| Drafts rejected by grounding, then regenerated | 3 (questions 1, 10, 15) |
-| Fallback answers, turn-limit hits | 0, 0 |
+**There is no evaluation score for `openai/gpt-oss-20b`.** Its run answered the first question
+correctly, then the second model call of question 2 was refused with HTTP 429 (tokens per
+day: limit 200,000, used 199,142). The evaluator stops at the first rate-limit failure, so
+questions 2 to 15 were never asked. Nothing was filled in from another model. The run can be
+completed later with `LLM_PROVIDER=groq uv run python evals/evaluator.py --run`, which only
+asks the questions that have no answer yet.
 
-Raw run: [evals/run.json](evals/runs/deepseek-deepseek-chat/run.json). Scores: [evals/results.json](evals/runs/deepseek-deepseek-chat/results.json).
-All 15 transcripts: [evals/runs/deepseek-deepseek-chat/transcripts/](evals/runs/deepseek-deepseek-chat/transcripts/).
+Per run, under [evals/runs/](evals/runs/): `run.json` (raw results with full traces),
+`results.json` (scores) and `transcripts/`.
+[DeepSeek run](evals/runs/deepseek-deepseek-chat/) |
+[Groq run](evals/runs/groq-openai-gpt-oss-20b/)
 
-**How much to read into this.** I read all 15 answers against the gold facts by hand and
-agree with the scores, but a perfect score on 15 questions mostly shows the set is not hard
-enough to separate good from excellent:
+**How much to read into this.** I read all 15 DeepSeek answers against the gold facts by hand
+and agree with the scores, but a perfect score on 15 questions mostly shows the set is not
+hard enough to separate good from excellent:
 
 - It is one run of one model. Hosted models are not deterministic even at temperature 0.
-- It was not run on the intended open-weight model. On `openai/gpt-oss-20b` (Groq), an
-  earlier 15-question development run, before the stabilization fixes, gave 11 correct, 1
-  overly literal, 1 incomplete, 1 wrong and 1 withheld. Those fixes have not been re-measured on that model.
+- The complete run is not on the intended open-weight model. On `openai/gpt-oss-20b` (Groq),
+  an earlier 15-question development run, before the stabilization fixes, gave 11 correct, 1
+  overly literal, 1 incomplete, 1 wrong and 1 withheld. Apart from the single evaluation
+  question above, those fixes have not been re-measured on that model.
 - The scorer checks that required facts are present. It does not check everything else the
   answer says; that is the grounding check's job, and it is not perfect either.
 - I wrote the questions knowing the graph and the tools.
