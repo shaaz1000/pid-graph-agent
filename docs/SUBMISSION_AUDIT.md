@@ -17,7 +17,7 @@ and a few optional items are listed at the end.
 | Agent answers natural-language questions as a multi-step workflow | Met | `agent/workflow.py` → `PidAgent` (LangGraph) | `uv run pid-agent "<question>"` | Model may make redundant calls |
 | Phase 1: find entities by tag, type or description | Met | `graph/entity_resolver.py`; tool `find_entities` | `uv run pid-agent tool find_entities '{"query": "tubular heat exchanger"}'` | Type-phrase matching uses a small stop-word list |
 | Phase 2: neighbours, pipes between, paths, properties | Met | `get_connections`, `traverse`, `find_path`, `get_properties` in `graph/service.py` | `uv run pid-agent tool find_path '{"source_entity_id": "P4711", "target_entity_id": "H1007"}'` | `find_path` returns only the shortest route |
-| Generalises: no mapping of known phrasings to fixed tool calls, in code or prompt | Met | Seven generic tools; `agent/prompts.py` has no entity names or recipes | `tests/test_agent.py::test_prompt_and_tool_specs_contain_no_assignment_examples_or_secrets`; `grep -rn "P4711" src/` finds nothing in agent or graph logic | The UI's example cards contain the sample questions; they are button labels only and are not sent to the model unless clicked |
+| Generalises: no mapping of known phrasings to fixed tool calls, in code or prompt | Met | Seven generic tools; `agent/prompts.py` has no entity names or recipes | `tests/test_agent.py::test_prompt_and_tool_specs_contain_no_assignment_examples_or_secrets`; `grep -rn "P4711" src/pid_agent/agent src/pid_agent/graph` finds one docstring example and no logic | The UI's example cards contain the sample questions; they are button labels only and are not sent to the model unless clicked |
 
 ## Requirements
 
