@@ -321,6 +321,8 @@ hard enough to separate good from excellent:
 
 - Real commit history is kept. [prompts/](prompts/) holds the assignment and the instructions
   given to the AI coding tool, in order; one early instruction was not saved and is marked so.
+- [docs/ARCHITECTURE_DEEP_DIVE.md](docs/ARCHITECTURE_DEEP_DIVE.md) is a long, file-by-file
+  walk-through of the implementation.
 - pyDEXPI is AGPL-3.0.
 
 **Time spent.** Approximately 5–6 hours of hands-on work across understanding
