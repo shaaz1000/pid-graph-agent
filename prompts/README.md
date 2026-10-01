@@ -15,6 +15,7 @@ written; later prompts never overwrite earlier ones.
 | `07-deepseek-diagnostic-verification.md` | Temporary diagnostic provider, diagnostic run rules, official verification procedure | Preserved development instruction |
 | `08-deepseek-configuration-and-diagnostic-run.md` | Key-variable name correction and the frozen eight-question diagnostic run | Preserved development instruction |
 | `09-final-stabilization-and-official-verification.md` | Two approved fixes after the diagnostic run, architecture freeze, official verification procedure | Preserved development instruction |
+| `10-model-facing-hygiene-and-freeze.md` | Removal of dataset-specific examples from model-facing text; final freeze and verification rules | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 

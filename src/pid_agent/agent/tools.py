@@ -23,7 +23,7 @@ class _Args(BaseModel):
 
 
 class FindEntitiesArgs(_Args):
-    query: str = Field(description="Tag, identifier, or short description, e.g. 'T4750', 'SV 104.01', 'C5 on line 47126', 'ball valve'.")
+    query: str = Field(description="Identifier or natural-language description of the entity to find. May include context such as the entity type or the line it is on.")
     entity_type: str | None = Field(default=None, description="Optional type filter, e.g. 'valve', 'pump', 'BallValve'.")
 
 
@@ -57,7 +57,7 @@ class FindPathArgs(_Args):
 
 
 class GetPropertiesArgs(_Args):
-    ids: list[str] | str = Field(description="Entity ids, connection ids, or other object ids (segments, nozzles, chambers, MetaData-1).")
+    ids: list[str] | str = Field(description="Entity ids, connection ids, or ids of other objects (segments, nozzles, chambers, the drawing metadata object).")
     requested_properties: list[str] | None = Field(default=None, description="Property names to look up. Omit to get every property.")
 
 
@@ -72,7 +72,8 @@ TOOL_ARGS: dict[str, type[_Args]] = {
 }
 TOOL_DESCRIPTIONS: dict[str, str] = {
     "find_entities": (
-        "Resolve a tag, identifier or short description to entities. 'ambiguous' = several "
+        "Find entities by identifier, type or description, optionally with context such as "
+        "the line they are on. 'ambiguous' = several "
         "entities match and none was chosen. 'not_found' may list resolution.suggestions: "
         "similar identifiers, not matches. Each match shows 'links': how many piping and "
         "instrumentation connections it has."
@@ -108,9 +109,10 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "diameter of every pipe on it."
     ),
     "get_properties": (
-        "Property values of entities, connections, lines, segments, nozzles, chambers or "
-        "'MetaData-1' (drawing data). Also searches an entity's sub-objects. Properties that "
-        "do not exist in the P&ID are listed under 'missing'."
+        "Property values of entities, connections, lines, segments, nozzles, chambers or the "
+        "drawing metadata object (its id is listed by list_entities without arguments). Also "
+        "searches an entity's sub-objects. Properties that do not exist in the P&ID are listed "
+        "under 'missing'."
     ),
 }
 

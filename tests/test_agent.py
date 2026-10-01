@@ -39,6 +39,9 @@ def test_prompt_and_tool_specs_contain_no_assignment_examples_or_secrets():
     text = SYSTEM_PROMPT + json.dumps(tool_specs())
     for forbidden in ("P4711", "H1007", "gsk_", "GROQ_API_KEY"):
         assert forbidden not in text
+    # No identifier of the C01 drawing at all: static text describes tools, not this plant.
+    for c01_identifier in ("P4712", "H1008", "T4750", "SV 104", "4712", "4750", "471", "MetaData-1"):
+        assert c01_identifier not in text
 
 
 def test_first_turn_must_consult_the_graph_then_the_model_decides(tools):
