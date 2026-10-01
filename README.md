@@ -419,8 +419,7 @@ check's job, and it has the limits listed below.
 - Licence: AGPL-3.0, because the code builds on pyDEXPI, which is AGPL-3.0. See
   [LICENSE](LICENSE) and [NOTICE](NOTICE). The C01 file is © DEXPI e.V.
 
-**Time spent.** Approximately 5–6 hours of hands-on work across understanding
-the pyDEXPI graph, designing the graph abstraction and agent workflow,
-directing implementation, reviewing/debugging behavior, building the
-evaluation, and documenting the result. I used AI coding tools throughout,
+**Time spent.** Approximately 5–6 hours on the core implementation, followed by
+additional time on model/provider evaluation, grounding hardening, evaluation
+runs, documentation, and final verification. I used AI coding tools throughout,
 as encouraged in the assignment.
