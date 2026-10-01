@@ -45,7 +45,7 @@ failover.
 **Which model was actually used.** The design target is the open-weight `openai/gpt-oss-20b`
 hosted on Groq, and all early development runs used it. Groq's free tier allows 200,000 tokens
 per day, which ran out during development. The formal evaluation below therefore has one
-complete run on **DeepSeek, model `deepseek-chat`**, and one run on **Groq, model
+complete run on **DeepSeek, model `deepseek-chat`**, and a run on **Groq, model
 `openai/gpt-oss-20b`** that the quota stopped after the first question. `deepseek-chat` is a
 hosted API alias; I have not verified which released weights it serves and make no licensing
 claim for it. To run with `openai/gpt-oss-20b`, put a Groq key in `.env` and leave the
@@ -258,9 +258,9 @@ boundaries are now structured evidence (`db563eb`).
 
 | | Groq `openai/gpt-oss-20b` | DeepSeek `deepseek-chat` |
 |---|---|---|
-| Status | **incomplete: 1 of 15 asked** | complete: 15 of 15 asked |
-| Mean score | not reportable (1 question) | **1.00** |
-| Outcomes | 1 correct, 14 not run (provider daily token limit) | 15 correct |
+| Questions asked | 1 of 15 (stopped by the provider's daily token quota) | 15 of 15 |
+| Mean score | none claimed | **1.00** |
+| Outcomes | question 1: full credit; questions 2-15: not asked | 15 correct |
 | Required facts found | 2 of 2 on the one question | 41 of 41 |
 | Forbidden facts found | 0 | 0 |
 | Model calls / tool calls | 3 / 2 on the one question | 50 / 43 (3.3 / 2.9 per question) |
@@ -268,12 +268,15 @@ boundaries are now structured evidence (`db563eb`).
 | Drafts rejected by grounding, then regenerated | 0 | 3 (questions 1, 10, 15) |
 | Fallback answers, turn-limit hits | 0, 0 | 0, 0 |
 
-**There is no evaluation score for `openai/gpt-oss-20b`.** Its run answered the first question
-correctly, then the second model call of question 2 was refused with HTTP 429 (tokens per
-day: limit 200,000, used 199,142). The evaluator stops at the first rate-limit failure, so
-questions 2 to 15 were never asked. Nothing was filled in from another model. The run can be
-completed later with `LLM_PROVIDER=groq uv run python evals/evaluator.py --run`, which only
-asks the questions that have no answer yet.
+**Groq `openai/gpt-oss-20b`** is supported and was exercised. The frozen evaluation started
+successfully on it and question 1 scored full credit. Groq's daily token quota (HTTP 429,
+200,000 tokens per day) then prevented the remaining questions from being asked, so no
+GPT-OSS evaluation score is claimed, and one question says nothing about how the model would
+score overall. Nothing was filled in from another model. The partial run is preserved
+separately and can be completed with `LLM_PROVIDER=groq uv run python evals/evaluator.py --run`,
+which only asks the questions that have no answer yet.
+
+**DeepSeek `deepseek-chat`**: the complete 15-question evaluation was run once on it.
 
 Per run, under [evals/runs/](evals/runs/): `run.json` (raw results with full traces),
 `results.json` (scores) and `transcripts/`.
@@ -320,7 +323,8 @@ hard enough to separate good from excellent:
   given to the AI coding tool, in order; one early instruction was not saved and is marked so.
 - pyDEXPI is AGPL-3.0.
 
-**Time spent.** About two hours of elapsed working time from the first inspection of pyDEXPI
-to the scored evaluation, measured from file and commit timestamps, with an AI coding agent
-doing the implementation under my direction. That figure excludes reading the assignment and
-writing the initial specification beforehand.
+**Time spent.** Approximately 5–6 hours of hands-on work across understanding
+the pyDEXPI graph, designing the graph abstraction and agent workflow,
+directing implementation, reviewing/debugging behavior, building the
+evaluation, and documenting the result. I used AI coding tools throughout,
+as encouraged in the assignment.
