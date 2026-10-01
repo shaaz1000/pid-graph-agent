@@ -1,0 +1,238 @@
+Provider: deepseek   Model: deepseek-chat   Commit: 407d6ba
+
+QUESTION [eval-09]
+What fluid code and piping class does line 47125 carry?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "line 47125"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "PipingNetworkSystem-5",
+      "name": "Line 47125",
+      "type": "PipingNetworkSystem",
+      "category": "piping_line",
+      "identifiers": {
+        "lineNumber": "47125"
+      },
+      "match_tier": "embedded_identifier",
+      "match_reason": "lineNumber = '47125'",
+      "links": {}
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_properties
+Input:  {"ids": "PipingNetworkSystem-5"}
+Status: success
+Result: {
+  "status": "success",
+  "properties": {
+    "PipingNetworkSystem-5": {
+      "found": [
+        {
+          "property": "fluidCode",
+          "value": "MNc"
+        },
+        {
+          "property": "lineNumber",
+          "value": "47125"
+        },
+        {
+          "property": "nominalDiameterNumericalValueRepresentation",
+          "value": "25"
+        },
+        {
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 25"
+        },
+        {
+          "property": "nominalDiameterStandard",
+          "value": "DN 25 (DIN 2448)"
+        },
+        {
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN"
+        },
+        {
+          "property": "pipingClassCode",
+          "value": "73HG12"
+        },
+        {
+          "property": "fluidCode",
+          "value": "MNc",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "nominalDiameterNumericalValueRepresentation",
+          "value": "25",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 25",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "nominalDiameterStandard",
+          "value": "DN 25 (DIN 2448)",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "pipingClassCode",
+          "value": "73HG12",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "primarySecondaryPipingNetworkSegment",
+          "value": "secondary segment",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "segmentNumber",
+          "value": "S1",
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "items",
+          "value": [
+            "SpringLoadedGlobeSafetyValve-1"
+          ],
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "connections",
+          "value": [
+            "PipingNetworkSegment-7/connections/1"
+          ],
+          "on": "PipingNetworkSegment-7",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "fluidCode",
+          "value": "MNc",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "nominalDiameterNumericalValueRepresentation",
+          "value": "50",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 50",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "nominalDiameterStandard",
+          "value": "DN 50 (DIN 2448)",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "pipingClassCode",
+          "value": "75HB13",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "primarySecondaryPipingNetworkSegment",
+          "value": "secondary segment",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "segmentNumber",
+          "value": "S2",
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "items",
+          "value": [],
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        },
+        {
+          "property": "connections",
+          "value": [
+            "PipingNetworkSegment-8/connections/1"
+          ],
+          "on": "PipingNetworkSegment-8",
+          "scope": "child:PipingNetworkSegment"
+        }
+      ],
+      "missing": []
+    }
+  }
+}
+
+FINAL ANSWER
+Line 47125 (PipingNetworkSystem-5) carries fluid code **MNc**.
+
+Piping class is not uniform across the line — it has two segments:
+- Segment S1 (PipingNetworkSegment-7): piping class **73HG12**, DN 25 (DIN 2448); contains SpringLoadedGlobeSafetyValve-1
+- Segment S2 (PipingNetworkSegment-8): piping class **75HB13**, DN 50 (DIN 2448)
+
+The line-level property `pipingClassCode` is 73HG12, matching segment S1.
+
+GROUNDING: grounded (15 plant-specific claims checked, 0 unsupported)
+
+EVIDENCE (28 graph facts)
+  [entity] PipingNetworkSystem-5  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSystem-5.fluidCode  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSystem-5.lineNumber  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSystem-5.nominalDiameterNumericalValueRepresentation  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSystem-5.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSystem-5.nominalDiameterStandard  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSystem-5.nominalDiameterTypeRepresentation  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSystem-5.pipingClassCode  <- plant_graph: PipingNetworkSystem-5
+  [property] PipingNetworkSegment-7.fluidCode  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.nominalDiameterNumericalValueRepresentation  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.nominalDiameterStandard  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.nominalDiameterTypeRepresentation  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.pipingClassCode  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.primarySecondaryPipingNetworkSegment  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.segmentNumber  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.items  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-7.connections  <- plant_graph: PipingNetworkSegment-7
+  [property] PipingNetworkSegment-8.fluidCode  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.nominalDiameterNumericalValueRepresentation  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.nominalDiameterStandard  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.nominalDiameterTypeRepresentation  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.pipingClassCode  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.primarySecondaryPipingNetworkSegment  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.segmentNumber  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.items  <- plant_graph: PipingNetworkSegment-8
+  [property] PipingNetworkSegment-8.connections  <- plant_graph: PipingNetworkSegment-8
+
+USAGE: 3 model calls, 8543 tokens, 2674 ms

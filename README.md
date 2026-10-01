@@ -1,3 +1,312 @@
-# pid-agent
+# P&ID graph agent
 
-Work in progress: deterministic graph layer over the DEXPI C01 reference P&ID.
+An agent that answers natural-language questions about a plant by querying the knowledge
+graph that [pyDEXPI](https://github.com/process-intelligence-research/pyDEXPI) builds from the
+DEXPI reference P&ID `C01V04-VER.EX01.xml`.
+
+> The LLM interprets intent and plans graph operations; it is not the source of plant
+> knowledge. All factual answers are derived from deterministic operations over the pyDEXPI
+> graph.
+
+Every answer comes with the tool calls that produced it, the graph facts it rests on, and the
+result of a grounding check.
+
+## How to run
+
+```bash
+git clone <this repository> && cd <this repository>
+uv sync                                          # install (Python 3.12 is fetched if needed)
+cp .env.example .env                             # then put your API key in .env
+uv run pid-agent "What is P4711 connected to, and through which pipes?"
+```
+
+`uv run pid-agent` without a question opens an interactive prompt. Add `--no-trace` for the
+answer only or `--json` for the full structured result.
+
+Without any API key you can still call the graph tools directly and run the tests:
+
+```bash
+uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
+uv run pytest                                    # 424 deterministic tests, no network
+uv run python evals/evaluator.py                 # re-score the saved evaluation run
+```
+
+### Configuration
+
+Set in `.env` (see `.env.example`). One provider is used per run; there is no automatic
+failover.
+
+| `LLM_PROVIDER` | Key variable | `LLM_MODEL` |
+|---|---|---|
+| `groq` (default) | `GROQ_API_KEY` | `openai/gpt-oss-20b` (default) |
+| `deepseek` | `DEEP_SEEK_API_KEY` | must be set, e.g. `deepseek-chat` |
+| `openrouter` | `OPENROUTER_API_KEY` | must be set to a tool-calling model id |
+
+**Which model was actually used.** The design target is the open-weight `openai/gpt-oss-20b`
+hosted on Groq, and all early development runs used it. Groq's free tier allows 200,000 tokens
+per day, which ran out during development, so the formal evaluation below was run with
+**DeepSeek, model `deepseek-chat`**. That is a hosted API alias; I have not verified which
+released weights it serves and make no licensing claim for it. To run with the open-weight
+model, put a Groq key in `.env` and leave the defaults. The OpenRouter adapter is tested only
+against mocks.
+
+## Design note
+
+**Ingestion.** `ProteusSerializer` parses the XML into the DEXPI object model, `GraphLoader`
+turns that into a NetworkX `MultiDiGraph` (the *plant graph*: 214 nodes, every DEXPI object,
+edges are only "composition" and "reference"), and `GraphAbstractor.build_conceptual_graph`
+collapses it into the *conceptual graph* (36 nodes: equipment, valves, fittings, instrument
+functions; pipes become edges). Nothing is hand-written; the graph was inspected before any
+design decision.
+
+**Why two graphs.** Each is authoritative for a different thing:
+
+- *Conceptual graph: topology.* Its piping edges run DEXPI source to target, which is the
+  drawn flow direction. I verified this against the XML: all 23 segments follow
+  `FromID -> ToID`, and the eight flow-arrow symbols point the same way.
+- *Plant graph: properties, hierarchy, provenance.* The abstraction copies line attributes
+  onto nodes with first-writer-wins (one tee ends up on the wrong line), and it drops nozzles
+  and chambers, where design pressure and temperature live. So entity properties and line
+  context are always re-read from the plant graph.
+- *Recovered open ends.* The abstraction silently drops four pipes that have only one end on
+  the drawing. They are recovered from the plant graph and marked `open_end`, with provenance,
+  and are never given a destination.
+- *Chamber-aware traversal.* Both sides of a heat exchanger merge into one node. A path that
+  enters through one chamber may only leave through the same chamber; a boundary that was not
+  crossed is reported as a structured fact.
+
+Graph node ids are random per load, so public ids are the stable Proteus ids
+(`CentrifugalPump-1`).
+
+**Entity resolution** is deterministic and tiered: exact tag, tag ignoring case, id, any other
+identifier (only five items have a tag; valves are found by position number, component code,
+or line plus component number), identifiers inside a phrase, then type words. An identifier
+shared by several items returns all of them flagged ambiguous. Fuzzy matches are only ever
+suggestions.
+
+**Tools.** Seven generic operations, no question-specific ones:
+`find_entities`, `list_entities`, `get_entity`, `get_connections` (adjacency),
+`traverse` (reachability, cycle-safe, depth-bounded), `find_path` (route) and
+`get_properties`. Every result is structured and carries evidence items that point back to
+graph objects.
+
+**Agent.** A LangGraph state machine:
+plan -> execute tools -> plan again if needed -> draft answer -> grounding check ->
+(one regeneration from evidence only) -> final answer, or a cautious answer assembled directly
+from evidence. The model chooses tools and words the answer. Budgets (8 planning turns, 16
+tool calls, repeated-call detection) guarantee termination.
+
+**Grounding.** After drafting, plant-specific claims in the answer (identifiers, line numbers,
+DN values, numbers with units, type names) are extracted and checked against the tool
+results. Tool inputs and warning text are not evidence, because they can echo the user. An
+identifier must also fit the role the sentence gives it ("segment C3" fails when C3 is a
+component number), and a value must not be attributed to a different property than the one
+that carries it.
+
+**Visible workflow.** The trace lists the actual tool calls, inputs and results. It contains
+no model reasoning.
+
+```mermaid
+flowchart TD
+    XML["C01V04-VER.EX01.xml"] --> PS["ProteusSerializer"] --> DM["DEXPI object model"] --> GL["GraphLoader"]
+    GL --> PG["Plant graph<br/>properties, hierarchy, provenance"]
+    PG --> GA["GraphAbstractor"] --> CG["Conceptual graph<br/>piping topology and flow direction"]
+    PG --> GS["Normalizer + GraphService<br/>AUTHORITATIVE PLANT DATA"]
+    CG --> GS
+    U["User question"] --> AG["LangGraph agent"]
+    AG <-->|"plans tool calls / reads results"| LLM["Hosted LLM<br/>interpretation and planning only"]
+    AG -->|"7 generic tools"| GS
+    GS -->|"structured results + evidence"| AG
+    AG --> GR["Grounding check"] --> OUT["Answer + tool trace + evidence"] --> U
+```
+
+## Example transcripts
+
+All from real runs. Each block shows the actual tool calls; full transcripts with every tool
+result are in the linked files. The first six are from the evaluation run
+(DeepSeek `deepseek-chat`, commit `407d6ba`).
+
+**1. Route with pipe properties** ([full](evals/transcripts/eval-07.txt))
+
+```
+Q: Trace the route from heat exchanger H1007 to tank T4750 and give the line number and pipe size along it.
+1 find_entities {"query": "H1007"}                                   -> success
+2 find_entities {"query": "T4750"}                                   -> success
+3 find_path {"source_entity_id": "PlateHeatExchanger-1", "target_entity_id": "Tank-1"} -> success
+A: H1007 nozzle N2 (Chamber-1) -> GlobeValve 47123/C1 (GlobeValve-2) -> T4750 nozzle N1.
+   Line number: 47123 (segment S1), nominal diameter DN 80, fluid code MNb.
+GROUNDING: grounded
+```
+
+**2. Reachability with several end points** ([full](evals/transcripts/eval-05.txt))
+
+```
+Q: If I follow the piping downstream from the swing check valve, where does the drawing end?
+1 find_entities {"query": "swing check valve"}                       -> success
+2 traverse {"start_entity_id": "SwingCheckValve-1", "direction": "downstream"} -> success
+A: Four terminal points: BallValve 47126/C2, BlindFlange 47126/C6, BlindFlange 47126/C11 and
+   FlowOutPipeOffPageConnector-1 ... The off-page connector is a real pipe leaving this
+   drawing; its destination is not shown ... The traversal did not continue through H1008
+   from Chamber-3 to Chamber-4 - those are separate chambers/sides.
+GROUNDING: grounded
+```
+
+**3. Ambiguity is surfaced, not guessed** ([full](evals/transcripts/eval-02.txt))
+
+```
+Q: What is the nominal diameter at component C1?
+1 find_entities {"query": "C1"}                                      -> ambiguous
+A: "C1" is not unique in this P&ID - five components carry the piping component number C1,
+   on five different lines: GlobeValve-2 (47123/C1), ButterflyValve-1 (47124/C1),
+   PipeTee-2 (47126/C1), GlobeValve-1 (47127/C1), GlobeValve-3 (47141/C1).
+   Tell me which line (or the tag/type) you mean and I'll give you the nominal diameter.
+GROUNDING: grounded
+```
+
+**4. Missing data** ([full](evals/transcripts/eval-11.txt))
+
+```
+Q: How much does heat exchanger H1007 weigh?
+1 find_entities {"query": "H1007"}                                   -> success
+2 get_properties {"ids": "PlateHeatExchanger-1"}                     -> success
+A: The supplied P&ID does not contain a weight for H1007 (PlateHeatExchanger-1). No
+   mass/weight property exists for it. (It then lists the properties that do exist.)
+GROUNDING: grounded
+```
+
+**5. Struggle: correct, but ten tool calls** ([full](evals/transcripts/eval-13.txt))
+
+```
+Q: For control loop 4712.02: where is the pressure sensed, and which valve does the loop end up acting on?
+1 find_entities "4712.02"   2 list_entities   3 get_entity (controller)   4 get_connections (controller)
+5 get_entity (transmitter)  6 get_entity (actuator)  7 get_connections (transmitter)
+8 get_connections (actuator)  9 get_entity (blind flange)  10 get_entity (valve)
+A: Pressure sensed by PT4712.02 at BlindFlange 47126/C11; signal to PICSA4712.02, then to
+   PV4712.02, which operates GlobeValve 47127/C1. The actuator is configured fail close.
+GROUNDING: grounded     6 model calls, 23,870 tokens
+```
+
+Four of the ten calls were not needed. Following an instrumentation chain takes one call per
+hop, and nothing stops the model from exploring further once it has the answer.
+
+**6. Struggle: first draft rejected by the grounding check** ([full](evals/transcripts/eval-10.txt))
+
+```
+Q: What design pressure limits apply to each chamber of tank T4750?
+1 find_entities {"query": "T4750"}                                   -> success
+2 get_entity {"entity_id": "Tank-1", "include_children": true}       -> success
+   draft rejected: "DN 20000" (the graph says nominalDiameter 20000.0 mm, which is not a DN)
+A: Chamber 1: -0.1 bar to 0.1 bar. Chamber 2: -0.1 bar to 0.05 bar.
+GROUNDING: regenerated
+```
+
+**7. Failure: wrong answer after hitting the turn limit**
+([full](examples/transcripts/dev-failure-groq-instrumentation-turn-limit.txt); Groq
+`openai/gpt-oss-20b`, development build before `c0a881c`)
+
+```
+Q: Which instrument operates the globe valve on line 47127, and what is its fail action?
+1 find_entities "line 47127" (type valve) -> the line   2 get_connections on the line -> error
+3 get_entity (line)   4-7 find_entities on the valve and on its alias PV4712.02_YV (x4)
+8 find_entities "OperatedValveReference-1" -> not_found      LIMIT: 8 planning steps
+A: ... The fail action of that instrument cannot be determined from the supplied P&ID data.
+```
+
+Wrong: the graph says *fail close*. Looking up the valve's alias returned the valve itself, so
+the model went round in a circle. Fixed generally in `67221a5` (type-plus-line resolution,
+link counts on entities, instrumentation links explained in words).
+
+**8. Failure: truncated search presented as the end**
+([full](examples/transcripts/dev-partial-deepseek-truncated-traversal.txt); DeepSeek, `308dc59`)
+
+```
+Q: Where does pump P4712 discharge to?
+1 find_entities   2 get_connections (downstream)   3 traverse {"direction": "downstream", "max_depth": 4}
+A: ... the discharge ultimately reaches tank T4750 via the relief branch, with the remaining
+   branches ending at valves C2, C5 and C7.
+```
+
+Partly wrong: C5 and C7 are not ends. The model chose depth 4 and never saw the heat exchanger
+and off-page connector beyond it. Results now mark such entities `continues_beyond_max_depth`
+(`db563eb`); question 6 of the evaluation exercises this.
+
+**9. Failure: correct answer withheld**
+([full](examples/transcripts/dev-withheld-deepseek-chamber-warning.txt); DeepSeek, `308dc59`)
+
+The model's draft was right but quoted two identifiers that the tool had only put in a
+warning, so the grounding check withheld it and returned an evidence list instead. Chamber
+boundaries are now structured evidence (`db563eb`).
+
+## Evaluation
+
+- **Set:** 15 questions in [evals/questions.json](evals/questions.json): entity resolution and
+  ambiguity (2), adjacency (1), reachability including a depth-limited case (3), routes (2),
+  line and chamber properties (2), missing data (1), instrumentation (2), a nonexistent tag
+  and a false premise (2). None repeats a development question.
+- **Gold facts** were read from the deterministic graph tools, never from an LLM. Each
+  question lists the tool calls its facts came from, and `tests/test_eval.py` re-derives them
+  from the C01 graph on every test run.
+- **Scoring** ([evals/evaluator.py](evals/evaluator.py)) uses no LLM judge. Each question has
+  required facts and, where it makes sense, forbidden ones (an invented weight, a valve that
+  is not on the route). `score = max(0, required found - forbidden found) / required`.
+  Matching ignores case, markdown, dash style and spacing inside identifiers. An answer the
+  agent withheld scores 0; provider failures are reported separately.
+- **Run:** each question once, no retries, questions and scorer committed (`407d6ba`) before
+  the run. Provider **DeepSeek**, model **`deepseek-chat`**.
+
+**Result: mean score 1.00 (15 of 15 correct, 41 of 41 required facts, no forbidden facts).**
+
+| Metric | Value |
+|---|---|
+| Model calls | 50 (3.3 per question) |
+| Tool calls | 43 (2.9 per question) |
+| Tokens | 149,044 (about 9,900 per question) |
+| Drafts rejected by grounding, then regenerated | 3 (questions 1, 10, 15) |
+| Fallback answers, turn-limit hits | 0, 0 |
+
+Raw run: [evals/run.json](evals/run.json). Scores: [evals/results.json](evals/results.json).
+All 15 transcripts: [evals/transcripts/](evals/transcripts/).
+
+**How much to read into this.** I read all 15 answers against the gold facts by hand and
+agree with the scores, but a perfect score on 15 questions mostly shows the set is not hard
+enough to separate good from excellent:
+
+- It is one run of one model. Hosted models are not deterministic even at temperature 0.
+- It was not run on the intended open-weight model. On `openai/gpt-oss-20b` (Groq), an
+  earlier 15-question development run, before the stabilization fixes, gave 11 correct, 1
+  overly literal, 1 incomplete, 1 wrong and 1 withheld. Those fixes have not been re-measured on that model.
+- The scorer checks that required facts are present. It does not check everything else the
+  answer says; that is the grounding check's job, and it is not perfect either.
+- I wrote the questions knowing the graph and the tools.
+- Of the three rejected drafts, two were real catches (a diameter in mm rewritten as "DN")
+  and one was a false alarm by the property-attribution check.
+
+## Limitations
+
+- **The graph, not the plant.** "Downstream" is drawn piping direction. Valve positions and
+  operating state are not in the P&ID, so nothing here says where fluid is flowing.
+- **The abstraction loses detail.** Open-ended pipes and chamber sides had to be recovered
+  from the plant graph. Chamber references exist only on the two heat exchangers, so the
+  chamber rule does nothing for other equipment.
+- **Most components have no tag.** Valves are addressed by derived identifiers such as
+  `47126/C5`; the agent says when an identifier is derived.
+- **`find_path` returns only the shortest route.**
+- **Instrumentation is one call per hop**; there is no multi-hop instrumentation traversal.
+- **Grounding is lexical.** It can miss a wrong statement made only of supported tokens, and
+  it cannot catch general-knowledge glosses (the model expanding an instrument code such as
+  "TICSA"). Slash-joined names like `N1/N2` are rejected and cost a regeneration.
+- **No "enough evidence" detector.** The model may make redundant calls; budgets bound it.
+- **Provider and model variance**, and Groq's free daily limit covers roughly one and a half
+  15-question runs.
+- **Not built:** OCR ingestion, a UI, visual highlighting, hosting.
+
+## Development notes
+
+- Real commit history is kept. [prompts/](prompts/) holds the assignment and the instructions
+  given to the AI coding tool, in order; one early instruction was not saved and is marked so.
+- pyDEXPI is AGPL-3.0.
+
+**Time spent.** About two hours of elapsed working time from the first inspection of pyDEXPI
+to the scored evaluation, measured from file and commit timestamps, with an AI coding agent
+doing the implementation under my direction. That figure excludes reading the assignment and
+writing the initial specification beforehand.

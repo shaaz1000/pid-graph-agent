@@ -1,0 +1,302 @@
+Provider: deepseek   Model: deepseek-chat   Commit: 407d6ba
+
+QUESTION [eval-15]
+Since H1008 is rated for 500 kW, which line feeds it?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "H1008"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "TubularHeatExchanger-1",
+      "name": "H1008",
+      "type": "TubularHeatExchanger",
+      "category": "equipment",
+      "tag": "H1008",
+      "identifiers": {
+        "tagName": "H1008"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'H1008'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 2,
+        "open_ended_pipes": 1
+      }
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_connections
+Input:  {"entity_id": "TubularHeatExchanger-1", "direction": "upstream", "relationship": "piping"}
+Status: success
+Result: {
+  "status": "success",
+  "connections": [
+    {
+      "id": "PipingNetworkSegment-15/connections/1",
+      "from": "PipeTee-4 (PipeTee 47126/C8)",
+      "to": "TubularHeatExchanger-1 (H1008)",
+      "type": "pipe",
+      "relationship": "piping",
+      "neighbor_is": "upstream",
+      "lineNumber": "47126",
+      "segmentNumber": "S7",
+      "nominalDiameterRepresentation": "DN 50",
+      "nominalDiameterStandard": "DN 50 (DIN 2448)",
+      "fluidCode": "MNc",
+      "pipingClassCode": "75HB13",
+      "to_nozzle": "N1 [Chamber-3]"
+    },
+    {
+      "id": "PipingNetworkSegment-22/connections/1",
+      "from": null,
+      "to": "TubularHeatExchanger-1 (H1008)",
+      "type": "open_end",
+      "relationship": "piping",
+      "neighbor_is": "upstream",
+      "open_end": "source",
+      "lineNumber": "47140",
+      "segmentNumber": "S1",
+      "nominalDiameterRepresentation": "DN 50",
+      "nominalDiameterStandard": "DN 50 (DIN 2448)",
+      "fluidCode": "QSa",
+      "pipingClassCode": "75HB13",
+      "insulationType": "Q",
+      "insulationThickness": "80.0 mm",
+      "to_nozzle": "N4 [Chamber-4]",
+      "note": "This pipe exists in the DEXPI model but has no source item on this drawing, so pyDEXPI's conceptual graph omits it. Where it comes from is not represented."
+    }
+  ],
+  "warnings": [
+    "1 connection(s) are open-ended: the pipe exists in the DEXPI model but its other end is not represented on this drawing, so no neighbour can be stated."
+  ]
+}
+
+STEP 3
+Tool:   get_properties
+Input:  {"ids": "TubularHeatExchanger-1"}
+Status: success
+Result: {
+  "status": "success",
+  "properties": {
+    "TubularHeatExchanger-1": {
+      "found": [
+        {
+          "property": "tagName",
+          "value": "H1008"
+        },
+        {
+          "property": "tagNamePrefix",
+          "value": "H"
+        },
+        {
+          "property": "tagNameSequenceNumber",
+          "value": "1008"
+        },
+        {
+          "property": "tagNameSuffix",
+          "value": ""
+        },
+        {
+          "property": "designHeatFlowRate",
+          "value": "313.0 kW"
+        },
+        {
+          "property": "designHeatTransferArea",
+          "value": "46.8 m2"
+        },
+        {
+          "property": "subTagName",
+          "value": "N1",
+          "on": "Nozzle-10",
+          "scope": "child:Nozzle"
+        },
+        {
+          "property": "chamber",
+          "value": "Chamber-3",
+          "on": "Nozzle-10",
+          "scope": "child:Nozzle"
+        },
+        {
+          "property": "subTagName",
+          "value": "N2",
+          "on": "Nozzle-11",
+          "scope": "child:Nozzle"
+        },
+        {
+          "property": "chamber",
+          "value": "Chamber-3",
+          "on": "Nozzle-11",
+          "scope": "child:Nozzle"
+        },
+        {
+          "property": "subTagName",
+          "value": "N3",
+          "on": "Nozzle-16",
+          "scope": "child:Nozzle"
+        },
+        {
+          "property": "chamber",
+          "value": "Chamber-4",
+          "on": "Nozzle-16",
+          "scope": "child:Nozzle"
+        },
+        {
+          "property": "subTagName",
+          "value": "N4",
+          "on": "Nozzle-15",
+          "scope": "child:Nozzle"
+        },
+        {
+          "property": "chamber",
+          "value": "Chamber-4",
+          "on": "Nozzle-15",
+          "scope": "child:Nozzle"
+        },
+        {
+          "property": "lowerLimitDesignPressure",
+          "value": "-1.0 bar",
+          "on": "Chamber-3",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "lowerLimitDesignTemperature",
+          "value": "-45.0 °C",
+          "on": "Chamber-3",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "subTagName",
+          "value": "Chamber 1",
+          "on": "Chamber-3",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "upperLimitDesignPressure",
+          "value": "60.0 bar",
+          "on": "Chamber-3",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "upperLimitDesignTemperature",
+          "value": "100.0 °C",
+          "on": "Chamber-3",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "lowerLimitDesignPressure",
+          "value": "-1.0 bar",
+          "on": "Chamber-4",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "lowerLimitDesignTemperature",
+          "value": "-45.0 °C",
+          "on": "Chamber-4",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "materialOfConstructionCode",
+          "value": "1.4308",
+          "on": "Chamber-4",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "nominalDiameter",
+          "value": "800.0 mm",
+          "on": "Chamber-4",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "nominalDiameterTypeRepresentation",
+          "value": "DN",
+          "on": "Chamber-4",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "subTagName",
+          "value": "Chamber 2",
+          "on": "Chamber-4",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "upperLimitDesignPressure",
+          "value": "30.0 bar",
+          "on": "Chamber-4",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "upperLimitDesignTemperature",
+          "value": "100.0 °C",
+          "on": "Chamber-4",
+          "scope": "child:Chamber"
+        },
+        {
+          "property": "tubeLength",
+          "value": "2200.0 mm",
+          "on": "TubeBundle-1",
+          "scope": "child:TubeBundle"
+        },
+        {
+          "property": "tubeMaterialOfConstructionCode",
+          "value": "1.4306",
+          "on": "TubeBundle-1",
+          "scope": "child:TubeBundle"
+        }
+      ],
+      "missing": []
+    }
+  }
+}
+
+FINAL ANSWER
+H1008 (TubularHeatExchanger-1) has two upstream piping connections:
+
+- Line 47126, segment S7, DN 50 (piping class 75HB13, fluid code MNc) — comes from PipeTee-4 (PipeTee 47126/C8) into nozzle N1 (Chamber-3). This is the only upstream line with a represented source.
+- Line 47140, segment S1, DN 50 (piping class 75HB13, fluid code QSa, insulated 80 mm) — enters nozzle N4 (Chamber-4), but it is open-ended: the pipe exists in the DEXPI model and its other end is not represented on this drawing, so its source cannot be named.
+
+Note on the premise: the supplied P&ID does not contain a 500 kW rating for H1008. The 500 kW figure is the user's unverified assumption. The supplied P&ID gives H1008 a designHeatFlowRate of 313.0 kW and a designHeatTransferArea of 46.8 m2.
+
+GROUNDING: regenerated (24 plant-specific claims checked, 0 unsupported)
+  a draft was rejected for unsupported claims: 313.0 kW
+
+EVIDENCE (32 graph facts)
+  [entity] TubularHeatExchanger-1  <- plant_graph: TubularHeatExchanger-1
+  [connection] PipingNetworkSegment-15/connections/1  <- conceptual_graph: PipingNetworkSegment-15/connections/1, PipingNetworkSegment-15, PipingNetworkSystem-6
+  [open_end] PipingNetworkSegment-22/connections/1  <- plant_graph: PipingNetworkSegment-22/connections/1, PipingNetworkSegment-22, PipingNetworkSystem-10
+  [property] TubularHeatExchanger-1.tagName  <- plant_graph: TubularHeatExchanger-1
+  [property] TubularHeatExchanger-1.tagNamePrefix  <- plant_graph: TubularHeatExchanger-1
+  [property] TubularHeatExchanger-1.tagNameSequenceNumber  <- plant_graph: TubularHeatExchanger-1
+  [property] TubularHeatExchanger-1.tagNameSuffix  <- plant_graph: TubularHeatExchanger-1
+  [property] TubularHeatExchanger-1.designHeatFlowRate  <- plant_graph: TubularHeatExchanger-1
+  [property] TubularHeatExchanger-1.designHeatTransferArea  <- plant_graph: TubularHeatExchanger-1
+  [property] Nozzle-10.subTagName  <- plant_graph: Nozzle-10
+  [property] Nozzle-10.chamber  <- plant_graph: Nozzle-10
+  [property] Nozzle-11.subTagName  <- plant_graph: Nozzle-11
+  [property] Nozzle-11.chamber  <- plant_graph: Nozzle-11
+  [property] Nozzle-16.subTagName  <- plant_graph: Nozzle-16
+  [property] Nozzle-16.chamber  <- plant_graph: Nozzle-16
+  [property] Nozzle-15.subTagName  <- plant_graph: Nozzle-15
+  [property] Nozzle-15.chamber  <- plant_graph: Nozzle-15
+  [property] Chamber-3.lowerLimitDesignPressure  <- plant_graph: Chamber-3
+  [property] Chamber-3.lowerLimitDesignTemperature  <- plant_graph: Chamber-3
+  [property] Chamber-3.subTagName  <- plant_graph: Chamber-3
+  [property] Chamber-3.upperLimitDesignPressure  <- plant_graph: Chamber-3
+  [property] Chamber-3.upperLimitDesignTemperature  <- plant_graph: Chamber-3
+  [property] Chamber-4.lowerLimitDesignPressure  <- plant_graph: Chamber-4
+  [property] Chamber-4.lowerLimitDesignTemperature  <- plant_graph: Chamber-4
+  [property] Chamber-4.materialOfConstructionCode  <- plant_graph: Chamber-4
+  [property] Chamber-4.nominalDiameter  <- plant_graph: Chamber-4
+  [property] Chamber-4.nominalDiameterTypeRepresentation  <- plant_graph: Chamber-4
+  [property] Chamber-4.subTagName  <- plant_graph: Chamber-4
+  [property] Chamber-4.upperLimitDesignPressure  <- plant_graph: Chamber-4
+  [property] Chamber-4.upperLimitDesignTemperature  <- plant_graph: Chamber-4
+  [property] TubeBundle-1.tubeLength  <- plant_graph: TubeBundle-1
+  [property] TubeBundle-1.tubeMaterialOfConstructionCode  <- plant_graph: TubeBundle-1
+
+USAGE: 4 model calls, 11551 tokens, 5038 ms

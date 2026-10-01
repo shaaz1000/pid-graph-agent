@@ -1,0 +1,141 @@
+Provider: deepseek   Model: deepseek-chat   Commit: 407d6ba
+
+QUESTION [eval-02]
+What is the nominal diameter at component C1?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "C1"}
+Status: ambiguous
+Result: {
+  "status": "ambiguous",
+  "message": "'C1' matches 5 entities and does not identify a single one. Use an entity id, or add line/type context.",
+  "resolution": {
+    "status": "multiple",
+    "ambiguous": true,
+    "match_count": 5,
+    "suggestions": []
+  },
+  "entities": [
+    {
+      "id": "GlobeValve-2",
+      "name": "GlobeValve 47123/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47123/C1",
+        "operatedValveReference": "HV4750.01_YV"
+      },
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-2, which links ActuatingFunction-2 to this valve"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1,
+        "instrumentation": 1
+      }
+    },
+    {
+      "id": "ButterflyValve-1",
+      "name": "ButterflyValve 47124/C1",
+      "type": "ButterflyValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentName": "66KL21",
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47124/C1"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1
+      }
+    },
+    {
+      "id": "PipeTee-2",
+      "name": "PipeTee 47126/C1",
+      "type": "PipeTee",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47126/C1"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 2
+      }
+    },
+    {
+      "id": "GlobeValve-1",
+      "name": "GlobeValve 47127/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47127/C1",
+        "operatedValveReference": "PV4712.02_YV"
+      },
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-1, which links ActuatingFunction-1 to this valve"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1,
+        "instrumentation": 1
+      }
+    },
+    {
+      "id": "GlobeValve-3",
+      "name": "GlobeValve 47141/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47141/C1",
+        "operatedValveReference": "TV4750.03_YV"
+      },
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-3, which links ActuatingFunction-3 to this valve"
+      },
+      "match_tier": "identifier",
+      "match_reason": "pipingComponentNumber = 'C1'",
+      "links": {
+        "piping_upstream": 1,
+        "open_ended_pipes": 1,
+        "instrumentation": 1
+      }
+    }
+  ]
+}
+
+FINAL ANSWER
+"C1" is not unique in this P&ID — five components carry the piping component number C1, on five different lines:
+
+| Entity | Type | Line component |
+|---|---|---|
+| GlobeValve-2 | GlobeValve | 47123/C1 |
+| ButterflyValve-1 | ButterflyValve | 47124/C1 |
+| PipeTee-2 | PipeTee | 47126/C1 |
+| GlobeValve-1 | GlobeValve | 47127/C1 |
+| GlobeValve-3 | GlobeValve | 47141/C1 |
+
+Tell me which line (or the tag/type) you mean and I'll give you the nominal diameter.
+
+GROUNDING: grounded (16 plant-specific claims checked, 0 unsupported)
+
+EVIDENCE (5 graph facts)
+  [entity] GlobeValve-2  <- plant_graph: GlobeValve-2
+  [entity] ButterflyValve-1  <- plant_graph: ButterflyValve-1
+  [entity] PipeTee-2  <- plant_graph: PipeTee-2
+  [entity] GlobeValve-1  <- plant_graph: GlobeValve-1
+  [entity] GlobeValve-3  <- plant_graph: GlobeValve-3
+
+USAGE: 2 model calls, 5782 tokens, 1768 ms

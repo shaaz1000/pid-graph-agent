@@ -1,0 +1,121 @@
+Provider: deepseek   Model: deepseek-chat   Commit: 407d6ba
+
+QUESTION [eval-07]
+Trace the route from heat exchanger H1007 to tank T4750 and give the line number and pipe size along it.
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "H1007"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "PlateHeatExchanger-1",
+      "name": "H1007",
+      "type": "PlateHeatExchanger",
+      "category": "equipment",
+      "tag": "H1007",
+      "identifiers": {
+        "tagName": "H1007"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'H1007'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1,
+        "open_ended_pipes": 2
+      }
+    }
+  ]
+}
+
+STEP 2
+Tool:   find_entities
+Input:  {"query": "T4750"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "Tank-1",
+      "name": "T4750",
+      "type": "Tank",
+      "category": "equipment",
+      "tag": "T4750",
+      "identifiers": {
+        "tagName": "T4750"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'T4750'",
+      "links": {
+        "piping_upstream": 3,
+        "piping_downstream": 1,
+        "instrumentation": 1
+      }
+    }
+  ]
+}
+
+STEP 3
+Tool:   find_path
+Input:  {"source_entity_id": "PlateHeatExchanger-1", "target_entity_id": "Tank-1", "direction": "downstream"}
+Status: success
+Result: {
+  "status": "success",
+  "paths": [
+    {
+      "length": 2,
+      "direction": "downstream",
+      "entities": [
+        "PlateHeatExchanger-1 (H1007)",
+        "GlobeValve-2 (GlobeValve 47123/C1)",
+        "Tank-1 (T4750)"
+      ],
+      "steps": [
+        {
+          "travelled": "with_flow",
+          "from": "PlateHeatExchanger-1 (H1007)",
+          "to": "GlobeValve-2 (GlobeValve 47123/C1)",
+          "lineNumber": "47123",
+          "segmentNumber": "S1",
+          "nominalDiameterRepresentation": "DN 80",
+          "fluidCode": "MNb",
+          "from_nozzle": "N2 [Chamber-1]"
+        },
+        {
+          "travelled": "with_flow",
+          "from": "GlobeValve-2 (GlobeValve 47123/C1)",
+          "to": "Tank-1 (T4750)",
+          "lineNumber": "47123",
+          "segmentNumber": "S1",
+          "nominalDiameterRepresentation": "DN 80",
+          "fluidCode": "MNb",
+          "to_nozzle": "N1"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "shortest_path_only": true
+  }
+}
+
+FINAL ANSWER
+Route from H1007 (PlateHeatExchanger-1) to T4750 (Tank-1), downstream:
+
+- H1007 nozzle N2 (Chamber-1) → GlobeValve 47123/C1 (GlobeValve-2) → T4750 nozzle N1
+- Line number: **47123** (segment S1), nominal diameter **DN 80**, fluid code MNb
+
+Two hops, one line throughout; no equipment between the exchanger and the tank other than the globe valve.
+
+GROUNDING: grounded (15 plant-specific claims checked, 0 unsupported)
+
+EVIDENCE (5 graph facts)
+  [entity] PlateHeatExchanger-1  <- plant_graph: PlateHeatExchanger-1
+  [entity] Tank-1  <- plant_graph: Tank-1
+  [path] PlateHeatExchanger-1->Tank-1  <- conceptual_graph: PipingNetworkSegment-3/connections/1, PipingNetworkSegment-3/connections/2
+  [connection] PipingNetworkSegment-3/connections/1  <- conceptual_graph: PipingNetworkSegment-3/connections/1, PipingNetworkSegment-3, PipingNetworkSystem-3
+  [connection] PipingNetworkSegment-3/connections/2  <- conceptual_graph: PipingNetworkSegment-3/connections/2, PipingNetworkSegment-3, PipingNetworkSystem-3
+
+USAGE: 3 model calls, 8411 tokens, 2412 ms

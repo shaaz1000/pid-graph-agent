@@ -1,0 +1,132 @@
+Provider: deepseek   Model: deepseek-chat   Commit: 407d6ba
+
+QUESTION [eval-12]
+Which valve does HV4750.01 operate, and on which line is that valve installed?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "HV4750.01"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "ActuatingFunction-2",
+      "name": "HV4750.01",
+      "type": "ActuatingFunction",
+      "category": "instrumentation",
+      "identifiers": {
+        "actuatingFunctionNumber": "HV4750.01",
+        "ControlledActuator.subTagName": "HV4750.01_YC",
+        "ActuatingSystem.actuatingSystemNumber": "HV4750.01"
+      },
+      "identifier_notes": {
+        "ControlledActuator.subTagName": "alias: attribute subTagName of the associated ControlledActuator ControlledActuator-2",
+        "ActuatingSystem.actuatingSystemNumber": "alias: attribute actuatingSystemNumber of the associated ActuatingSystem ActuatingSystem-2"
+      },
+      "match_tier": "identifier",
+      "match_reason": "actuatingFunctionNumber = 'HV4750.01'",
+      "links": {
+        "instrumentation": 2
+      }
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_connections
+Input:  {"entity_id": "ActuatingFunction-2", "relationship": "instrumentation"}
+Status: success
+Result: {
+  "status": "success",
+  "connections": [
+    {
+      "id": "SignalConveyingFunction-2",
+      "from": "ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction HS4750.01)",
+      "to": "ActuatingFunction-2 (HV4750.01)",
+      "type": "signal_line",
+      "relationship": "instrumentation",
+      "meaning": "'from' sends its control signal to 'to'",
+      "other_entity": "ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction HS4750.01) [ProcessInstrumentationFunction]"
+    },
+    {
+      "id": "OperatedValveReference-2",
+      "from": "ActuatingFunction-2 (HV4750.01)",
+      "to": "GlobeValve-2 (GlobeValve 47123/C1)",
+      "type": "operated_valve_reference",
+      "relationship": "instrumentation",
+      "meaning": "'from' is the actuating function that operates the valve 'to'",
+      "other_entity": "GlobeValve-2 (GlobeValve 47123/C1) [GlobeValve]",
+      "subTagName": "HV4750.01_YV"
+    }
+  ]
+}
+
+STEP 3
+Tool:   get_entity
+Input:  {"entity_id": "GlobeValve-2"}
+Status: success
+Result: {
+  "status": "success",
+  "entities": [
+    {
+      "id": "GlobeValve-2",
+      "type": "GlobeValve",
+      "type_hierarchy": [
+        "GlobeValve",
+        "OperatedValve",
+        "PipingComponent",
+        "SensingLocation"
+      ],
+      "category": "piping_component",
+      "name": "GlobeValve 47123/C1",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47123/C1",
+        "operatedValveReference": "HV4750.01_YV"
+      },
+      "properties": {
+        "fluidCode": "MNb",
+        "pipingClassCode": "75HB13",
+        "pipingComponentNumber": "C1"
+      },
+      "piping_context": {
+        "segment_id": "PipingNetworkSegment-3",
+        "line_id": "PipingNetworkSystem-3",
+        "fluidCode": "MNb",
+        "lineNumber": "47123",
+        "nominalDiameterNumericalValueRepresentation": "80",
+        "nominalDiameterRepresentation": "DN 80",
+        "nominalDiameterStandard": "DN 80 (DIN 2448)",
+        "nominalDiameterTypeRepresentation": "DN",
+        "pipingClassCode": "75HB13",
+        "primarySecondaryPipingNetworkSegment": "primary segment",
+        "segmentNumber": "S1"
+      },
+      "children_available": [],
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1,
+        "instrumentation": 1
+      },
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-2, which links ActuatingFunction-2 to this valve"
+      }
+    }
+  ]
+}
+
+FINAL ANSWER
+**HV4750.01** (actuating function `ActuatingFunction-2`) operates **GlobeValve 47123/C1** (`GlobeValve-2`), via the operated-valve link whose sub-tag is HV4750.01_YV. The control signal comes from HS4750.01 (`ProcessInstrumentationFunction-3`).
+
+The valve is installed on **line 47123**, segment S1 (`PipingNetworkSegment-3`), **DN 80** (DIN 2448), piping class 75HB13, fluid code MNb.
+
+GROUNDING: grounded (14 plant-specific claims checked, 0 unsupported)
+
+EVIDENCE (4 graph facts)
+  [entity] ActuatingFunction-2  <- plant_graph: ActuatingFunction-2
+  [connection] SignalConveyingFunction-2  <- conceptual_graph: SignalConveyingFunction-2, ProcessInstrumentationFunction-3, ActuatingFunction-2
+  [connection] OperatedValveReference-2  <- conceptual_graph: OperatedValveReference-2, ActuatingFunction-2, GlobeValve-2
+  [entity] GlobeValve-2  <- plant_graph: GlobeValve-2
+
+USAGE: 4 model calls, 11588 tokens, 3700 ms
