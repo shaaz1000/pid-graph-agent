@@ -12,6 +12,7 @@ written; later prompts never overwrite earlier ones.
 | `04-llm-agent-implementation.md` | LLM adapter and LangGraph agent instructions | **Original exact instruction unavailable** — placeholder only, not reconstructed |
 | `05-agent-stabilization.md` | Agent stabilization and the prompt-history rule | Preserved development instruction |
 | `06-pre-evaluation-provider-verification.md` | Prompt-history repair, second LLM provider, live verification | Preserved development instruction |
+| `07-deepseek-diagnostic-verification.md` | Temporary diagnostic provider, diagnostic run rules, official verification procedure | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 

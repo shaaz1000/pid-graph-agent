@@ -18,13 +18,15 @@ def create_llm(settings: Settings) -> LLMClient:
         from pid_agent.llm.groq_provider import GroqProvider
 
         return GroqProvider(api_key=settings.require_api_key(), model=settings.llm_model)
-    if provider == "openrouter":
+    if provider in ("openrouter", "deepseek"):
+        from pid_agent.llm.deepseek_provider import DeepSeekProvider
         from pid_agent.llm.openrouter_provider import OpenRouterProvider
 
         if not settings.llm_model:
             raise ConfigError(
-                "LLM_PROVIDER=openrouter needs LLM_MODEL set to the id of an open-weight, "
-                "tool-calling model available on OpenRouter. No default is assumed."
+                f"LLM_PROVIDER={provider} needs LLM_MODEL set to the id of a tool-calling model "
+                "available from that provider. No default is assumed."
             )
-        return OpenRouterProvider(api_key=settings.require_api_key(), model=settings.llm_model)
-    raise ConfigError(f"Unsupported LLM_PROVIDER '{settings.llm_provider}'. Supported: groq, openrouter.")
+        adapter = OpenRouterProvider if provider == "openrouter" else DeepSeekProvider
+        return adapter(api_key=settings.require_api_key(), model=settings.llm_model)
+    raise ConfigError(f"Unsupported LLM_PROVIDER '{settings.llm_provider}'. Supported: groq, openrouter, deepseek.")

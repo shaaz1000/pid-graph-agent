@@ -45,7 +45,19 @@ TARGETED = [
     "Which valve does TV4750.03 act on, and does it fail open or closed?",
     "What is the design pressure of H1007?",
 ]
-SETS = {"smoke": QUESTIONS, "targeted": TARGETED}
+# Development diagnostics with a secondary provider: the same behaviour classes, mostly with
+# other entities and wording than the questions that failed before.
+DIAGNOSTIC = [
+    "Starting from the centrifugal pump, which pieces of equipment can the fluid reach further down the line?",
+    "Where does pump P4712 discharge to?",
+    "Which instrument operates the globe valve on line 47127, and what is its fail action?",
+    "What is temperature transmitter TT4750.03 measuring, and which controller receives its signal?",
+    "What design pressure limits apply to the tubular heat exchanger?",
+    "Which line is the ball valve on?",
+    "Who supplied pump P4712 and when was it installed?",
+    "What is directly connected to the butterfly valve?",
+]
+SETS = {"smoke": QUESTIONS, "targeted": TARGETED, "diagnostic": DIAGNOSTIC}
 
 
 def main() -> None:
