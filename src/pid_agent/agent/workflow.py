@@ -69,6 +69,7 @@ class PidAgent:
             "pending_calls": [],
             "trace": [],
             "observations": [],
+            "resolved_entities": {},
             "iterations": 0,
             "tool_calls_made": 0,
             "duplicate_calls": 0,
@@ -93,6 +94,7 @@ class PidAgent:
             answer=final["answer"],
             trace=final["trace"],
             evidence=self._collect_evidence(final["observations"]),
+            resolved_entities=final["resolved_entities"],
             grounding_status=final["grounding_status"],
             claims_checked=final["claims_checked"],
             unsupported_claims=final["unsupported_claims"],
@@ -170,6 +172,7 @@ class PidAgent:
         messages = list(state["messages"])
         trace = list(state["trace"])
         observations = list(state["observations"])
+        resolved = dict(state["resolved_entities"])
         made, duplicates, malformed = state["tool_calls_made"], state["duplicate_calls"], state["malformed_streak"]
         earlier = {self._call_key(s.tool, s.input): s.step for s in trace if s.executed}
 
@@ -193,11 +196,12 @@ class PidAgent:
                 malformed = 0
                 earlier[key] = step
                 observations.append(result)
-                payload = compact_result(result)
+                payload = self._reuse_note(result, resolved) or compact_result(result)
+                self._remember(result, resolved, step)
                 trace.append(TraceStep(step=step, tool=call.name, input=call.arguments, status=result["status"], result=payload, duration_ms=result["meta"].get("duration_ms", 0.0)))
             messages.append({"role": "tool", "tool_call_id": call.id, "content": json.dumps(payload, ensure_ascii=False)})
 
-        return {"messages": messages, "trace": trace, "observations": observations, "pending_calls": [], "tool_calls_made": made, "duplicate_calls": duplicates, "malformed_streak": malformed}
+        return {"messages": messages, "trace": trace, "observations": observations, "resolved_entities": resolved, "pending_calls": [], "tool_calls_made": made, "duplicate_calls": duplicates, "malformed_streak": malformed}
 
     def _force_answer(self, state: AgentState) -> dict[str, Any]:
         """A budget is spent: require an answer from what has been collected, without tools."""
@@ -293,6 +297,29 @@ class PidAgent:
     def _call_key(name: str, arguments: dict[str, Any] | None) -> str:
         cleaned = {k: v for k, v in (arguments or {}).items() if v is not None}
         return f"{name}:{json.dumps(cleaned, sort_keys=True, default=str)}"
+
+    @staticmethod
+    def _remember(result: dict[str, Any], resolved: dict[str, dict[str, Any]], step: int) -> None:
+        """Keep every entity the tools have identified, so it need not be looked up again."""
+        for entity in result.get("entities", []):
+            if "id" in entity and "type" in entity:
+                resolved.setdefault(entity["id"], {"name": entity.get("name", entity["id"]), "type": entity["type"], "step": step})
+
+    @staticmethod
+    def _reuse_note(result: dict[str, Any], resolved: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
+        """A lookup that only re-finds a known entity gets a short reminder instead of a full result."""
+        if result["tool"] != "find_entities" or result["status"] != "success" or len(result["entities"]) != 1:
+            return None
+        known = resolved.get(result["entities"][0]["id"])
+        if known is None:
+            return None
+        entity = result["entities"][0]
+        return {
+            "status": "success",
+            "entities": [{"id": entity["id"], "name": entity["name"], "type": entity["type"]}],
+            "note": f"{entity['id']} was already identified in step {known['step']}. Use this id directly in other tools.",
+            **({"warnings": result["warnings"]} if result.get("warnings") else {}),
+        }
 
     @staticmethod
     def _add_usage(usage: dict[str, int], response: LLMResponse) -> dict[str, int]:

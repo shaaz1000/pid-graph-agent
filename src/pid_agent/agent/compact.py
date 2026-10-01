@@ -21,8 +21,18 @@ CONNECTION_PROPERTIES = (
     "insulationThickness",
     "subTagName",
 )
-ENTITY_DROP = {"identifier_origins", "in_topology"}
-META_KEEP = ("count", "visited_entities", "max_depth", "cycle_detected", "start_is_in_cycle", "truncated_by_max_depth", "stopped_at", "shortest_path_only")
+# Dropped from the model's view: bookkeeping that carries no plant meaning.
+ENTITY_DROP = {"identifier_origins", "in_topology", "confidence"}
+META_KEEP = ("count", "max_depth", "cycle_detected", "start_is_in_cycle", "truncated_by_max_depth", "stopped_at", "shortest_path_only")
+# Per-pipe details not needed to follow a route; get_connections / get_properties have them.
+PATH_STEP_DROP = {"id", "type", "relationship", "nominalDiameterStandard", "pipingClassCode"}
+# What an instrumentation link means, in words, so the model need not know DEXPI class names.
+INSTRUMENTATION_MEANING = {
+    "operated_valve_reference": "'from' is the actuating function that operates the valve 'to'",
+    "signal_line": "'from' sends its control signal to 'to'",
+    "measuring_line": "the measurement taken by 'from' is the input of 'to'",
+    "sensing_location": "'from' measures at 'to'",
+}
 
 
 def _ref(ref: dict[str, Any] | None) -> str | None:
@@ -46,9 +56,13 @@ def compact_connection(connection: dict[str, Any]) -> dict[str, Any]:
         "type": connection["connection_type"],
         "relationship": connection["relationship"],
     }
-    for key in ("neighbor_is", "reference_direction", "open_end"):
+    for key in ("neighbor_is", "open_end"):
         if connection.get(key):
             out[key] = connection[key]
+    if connection["relationship"] == "instrumentation":
+        out["meaning"] = INSTRUMENTATION_MEANING[connection["connection_type"]]
+        if connection.get("neighbor"):
+            out["other_entity"] = _ref(connection["neighbor"]) + f" [{connection['neighbor']['type']}]"
     properties = connection.get("properties", {})
     out.update({k: properties[k] for k in CONNECTION_PROPERTIES if k in properties})
     for key, name in (("source_nozzle", "from_nozzle"), ("target_nozzle", "to_nozzle")):
@@ -67,10 +81,13 @@ def _traverse_view(result: dict[str, Any]) -> dict[str, Any]:
     each pipe keeps only its ends, line and diameter. Details remain available through
     get_connections / find_path / get_properties.
     """
-    entities = [
-        {"id": e["id"], "name": e["name"], "type": e["type"], "distance": e["distance"], "via": e["path_entities"][-2]}
-        for e in result["entities"]
-    ]
+    entities = []
+    for e in result["entities"]:
+        row = {"id": e["id"], "name": e["name"], "type": e["type"], "category": e["category"], "distance": e["distance"], "via": e["path_entities"][-2]}
+        row["through_equipment"] = e["through_equipment"]
+        if e.get("terminal"):
+            row["terminal"] = True
+        entities.append(row)
     connections = []
     for connection in result["connections"]:
         full = compact_connection(connection)
@@ -81,10 +98,18 @@ def _traverse_view(result: dict[str, Any]) -> dict[str, Any]:
 
 def compact_entity(entity: dict[str, Any]) -> dict[str, Any]:
     out = {k: v for k, v in entity.items() if k not in ENTITY_DROP}
+    if out.get("identifier_kind") == "source_identifier":
+        out.pop("identifier_kind")
     origins = entity.get("identifier_origins") or {}
     notes = {k: f"{o['kind']}: {o['origin']}" for k, o in origins.items() if o["kind"] != "source_identifier"}
+    notes = {**out.get("identifier_notes", {}), **notes}
+    # Aliases point at related objects and are worth reading; how a derived identifier was
+    # composed is only repeated when it is the identifier that matched (see match_reason).
+    notes = {k: v for k, v in notes.items() if v.startswith("alias")}
     if notes:
         out["identifier_notes"] = notes
+    else:
+        out.pop("identifier_notes", None)
     return out
 
 
@@ -115,12 +140,14 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
     out: dict[str, Any] = {"status": result["status"]}
     if result.get("message"):
         out["message"] = result["message"]
-    if result.get("resolution"):
-        out["resolution"] = result["resolution"]
+    resolution = result.get("resolution")
+    if resolution and (resolution.get("ambiguous") or resolution.get("status") != "unique"):
+        out["resolution"] = resolution
     if result["tool"] == "traverse":
         out.update({k: v for k, v in _traverse_view(result).items() if v})
     else:
-        if result.get("entities"):
+        # get_connections repeats the queried entity; the model already has it.
+        if result.get("entities") and result["tool"] != "get_connections":
             out["entities"] = [compact_entity(e) for e in result["entities"]]
         if result.get("connections"):
             out["connections"] = [compact_connection(c) for c in result["connections"]]
@@ -130,7 +157,10 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
                 "length": path["length"],
                 "direction": path["direction"],
                 "entities": [_ref(e) for e in path["entities"]],
-                "steps": [{"travelled": s["travelled"], **compact_connection(s["connection"])} for s in path["steps"]],
+                "steps": [
+                    {"travelled": s["travelled"], **{k: v for k, v in compact_connection(s["connection"]).items() if k not in PATH_STEP_DROP}}
+                    for s in path["steps"]
+                ],
             }
             for path in result["paths"]
         ]
@@ -138,7 +168,9 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
         out["properties"] = _compact_properties(result["properties"])
     if result.get("warnings"):
         out["warnings"] = result["warnings"]
-    meta = {k: result["meta"][k] for k in META_KEEP if k in result.get("meta", {})}
+    meta = {k: result["meta"][k] for k in META_KEEP if result.get("meta", {}).get(k) not in (None, [], False)}
+    if result.get("meta", {}).get("endpoints"):
+        meta["endpoints"] = result["meta"]["endpoints"]
     if meta:
         out["meta"] = meta
     return out

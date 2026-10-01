@@ -129,3 +129,66 @@ def test_sign_matters(tools):
 def test_any_dash_before_a_negative_value_is_accepted(tools, dash):
     observations = [tools.call("get_properties", {"ids": ["PlateHeatExchanger-1"], "requested_properties": ["design pressure"]}).to_dict()]
     assert check_grounding(f"The range is {dash}1.0 bar to 60.0 bar.", "q", observations).grounded
+
+
+# ------------------------------------------------ context-aware checks
+@pytest.fixture(scope="module")
+def route(tools):
+    return [tools.call("find_path", {"source_entity_id": "Tank-1", "target_entity_id": "ReciprocatingPump-1"}).to_dict()]
+
+
+def test_identifier_used_in_the_wrong_role_is_flagged(route):
+    report = check_grounding("The diameter changes at the reducer (line 47124, segment C3).", "q", route)
+    assert [(c["claim"], c["kind"]) for c in report.unsupported] == [("segment C3", "identifier_role")]
+    assert "not as a segment" in report.unsupported[0]["reason"]
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "The diameter changes at PipeReducer-1 on line 47124, between segment S2 and segment S3.",
+        "Component C3 is the reducer; it sits in segment PipingNetworkSegment-5.",
+        "The pipe enters the pump at nozzle N1 on line number 47124.",
+        "This line has three segments and a component in each segment.",  # prose, no identifiers
+    ],
+)
+def test_identifiers_in_the_right_role_pass(route, tools, answer):
+    observations = route + [tools.call("get_entity", {"entity_id": "PipeReducer-1"}).to_dict()]
+    report = check_grounding(answer, "q", observations)
+    assert report.grounded, report.unsupported
+
+
+def test_line_number_known_only_from_a_line_component_identifier_passes(tools):
+    observations = [tools.call("find_entities", {"query": "globe valve on line 47127"}).to_dict()]
+    assert check_grounding("GlobeValve-1 is the globe valve on line 47127.", "q", observations).grounded
+
+
+def test_other_roles_are_flagged_too(route):
+    report = check_grounding("The butterfly valve is on line S1 as component 47124.", "q", route)
+    assert {c["claim"] for c in report.unsupported} == {"line S1", "component 47124"}
+
+
+@pytest.fixture(scope="module")
+def pump(tools):
+    return [tools.call("get_properties", {"ids": ["CentrifugalPump-1"]}).to_dict()]
+
+
+def test_correct_value_attached_to_the_wrong_property_is_flagged(pump):
+    report = check_grounding("The design pressure head of P4711 is 60.0 kW.", "q", pump)
+    assert [(c["claim"], c["kind"]) for c in report.unsupported] == [("60.0 kW", "value_attribution")]
+    assert "designShaftPower" in report.unsupported[0]["reason"] and "designPressureHead" in report.unsupported[0]["reason"]
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "The design shaft power of P4711 is 60.0 kW.",
+        "P4711: pressure head 10.0 m, volume flow rate 200.0 m3/h, shaft power 60.0 kW.",
+        "P4711: head 10.0 m, flow 200.0 m3/h, speed 600.0 min-1, power 60.0 kW.",
+        "| P4711 | 200.0 m3/h | 60.0 kW |",
+        "Its chamber is rated up to 60.0 bar (upper limit design pressure) and down to -0.5 bar.",
+    ],
+)
+def test_correct_attributions_and_terse_lists_pass(pump, answer):
+    report = check_grounding(answer, "q", pump)
+    assert report.grounded, report.unsupported

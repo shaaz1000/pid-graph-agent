@@ -72,38 +72,42 @@ TOOL_ARGS: dict[str, type[_Args]] = {
 }
 TOOL_DESCRIPTIONS: dict[str, str] = {
     "find_entities": (
-        "Resolve a tag, identifier or short description to entities in the P&ID graph. "
-        "status 'ambiguous' means several entities match and none was chosen; 'not_found' may "
-        "include resolution.suggestions, which are merely similar identifiers, not matches."
+        "Resolve a tag, identifier or short description to entities. 'ambiguous' = several "
+        "entities match and none was chosen. 'not_found' may list resolution.suggestions: "
+        "similar identifiers, not matches. Each match shows 'links': how many piping and "
+        "instrumentation connections it has."
     ),
     "list_entities": (
-        "List all entities of a type or category (matches supertypes: 'valve' covers every valve "
-        "class). Call without arguments to get the catalogue of types present in the graph."
+        "List all entities of a type or category (supertypes work: 'valve' covers every valve "
+        "class). Without arguments: the catalogue of types present."
     ),
     "get_entity": (
-        "Get one entity with its own properties, its line/segment context and (optionally) its "
+        "One entity: own properties, line/segment context, link counts and (optionally) "
         "nozzles, chambers and other sub-objects."
     ),
     "get_connections": (
-        "Direct connections of one entity. Piping connections carry line number, segment, nominal "
-        "diameter, fluid code and say whether the neighbour is upstream or downstream. "
-        "Instrumentation connections are signal/reference links, not process flow. A connection "
-        "with open_end set exists in the model but its other end is not on this drawing."
+        "ADJACENCY: only the immediate neighbours of one entity, one hop. For piping: the "
+        "connecting pipe (line, segment, nominal diameter, fluid) and whether the neighbour is "
+        "upstream or downstream; the neighbour is often a tee, valve or other fitting. For "
+        "instrumentation: the linked instrument function and what the link means. open_end = "
+        "the pipe exists but its other end is not on this drawing."
     ),
     "traverse": (
-        "Follow piping connections from an entity over multiple hops, 'downstream' (drawn flow "
-        "direction), 'upstream' or 'both'. Returns each reached entity once with its distance and "
-        "path. Safe on recycle loops. Use entity_types to filter results, max_depth to limit "
-        "distance, stop_at_types to not continue past certain types."
+        "REACHABILITY: everything reachable from an entity along piping, any number of hops, "
+        "in one call ('downstream' = drawn flow direction, 'upstream', or 'both'). Each result "
+        "has its distance, the entity it was reached via, through_equipment (equipment lying "
+        "between it and the start; empty = reached through pipes, valves and fittings only) "
+        "and terminal (nothing further is drawn in that direction). meta.endpoints lists all "
+        "terminal entities even when entity_types filters them out. Safe on recycle loops."
     ),
     "find_path": (
-        "Shortest piping path between two entities, with the properties (line, nominal diameter, "
-        "...) of every pipe on the way."
+        "PATH: the shortest piping route between two known entities, with line and nominal "
+        "diameter of every pipe on it."
     ),
     "get_properties": (
-        "Read properties of entities, connections, lines, segments, nozzles, chambers or "
-        "'MetaData-1' (drawing data). Requested properties that do not exist in the P&ID are "
-        "listed under 'missing'."
+        "Property values of entities, connections, lines, segments, nozzles, chambers or "
+        "'MetaData-1' (drawing data). Also searches an entity's sub-objects. Properties that "
+        "do not exist in the P&ID are listed under 'missing'."
     ),
 }
 

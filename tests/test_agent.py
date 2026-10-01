@@ -284,8 +284,9 @@ def test_instrumentation_and_piping_stay_distinct_for_the_model(tools):
     )
     by_type = {c["type"]: c for c in llm.tool_messages()[0]["connections"]}
     assert by_type["operated_valve_reference"]["relationship"] == "instrumentation"
-    assert by_type["operated_valve_reference"]["reference_direction"] == "incoming"
-    assert "neighbor_is" not in by_type["operated_valve_reference"]
+    assert "neighbor_is" not in by_type["operated_valve_reference"]  # no upstream/downstream for signals
+    assert "operates the valve" in by_type["operated_valve_reference"]["meaning"]
+    assert by_type["operated_valve_reference"]["other_entity"] == "ActuatingFunction-1 (PV4712.02) [ActuatingFunction]"
     assert by_type["pipe"]["relationship"] == "piping"
     assert result.grounding_status == "grounded"
 
@@ -499,3 +500,192 @@ def test_transcript_shows_actual_calls_and_no_reasoning(tools):
 def test_result_is_json_serialisable(tools):
     result, _ = run(tools, "q", [call("find_entities", query="P4711")], "P4711 is CentrifugalPump-1.")
     json.dumps(result.to_dict())
+
+
+# =====================================================================
+# Stabilization: failure patterns seen in live runs, reproduced with a scripted model
+# =====================================================================
+REACHABLE = [
+    # (start, equipment reached without passing other equipment, endpoints where the drawing ends)
+    ("ReciprocatingPump-1", {"Tank-1", "TubularHeatExchanger-1"}, {"FlowOutPipeOffPageConnector-1", "BlindFlange-1", "BlindFlange-2", "BallValve-2"}),
+    ("CentrifugalPump-1", {"PlateHeatExchanger-1"}, {"FlowOutPipeOffPageConnector-1", "BlindFlange-1", "BlindFlange-2", "BallValve-2"}),
+    ("PlateHeatExchanger-1", {"Tank-1"}, {"FlowOutPipeOffPageConnector-1", "BlindFlange-1", "BlindFlange-2", "BallValve-2"}),
+]
+
+
+@pytest.mark.parametrize(("start", "direct", "endpoints"), REACHABLE)
+def test_adjacency_and_reachability_give_different_evidence(tools, start, direct, endpoints):
+    """1. One hop names a fitting or a single neighbour; a traversal names every destination."""
+    _, adjacent = run(tools, f"What is directly downstream of {start}?", [call("get_connections", entity_id=start, direction="downstream", relationship="piping")], "Done.")
+    neighbours = [c["to"] for c in adjacent.tool_messages()[0]["connections"] if c.get("to")]
+    assert len(neighbours) == 1
+
+    _, reach = run(tools, f"What equipment is reachable downstream of {start}?", [call("traverse", start_entity_id=start, direction="downstream", entity_types=["equipment"])], "Done.")
+    seen = reach.tool_messages()[0]
+    assert {e["id"] for e in seen["entities"] if not e["through_equipment"]} == direct
+    assert set(seen["meta"]["endpoints"]) == endpoints
+    assert len(seen["entities"]) >= len(neighbours)
+
+
+def test_planner_that_walks_hop_by_hop_gets_the_same_facts_at_higher_cost(tools):
+    """1. The live failure pattern: adjacency used where a traversal was needed."""
+    walking, _ = run(
+        tools, "Where does P4712 ultimately discharge?",
+        [call("get_connections", entity_id="ReciprocatingPump-1", direction="downstream", relationship="piping")],
+        [call("get_connections", entity_id="PipeTee-2", direction="downstream", relationship="piping")],
+        [call("get_connections", entity_id="PipeTee-1", direction="downstream", relationship="piping")],
+        [call("get_connections", entity_id="SpringLoadedGlobeSafetyValve-1", direction="downstream", relationship="piping")],
+        "P4712 discharges through PipeTee-2 and PipeTee-1; one branch goes via SV 104.01 to T4750.",
+    )
+    direct, _ = run(
+        tools, "Where does P4712 ultimately discharge?",
+        [call("traverse", start_entity_id="ReciprocatingPump-1", direction="downstream", entity_types=["equipment"])],
+        "Downstream of P4712 the piping reaches T4750 and H1008 without passing other equipment, and leaves the drawing at FlowOutPipeOffPageConnector-1.",
+    )
+    assert walking.usage["llm_calls"] == 5 and direct.usage["llm_calls"] == 2
+    assert walking.grounding_status == direct.grounding_status == "grounded"
+    assert "TubularHeatExchanger-1" not in json.dumps(walking.trace[-1].result)  # the walk never saw H1008
+    assert "TubularHeatExchanger-1" in json.dumps(direct.trace[0].result)
+
+
+def test_multi_step_downstream_traversal_with_follow_up(tools):
+    """2. Resolve, traverse, then read a property of something the traversal found."""
+    result, llm = run(
+        tools, "What heat exchanger does the tank feed, and what is its heat transfer area?",
+        [call("find_entities", query="tank")],
+        [call("traverse", start_entity_id="Tank-1", direction="downstream", entity_types=["heat exchanger"])],
+        [call("get_properties", ids=["TubularHeatExchanger-1"], requested_properties=["designHeatTransferArea"])],
+        "T4750 feeds H1008 (TubularHeatExchanger-1) via P4712; its design heat transfer area is 46.8 m2.",
+    )
+    assert [t for t, _ in executed(result)] == ["find_entities", "traverse", "get_properties"]
+    assert llm.tool_messages()[1]["entities"][0]["through_equipment"] == ["ReciprocatingPump-1"]
+    assert result.grounding_status == "grounded" and result.usage["llm_calls"] == 4
+
+
+@pytest.mark.parametrize(
+    ("valve_query", "valve", "function", "fail_action"),
+    [
+        ("globe valve on line 47127", "GlobeValve-1", "ActuatingFunction-1", "fail close"),
+        ("globe valve on line 47141", "GlobeValve-3", "ActuatingFunction-3", "fail open"),
+        ("globe valve on line 47123", "GlobeValve-2", "ActuatingFunction-2", "fail close"),
+    ],
+)
+def test_instrumentation_chain_from_valve_to_fail_action(tools, valve_query, valve, function, fail_action):
+    """3. valve -> operating function -> property, in three tool calls."""
+    result, llm = run(
+        tools, f"Which instrument operates the {valve_query}, and what is its fail action?",
+        [call("find_entities", query=valve_query)],
+        [call("get_connections", entity_id=valve, relationship="instrumentation")],
+        [call("get_properties", ids=[function], requested_properties=["failAction"])],
+        f"{valve} is operated by {function}; its fail action is {fail_action}.",
+    )
+    seen = llm.tool_messages()
+    assert seen[0]["entities"][0]["id"] == valve and seen[0]["entities"][0]["links"]["instrumentation"] == 1
+    assert seen[1]["connections"][0]["other_entity"].startswith(function)
+    assert seen[2]["properties"][function]["found"][0]["value"] == fail_action
+    assert result.grounding_status == "grounded" and result.usage["llm_calls"] == 4
+
+
+def test_alias_lookup_no_longer_leads_in_a_circle(tools):
+    """3. The live dead end: looking up the valve's actuator alias returned the valve again."""
+    _, llm = run(tools, "q", [call("find_entities", query="globe valve on line 47127")], [call("find_entities", query="PV4712.02_YV")], "Done.")
+    first, second = llm.tool_messages()
+    assert "ActuatingFunction-1" in first["entities"][0]["identifier_notes"]["operatedValveReference"]
+    assert second["note"].startswith("GlobeValve-1 was already identified in step 1")
+
+
+def test_repeated_search_for_a_resolved_entity_gets_a_short_reminder(tools):
+    """4. Rediscovery costs a turn; the reply is small and says to reuse the id."""
+    result, llm = run(
+        tools, "q",
+        [call("find_entities", query="P4711")],
+        [call("find_entities", query="pump P4711")],
+        [call("find_entities", query="CentrifugalPump-1", entity_type="pump")],
+        "P4711 is CentrifugalPump-1.",
+    )
+    first, second, third = llm.tool_messages()
+    assert "links" in first["entities"][0]
+    for reminder in (second, third):
+        assert reminder["entities"] == [{"id": "CentrifugalPump-1", "name": "P4711", "type": "CentrifugalPump"}]
+        assert "already identified in step 1" in reminder["note"]
+    assert result.resolved_entities == {"CentrifugalPump-1": {"name": "P4711", "type": "CentrifugalPump", "step": 1}}
+    assert [s.status for s in result.trace] == ["success"] * 3  # different queries, so all were executed
+
+
+def test_resolved_entities_accumulate_from_every_tool(tools):
+    result, _ = run(
+        tools, "q",
+        [call("find_entities", query="T4750")],
+        [call("traverse", start_entity_id="Tank-1", direction="downstream", entity_types=["pump"])],
+        "T4750 feeds P4712.",
+    )
+    assert set(result.resolved_entities) == {"Tank-1", "ReciprocatingPump-1"}
+    assert result.resolved_entities["ReciprocatingPump-1"]["step"] == 2
+
+
+def test_continuing_after_the_fact_is_found_is_bounded_and_harmless(tools):
+    """5. The property is in hand after step 1; extra exploration cannot change or delay it much."""
+    found = [call("get_properties", ids=["CentrifugalPump-1"], requested_properties=["designShaftPower"])]
+    result, llm = run(
+        tools, "What is the shaft power of P4711?",
+        found,
+        found,  # asks again: not executed
+        [call("get_entity", entity_id="CentrifugalPump-1")],
+        found,  # and again: the loop is cut here
+        "The design shaft power of P4711 is 60.0 kW.",
+    )
+    assert [(s.tool, s.status, s.executed) for s in result.trace] == [
+        ("get_properties", "success", True),
+        ("get_properties", "duplicate", False),
+        ("get_entity", "success", True),
+        ("get_properties", "duplicate", False),
+    ]
+    assert result.limit_reached == "the same tool call was repeated"
+    assert result.answer == "The design shaft power of P4711 is 60.0 kW." and result.grounding_status == "grounded"
+
+
+def test_model_that_answers_as_soon_as_the_fact_is_found_uses_two_calls(tools):
+    result, _ = run(
+        tools, "What is the shaft power of P4711?",
+        [call("get_properties", ids=["P4711"], requested_properties=["designShaftPower"])],
+        "The design shaft power of P4711 is 60.0 kW.",
+    )
+    assert result.usage["llm_calls"] == 2 and result.iterations == 2 and len(result.trace) == 1
+
+
+def test_value_attached_to_the_wrong_property_is_rejected(tools):
+    """10. A real value, wrong field."""
+    result, _ = run(
+        tools, "What is the pressure head of P4711?",
+        [call("get_properties", ids=["CentrifugalPump-1"])],
+        "The design pressure head of P4711 is 60.0 kW.",
+        "The design pressure head of P4711 is 10.0 m.",
+    )
+    assert result.grounding_status == "regenerated"
+    assert result.rejected_drafts[0]["unsupported_claims"][0]["kind"] == "value_attribution"
+    assert result.answer == "The design pressure head of P4711 is 10.0 m."
+
+
+def test_identifier_in_the_wrong_role_is_rejected(tools):
+    """10. 'segment C3': C3 is a component number, not a segment."""
+    result, _ = run(
+        tools, "Where does the pipe size change between the tank and P4712?",
+        [call("find_path", source_entity_id="Tank-1", target_entity_id="ReciprocatingPump-1")],
+        "The size changes from DN 80 to DN 50 at the reducer (line 47124, segment C3).",
+        "The size changes from DN 80 to DN 50 at PipeReducer-1 (line 47124, component C3).",
+    )
+    assert result.grounding_status == "regenerated"
+    assert [c["claim"] for c in result.rejected_drafts[0]["unsupported_claims"]] == ["segment C3"]
+
+
+def test_open_end_and_no_connection_look_different_to_the_model(tools):
+    """12. A pipe that leaves the drawing is not the same as nothing being connected."""
+    _, llm = run(
+        tools, "q",
+        [call("get_connections", entity_id="GlobeValve-3", direction="downstream", relationship="piping"), call("get_connections", entity_id="BlindFlange-2", direction="downstream", relationship="piping")],
+        "Done.",
+    )
+    leaves_drawing, nothing = llm.tool_messages()
+    assert leaves_drawing["status"] == "success" and leaves_drawing["connections"][0]["open_end"] == "target"
+    assert "not represented" in leaves_drawing["connections"][0]["note"]
+    assert nothing["status"] == "empty" and "connections" not in nothing

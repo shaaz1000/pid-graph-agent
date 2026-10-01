@@ -28,6 +28,7 @@ class AgentState(TypedDict, total=False):
     pending_calls: list[Any]
     trace: list[TraceStep]
     observations: list[dict[str, Any]]  # full tool results, used for grounding
+    resolved_entities: dict[str, dict[str, Any]]  # id -> name/type/first step, for reuse
     iterations: int
     tool_calls_made: int
     duplicate_calls: int
@@ -50,6 +51,7 @@ class AgentResult(BaseModel):
     answer: str
     trace: list[TraceStep]
     evidence: list[dict[str, Any]]
+    resolved_entities: dict[str, dict[str, Any]] = Field(default_factory=dict)
     grounding_status: GroundingStatus
     claims_checked: int = 0
     unsupported_claims: list[dict[str, Any]] = Field(default_factory=list)

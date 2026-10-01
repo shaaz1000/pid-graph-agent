@@ -367,3 +367,26 @@ def test_get_properties_multiple_ids(service):
     result = service.get_properties(["CentrifugalPump-1", "ReciprocatingPump-1"], ["designVolumeFlowRate"])
     values = {k: v["found"][0]["value"] for k, v in result.properties.items()}
     assert values == {"CentrifugalPump-1": "200.0 m3/h", "ReciprocatingPump-1": "420.0 m3/h"}
+
+
+# ------------------------------------- path facts added for multi-hop reasoning
+def test_traverse_rows_say_which_equipment_lies_on_the_way(service):
+    rows = {e["id"]: e for e in service.traverse("CentrifugalPump-1", "downstream", entity_types=["equipment"]).entities}
+    assert rows["PlateHeatExchanger-1"]["through_equipment"] == []
+    assert rows["Tank-1"]["through_equipment"] == ["PlateHeatExchanger-1"]
+    assert rows["ReciprocatingPump-1"]["through_equipment"] == ["PlateHeatExchanger-1", "Tank-1"]
+
+
+def test_traverse_endpoints_are_listed_regardless_of_filters(service):
+    result = service.traverse("Tank-1", "downstream", entity_types=["pump"])
+    assert [e["id"] for e in result.entities] == ["ReciprocatingPump-1"]
+    assert set(result.meta["endpoints"]) == {"FlowOutPipeOffPageConnector-1", "BlindFlange-1", "BlindFlange-2", "BallValve-2"}
+    upstream = service.traverse("Tank-1", "upstream")
+    assert upstream.meta["endpoints"] == ["FlowInPipeOffPageConnector-1"]
+    assert service.traverse("Tank-1", "both").meta["endpoints"] == []  # no travel direction, no endpoints
+
+
+def test_entity_results_report_link_counts(service):
+    assert service.find_entities("T4750").entities[0]["links"] == {"piping_upstream": 3, "piping_downstream": 1, "instrumentation": 1}
+    assert service.get_entity("PlateHeatExchanger-1").entities[0]["links"] == {"piping_upstream": 1, "piping_downstream": 1, "open_ended_pipes": 2}
+    assert service.get_entity("ProcessInstrumentationFunction-2").entities[0]["links"] == {"instrumentation": 2}

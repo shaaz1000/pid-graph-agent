@@ -56,7 +56,7 @@ class GraphService:
         result.warnings += resolution.warnings
         for match in resolution.matches:
             entity = self._index.entities[match.entity_id]
-            result.entities.append({**entity.summary(), **match.to_dict()})
+            result.entities.append({**entity.summary(), **match.to_dict(), "links": self._link_counts(entity.id)})
             result.evidence.append(self._entity_evidence(entity))
         result.resolution = {
             "status": resolution.status,
@@ -122,6 +122,7 @@ class GraphService:
             detail["children"] = [c.model_dump() for c in entity.children]
         else:
             detail["children_available"] = [{"id": c.id, "type": c.type} for c in entity.children]
+        detail["links"] = self._link_counts(entity.id)
         result.entities.append(detail)
         result.evidence.append(self._entity_evidence(entity, with_properties=True))
         if include_children:
@@ -195,11 +196,20 @@ class GraphService:
             start.id, direction, depth, stop_at=(lambda i: i in stops) if stops is not None else None  # type: ignore[arg-type]
         )
         used_connections: dict[str, Connection] = {}
+        endpoints: list[str] = []
         for reach in sorted(outcome.reached.values(), key=lambda r: (r.distance, r.entity_id)):
+            terminal = direction != "both" and not self._flow.has_moves(reach.entity_id, direction)  # type: ignore[arg-type]
+            if terminal:
+                endpoints.append(reach.entity_id)
             if wanted is not None and reach.entity_id not in wanted:
                 continue
             entity = self._index.entities[reach.entity_id]
-            result.entities.append({**entity.summary(), **self._reach_view(reach)})
+            row = {**entity.summary(), **self._reach_view(reach)}
+            # Path facts that separate "reached directly" from "reached through other equipment".
+            row["through_equipment"] = [i for i in reach.entity_path[1:-1] if self._index.entities[i].category == "equipment"]
+            if terminal:
+                row["terminal"] = True
+            result.entities.append(row)
             result.evidence.append(self._path_evidence(start.id, reach))
             for connection_id in reach.connection_path:
                 used_connections[connection_id] = self._index.connections[connection_id]
@@ -208,6 +218,9 @@ class GraphService:
             result.evidence.append(self._connection_evidence(connection))
         self._add_open_ends(outcome, direction, result)
         self._traversal_meta(outcome, depth, result)
+        # Entities where nothing further is drawn in the travel direction; listed even when
+        # entity_types filters them out of the main result.
+        result.meta["endpoints"] = endpoints
         if not result.entities:
             result.status = "empty"
             what = f" of type {entity_types}" if entity_types else ""
@@ -282,6 +295,22 @@ class GraphService:
         return result
 
     # ============================================================ helpers
+    def _link_counts(self, entity_id: str) -> dict[str, int]:
+        """How many connections of each kind an entity has, so callers know what to ask for."""
+        counts = {"piping_upstream": 0, "piping_downstream": 0, "open_ended_pipes": 0, "instrumentation": 0}
+        for connection in self._index.connections.values():
+            if entity_id not in (connection.source, connection.target):
+                continue
+            if connection.relationship == "instrumentation":
+                counts["instrumentation"] += 1
+            elif connection.open_end:
+                counts["open_ended_pipes"] += 1
+            elif connection.source == entity_id:
+                counts["piping_downstream"] += 1
+            else:
+                counts["piping_upstream"] += 1
+        return {k: v for k, v in counts.items() if v}
+
     def _category_counts(self) -> dict[str, int]:
         counts: dict[str, int] = {}
         for entity in self._index.entities.values():
@@ -305,6 +334,8 @@ class GraphService:
         if resolution.status == "unique":
             entity = self._index.entities[resolution.entity_ids[0]]
             result.warnings.append(f"'{entity_id}' is not an entity id; resolved it to {entity.id} ({resolution.matches[0].reason}).")
+            # The caller used a tag or other identifier: record which entity it denotes.
+            result.evidence.append(self._entity_evidence(entity))
             return entity
         if resolution.status == "multiple":
             result.status = "ambiguous"
@@ -444,6 +475,7 @@ class GraphService:
         probe = ToolResult(tool="get_properties", status="success")
         entity = self._require_entity(object_id, probe)
         result.warnings += probe.warnings
+        result.evidence += probe.evidence
         if entity is None:
             result.warnings.append(probe.message or f"Unknown id '{object_id}'.")
             return None

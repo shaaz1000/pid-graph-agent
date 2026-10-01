@@ -332,7 +332,7 @@ class EntityResolver:
         ids = self.entities_of_type(entity_type)
         by_identifier = bool(resolution.matches) and all(m.tier != "type" for m in resolution.matches)
         if ids is None:
-            message = f"Unknown entity_type '{entity_type}'. Known types: {', '.join(self.type_catalogue())}."
+            message = f"Unknown entity_type '{entity_type}' (call list_entities without arguments to see the types present)."
             if by_identifier:
                 # The identifier is the stronger signal; a wrong type word must not hide it.
                 resolution.warnings.append(message + " The type filter was ignored.")

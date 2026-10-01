@@ -91,6 +91,10 @@ class FlowGraph:
             moves += [(c, False) for c in self._in.get(entity_id, [])]
         return moves
 
+    def has_moves(self, entity_id: str, direction: Direction) -> bool:
+        """Whether any drawn connection continues from ``entity_id`` in the travel direction."""
+        return bool(self._moves(entity_id, direction))
+
     def bfs(
         self,
         start: str,
