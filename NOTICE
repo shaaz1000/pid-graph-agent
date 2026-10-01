@@ -1,0 +1,24 @@
+pid-graph-agent
+Copyright (C) 2026 Shaaz Khan
+
+This program is free software: you can redistribute it and/or modify it under the terms of
+the GNU Affero General Public License, version 3, as published by the Free Software
+Foundation. It is distributed without any warranty. See the LICENSE file for the full text.
+
+Why this licence: the program imports and builds on pyDEXPI, which is released under the
+GNU Affero General Public License v3 (AGPL-3.0). A work based on pyDEXPI has to be published
+under the same licence.
+
+Third-party material
+
+- pyDEXPI (https://github.com/process-intelligence-research/pyDEXPI)
+  Copyright (C) 2025 Artur Schweidtmann. AGPL-3.0. Used as a dependency; not copied here.
+
+- data/C01V04-VER.EX01.xml, the DEXPI reference P&ID "C01"
+  Copyright DEXPI e.V. Published in the DEXPI TrainingTestCases repository
+  (https://gitlab.com/dexpi/TrainingTestCases) and redistributed with pyDEXPI. It is included
+  here unmodified as the input the assignment specifies. It is not covered by this
+  repository's licence; its own terms apply.
+
+Other dependencies (NetworkX, LangGraph, pydantic, httpx, the Groq SDK, Streamlit and others)
+are installed from their own distributions under their own licences and are not copied here.
