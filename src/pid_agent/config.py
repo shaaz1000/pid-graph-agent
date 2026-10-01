@@ -16,7 +16,7 @@ DEFAULT_LLM_PROVIDER = "groq"
 DEFAULT_LLM_MODEL = "openai/gpt-oss-20b"
 # The environment variable holding the key for each supported provider. Only the key of the
 # selected provider is read; there is no fallback from one provider to another.
-API_KEY_VARIABLES = {"groq": "GROQ_API_KEY", "openrouter": "OPENROUTER_API_KEY", "deepseek": "DEEP_SEEK_API_KEY"}
+API_KEY_VARIABLES = {"groq": "GROQ_API_KEY", "nvidia": "NVIDIA_API_KEY", "openrouter": "OPENROUTER_API_KEY", "deepseek": "DEEP_SEEK_API_KEY"}
 
 
 @dataclass(frozen=True)
@@ -26,6 +26,8 @@ class Settings:
     llm_model: str = DEFAULT_LLM_MODEL
     # repr=False keeps the secret out of logs, tracebacks and debug prints.
     llm_api_key: str | None = field(default=None, repr=False)
+    # Optional endpoint override for OpenAI-compatible providers; None means the provider's own.
+    llm_base_url: str | None = None
     max_traversal_depth: int = 25
 
     def require_api_key(self) -> str:
@@ -50,4 +52,5 @@ def load_settings(env_file: Path | None = None) -> Settings:
         # Only the default provider has a default model; for others LLM_MODEL must be set.
         llm_model=os.environ.get("LLM_MODEL") or (DEFAULT_LLM_MODEL if provider.lower() == DEFAULT_LLM_PROVIDER else ""),
         llm_api_key=(os.environ.get(key_variable) or None) if key_variable else None,
+        llm_base_url=os.environ.get("LLM_BASE_URL") or None,
     )

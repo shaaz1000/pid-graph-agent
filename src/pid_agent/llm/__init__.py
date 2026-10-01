@@ -18,8 +18,9 @@ def create_llm(settings: Settings) -> LLMClient:
         from pid_agent.llm.groq_provider import GroqProvider
 
         return GroqProvider(api_key=settings.require_api_key(), model=settings.llm_model)
-    if provider in ("openrouter", "deepseek"):
+    if provider in ("nvidia", "openrouter", "deepseek"):
         from pid_agent.llm.deepseek_provider import DeepSeekProvider
+        from pid_agent.llm.nvidia_provider import NvidiaProvider
         from pid_agent.llm.openrouter_provider import OpenRouterProvider
 
         if not settings.llm_model:
@@ -27,6 +28,6 @@ def create_llm(settings: Settings) -> LLMClient:
                 f"LLM_PROVIDER={provider} needs LLM_MODEL set to the id of a tool-calling model "
                 "available from that provider. No default is assumed."
             )
-        adapter = OpenRouterProvider if provider == "openrouter" else DeepSeekProvider
-        return adapter(api_key=settings.require_api_key(), model=settings.llm_model)
-    raise ConfigError(f"Unsupported LLM_PROVIDER '{settings.llm_provider}'. Supported: groq, openrouter, deepseek.")
+        adapter = {"nvidia": NvidiaProvider, "openrouter": OpenRouterProvider, "deepseek": DeepSeekProvider}[provider]
+        return adapter(api_key=settings.require_api_key(), model=settings.llm_model, base_url=settings.llm_base_url)
+    raise ConfigError(f"Unsupported LLM_PROVIDER '{settings.llm_provider}'. Supported: groq, nvidia, openrouter, deepseek.")

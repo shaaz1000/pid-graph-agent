@@ -39,13 +39,14 @@ class OpenAICompatibleProvider:
         max_output_tokens: int = 4096,
         timeout_seconds: float = 60.0,
         http_client: httpx.Client | None = None,
+        base_url: str | None = None,
     ) -> None:
         self._api_key = api_key
         self._model = model
         self._temperature = temperature
         self._max_output_tokens = max_output_tokens
         # The client is injectable so tests can run against a mock transport, offline.
-        self._http = http_client or httpx.Client(base_url=self.base_url, timeout=timeout_seconds)
+        self._http = http_client or httpx.Client(base_url=base_url or self.base_url, timeout=timeout_seconds)
 
     def complete(
         self,
