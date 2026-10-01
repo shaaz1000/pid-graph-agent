@@ -1,7 +1,13 @@
 """Formal evaluation: run the questions once, then score the answers deterministically.
 
-    uv run python evals/evaluator.py            score the saved run (no API key needed)
-    uv run python evals/evaluator.py --run      ask every question once, save the run, then score
+    uv run python evals/evaluator.py            score every saved run (no API key needed)
+    uv run python evals/evaluator.py --run      ask the questions once with the configured
+                                                provider and model, save the run, then score
+
+Each provider/model has its own directory under evals/runs/, so runs never overwrite each
+other. ``--run`` never re-asks a question that already has an answer: it only asks questions
+that were not reached or that failed for infrastructure reasons, and it stops at the first
+provider rate-limit failure so that a spent quota is not hammered.
 
 Scoring (no LLM judge): every question lists required facts taken from the graph, and
 optionally forbidden ones (wrong or invented facts).
@@ -27,9 +33,7 @@ from typing import Any
 
 HERE = Path(__file__).parent
 QUESTIONS = HERE / "questions.json"
-RUN = HERE / "run.json"
-RESULTS = HERE / "results.json"
-TRANSCRIPTS = HERE / "transcripts"
+RUNS = HERE / "runs"
 TYPOGRAPHY = str.maketrans({"−": "-", "‑": "-", "‐": "-", "–": "-", "—": "-", " ": " ", " ": " ", " ": " "})
 
 
@@ -66,7 +70,11 @@ def judge(question: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
     return {**scored, "outcome": outcome}
 
 
-def run_questions(questions: list[dict[str, Any]], pause: float) -> dict[str, Any]:
+def run_directory(provider: str, model: str) -> Path:
+    return RUNS / re.sub(r"[^a-z0-9.]+", "-", f"{provider}-{model}".lower()).strip("-")
+
+
+def run_questions(questions: list[dict[str, Any]], pause: float) -> Path:
     from pid_agent.agent.tools import GraphTools
     from pid_agent.agent.workflow import PidAgent, format_transcript
     from pid_agent.config import load_settings
@@ -76,24 +84,39 @@ def run_questions(questions: list[dict[str, Any]], pause: float) -> dict[str, An
     settings = load_settings()
     agent = PidAgent(create_llm(settings), GraphTools(GraphService.from_file(settings.data_file)))
     commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=HERE).stdout.strip()
+    directory = run_directory(settings.llm_provider, settings.llm_model)
+    (directory / "transcripts").mkdir(parents=True, exist_ok=True)
+    run_file = directory / "run.json"
     run = {"provider": settings.llm_provider, "model": settings.llm_model, "commit": commit, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "results": []}
-    TRANSCRIPTS.mkdir(exist_ok=True)
+    if run_file.exists():  # resume: keep every answer already given
+        run = json.loads(run_file.read_text())
+        run["results"] = [r for r in run["results"] if not r.get("failure_category")]
+    answered = {r["question_id"] for r in run["results"]}
     for question in questions:
+        if question["id"] in answered:
+            continue
         result = agent.ask(question["question"], question_id=question["id"])
-        run["results"].append(result.to_dict())
+        run["results"].append({**result.to_dict(), "answered_at": time.strftime("%Y-%m-%d %H:%M:%S")})
         header = f"Provider: {settings.llm_provider}   Model: {settings.llm_model}   Commit: {commit[:7]}\n\n"
-        (TRANSCRIPTS / f"{question['id']}.txt").write_text(header + format_transcript(result) + "\n")
-        RUN.write_text(json.dumps(run, indent=2, ensure_ascii=False) + "\n")
-        print(f"ran {question['id']}: {result.grounding_status}, {result.usage['llm_calls']} model calls")
+        (directory / "transcripts" / f"{question['id']}.txt").write_text(header + format_transcript(result) + "\n")
+        run_file.write_text(json.dumps(run, indent=2, ensure_ascii=False) + "\n")
+        print(f"ran {question['id']}: {result.grounding_status}, {result.usage['llm_calls']} model calls, failure={result.failure_category}")
+        if result.failure_category == "rate_limit":
+            print("provider rate limit reached: stopping; the remaining questions were not asked")
+            break
         time.sleep(pause)
-    return run
+    return directory
+
+
+# A question the run never reached (the provider's quota ran out first).
+NOT_ASKED = {"failure_category": "not_asked", "answer": "", "grounding_status": "not_validated", "usage": {"llm_calls": 0, "total_tokens": 0}, "trace": [], "duration_ms": 0.0}
 
 
 def score_run(questions: list[dict[str, Any]], run: dict[str, Any]) -> dict[str, Any]:
     by_id = {r["question_id"]: r for r in run["results"]}
     rows = []
     for question in questions:
-        result = by_id[question["id"]]
+        result = by_id.get(question["id"]) or NOT_ASKED
         verdict = judge(question, result)
         rows.append({
             "id": question["id"],
@@ -151,10 +174,11 @@ def main() -> None:
     parser.add_argument("--pause", type=float, default=1.0, help="seconds between questions when running")
     args = parser.parse_args()
     questions = json.loads(QUESTIONS.read_text())["questions"]
-    run = run_questions(questions, args.pause) if args.run else json.loads(RUN.read_text())
-    report = score_run(questions, run)
-    RESULTS.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
-    print_report(report)
+    directories = [run_questions(questions, args.pause)] if args.run else sorted(p.parent for p in RUNS.glob("*/run.json"))
+    for directory in directories:
+        report = score_run(questions, json.loads((directory / "run.json").read_text()))
+        (directory / "results.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
+        print_report(report)
 
 
 if __name__ == "__main__":

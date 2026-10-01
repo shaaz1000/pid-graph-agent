@@ -126,7 +126,7 @@ All from real runs. Each block shows the actual tool calls; full transcripts wit
 result are in the linked files. The first six are from the evaluation run
 (DeepSeek `deepseek-chat`, commit `407d6ba`).
 
-**1. Route with pipe properties** ([full](evals/transcripts/eval-07.txt))
+**1. Route with pipe properties** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-07.txt))
 
 ```
 Q: Trace the route from heat exchanger H1007 to tank T4750 and give the line number and pipe size along it.
@@ -138,7 +138,7 @@ A: H1007 nozzle N2 (Chamber-1) -> GlobeValve 47123/C1 (GlobeValve-2) -> T4750 no
 GROUNDING: grounded
 ```
 
-**2. Reachability with several end points** ([full](evals/transcripts/eval-05.txt))
+**2. Reachability with several end points** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-05.txt))
 
 ```
 Q: If I follow the piping downstream from the swing check valve, where does the drawing end?
@@ -151,7 +151,7 @@ A: Four terminal points: BallValve 47126/C2, BlindFlange 47126/C6, BlindFlange 4
 GROUNDING: grounded
 ```
 
-**3. Ambiguity is surfaced, not guessed** ([full](evals/transcripts/eval-02.txt))
+**3. Ambiguity is surfaced, not guessed** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-02.txt))
 
 ```
 Q: What is the nominal diameter at component C1?
@@ -163,7 +163,7 @@ A: "C1" is not unique in this P&ID - five components carry the piping component 
 GROUNDING: grounded
 ```
 
-**4. Missing data** ([full](evals/transcripts/eval-11.txt))
+**4. Missing data** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-11.txt))
 
 ```
 Q: How much does heat exchanger H1007 weigh?
@@ -174,7 +174,7 @@ A: The supplied P&ID does not contain a weight for H1007 (PlateHeatExchanger-1).
 GROUNDING: grounded
 ```
 
-**5. Struggle: correct, but ten tool calls** ([full](evals/transcripts/eval-13.txt))
+**5. Struggle: correct, but ten tool calls** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-13.txt))
 
 ```
 Q: For control loop 4712.02: where is the pressure sensed, and which valve does the loop end up acting on?
@@ -189,7 +189,7 @@ GROUNDING: grounded     6 model calls, 23,870 tokens
 Four of the ten calls were not needed. Following an instrumentation chain takes one call per
 hop, and nothing stops the model from exploring further once it has the answer.
 
-**6. Struggle: first draft rejected by the grounding check** ([full](evals/transcripts/eval-10.txt))
+**6. Struggle: first draft rejected by the grounding check** ([full](evals/runs/deepseek-deepseek-chat/transcripts/eval-10.txt))
 
 ```
 Q: What design pressure limits apply to each chamber of tank T4750?
@@ -264,8 +264,8 @@ boundaries are now structured evidence (`db563eb`).
 | Drafts rejected by grounding, then regenerated | 3 (questions 1, 10, 15) |
 | Fallback answers, turn-limit hits | 0, 0 |
 
-Raw run: [evals/run.json](evals/run.json). Scores: [evals/results.json](evals/results.json).
-All 15 transcripts: [evals/transcripts/](evals/transcripts/).
+Raw run: [evals/run.json](evals/runs/deepseek-deepseek-chat/run.json). Scores: [evals/results.json](evals/runs/deepseek-deepseek-chat/results.json).
+All 15 transcripts: [evals/runs/deepseek-deepseek-chat/transcripts/](evals/runs/deepseek-deepseek-chat/transcripts/).
 
 **How much to read into this.** I read all 15 answers against the gold facts by hand and
 agree with the scores, but a perfect score on 15 questions mostly shows the set is not hard
