@@ -192,7 +192,7 @@ def test_no_secret_leaks_into_errors_or_repr():
 def test_agent_runs_unchanged_on_the_openrouter_adapter(tools):
     turns = iter([
         completion({"content": None, "tool_calls": [{"id": "c1", "type": "function", "function": {"name": "find_entities", "arguments": '{"query": "T4750"}'}}]}, {"prompt_tokens": 900, "completion_tokens": 20, "total_tokens": 920}),
-        completion({"content": "T4750 is Tank-1."}, {"prompt_tokens": 1000, "completion_tokens": 10, "total_tokens": 1010}),
+        completion({"content": 'T4750 is Tank-1.\n\n```claims\n[{"predicate": "identified_as", "subject": "Tank-1", "value": "T4750"}]\n```'}, {"prompt_tokens": 1000, "completion_tokens": 10, "total_tokens": 1010}),
     ])
     provider, seen = provider_with(lambda request: next(turns))
     result = PidAgent(provider, tools).ask("Which entity is T4750?")

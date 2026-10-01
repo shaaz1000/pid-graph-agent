@@ -107,7 +107,7 @@ def _render(view: AnswerView) -> None:
 
     g = view.grounding
     if g is not None:
-        css, mark = ("pid-ok", "✓") if g.ok else ("pid-warn", "!")
+        css, mark = ("pid-ok", "✓") if g.ok and g.level != "limited" else ("pid-warn", "!")
         st.markdown(f'<span class="{css}">{mark} {g.label}</span> <span class="pid-meta">· {view.usage}</span>', unsafe_allow_html=True)
 
     if view.summary:
@@ -136,13 +136,31 @@ def _render(view: AnswerView) -> None:
                 if e.fact:
                     st.caption(e.fact)
     if g is not None:
-        with st.expander("Grounding"):
+        with st.expander(f"Grounding · {g.level.replace('_', ' ')}" + (f" · {len(g.claims)} validated claims" if g.claims else "")):
             st.markdown(f"**{g.label}.** {g.detail}")
+            if g.claims:
+                st.markdown('<div class="pid-label">Validated claims and their evidence</div>', unsafe_allow_html=True)
+            for claim in g.claims:
+                with st.container(border=True):
+                    st.markdown(f"**Claim** `{claim.text}`")
+                    for fact in claim.facts:
+                        st.markdown(
+                            f"Evidence `{fact.id}`: {fact.statement}  \n"
+                            f"<span class='pid-meta'>evidence id {fact.evidence_id} · {fact.source_graph} · {', '.join(fact.source_object_ids) or 'no DEXPI object id'}</span>",
+                            unsafe_allow_html=True,
+                        )
+            if g.gaps:
+                st.markdown('<div class="pid-label">Found in tool results but not matched to a claim</div>', unsafe_allow_html=True)
+                for gap in g.gaps:
+                    st.markdown(f"- {gap}")
             for claims in g.rejected:
-                st.markdown(f"- A draft was rejected for unsupported claims: `{claims}`")
+                st.markdown(f"- A draft was rejected: `{claims}`")
             for claim in g.unsupported:
                 st.markdown(f"- Unsupported: {claim}")
-            st.caption("A deterministic check compares identifiers, numbers, units and DN values in the answer with the tool results. It is not a confidence score.")
+            st.caption(
+                "Code compares each structured claim with typed facts from the tool results: subject, relation or property, value and unit. "
+                "No model judges the answer, and this status is not a confidence score."
+            )
     if view.notices or view.warnings:
         with st.expander(f"Warnings and graph notes ({len(view.notices) + len(view.warnings)})"):
             for notice in view.notices:

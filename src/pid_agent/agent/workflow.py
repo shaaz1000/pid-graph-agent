@@ -22,7 +22,7 @@ from typing import Any
 from langgraph.graph import END, START, StateGraph
 
 from pid_agent.agent.compact import compact_result, render_evidence
-from pid_agent.agent.grounding import check_grounding
+from pid_agent.agent.claims import check_answer
 from pid_agent.agent.prompts import (
     FORCED_ANSWER_NOTE,
     MALFORMED_OUTPUT_NOTE,
@@ -37,6 +37,10 @@ from pid_agent.llm.base import LLMClient, LLMError, LLMResponse, ToolCall, assis
 logger = logging.getLogger(__name__)
 
 NO_ANSWER = "I could not determine that from the supplied P&ID graph."
+OUT_OF_SCOPE = (
+    "I can only answer from the loaded P&ID graph, and no graph-supported statement could be made for this "
+    "question. Ask about the equipment, piping, instrumentation or properties in the drawing."
+)
 
 
 @dataclass(frozen=True)
@@ -45,6 +49,8 @@ class AgentLimits:
     max_tool_calls: int = 16      # executed tool calls per question
     max_duplicate_calls: int = 2  # identical repeated calls tolerated before forcing an answer
     max_malformed_outputs: int = 2
+    # Ask once for a corrected answer when the claims block is missing or incomplete.
+    claims_retry: bool = True
 
 
 class PidAgent:
@@ -82,6 +88,13 @@ class PidAgent:
             "rejected_drafts": [],
             "grounding_attempts": 0,
             "grounding_status": "not_validated",
+            "grounding_level": "not_validated",
+            "answer_text": None,
+            "claims": [],
+            "rejected_claims": [],
+            "grounding_gaps": [],
+            "retry_reasons": [],
+            "anchored": False,
             "failure_reason": None,
             "failure_category": None,
             "usage": {"llm_calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
@@ -97,6 +110,10 @@ class PidAgent:
             evidence=self._collect_evidence(final["observations"]),
             resolved_entities=final["resolved_entities"],
             grounding_status=final["grounding_status"],
+            grounding_level=final["grounding_level"],
+            claims=final["claims"],
+            rejected_claims=final["rejected_claims"],
+            grounding_gaps=final["grounding_gaps"],
             claims_checked=final["claims_checked"],
             unsupported_claims=final["unsupported_claims"],
             rejected_drafts=final["rejected_drafts"],
@@ -222,12 +239,21 @@ class PidAgent:
         return update
 
     def _validate(self, state: AgentState) -> dict[str, Any]:
-        report = check_grounding(state["draft"] or "", state["question"], state["observations"])
-        if not report.grounded:
-            logger.warning("grounding_failed id=%s attempt=%d unsupported=%s", state["question_id"], state["grounding_attempts"], [c["claim"] for c in report.unsupported])
-        update: dict[str, Any] = {"unsupported_claims": report.unsupported, "claims_checked": report.claims_checked}
-        if not report.grounded:
-            update["rejected_drafts"] = [*state["rejected_drafts"], {"draft": state["draft"], "unsupported_claims": report.unsupported}]
+        """Deterministic claim-to-evidence validation of the draft. No model is involved."""
+        report = check_answer(state["draft"] or "", state["question"], state["observations"], SYSTEM_PROMPT)
+        # Unsupported content always triggers the one rewrite; missing or incomplete claims do
+        # so only on the first attempt, after which the answer is at most "limited".
+        soft = report.gaps if self._limits.claims_retry and state["grounding_attempts"] == 0 else []
+        reasons = [*report.problems, *soft]
+        if reasons:
+            logger.warning("grounding_failed id=%s attempt=%d unsupported=%s", state["question_id"], state["grounding_attempts"], [c["claim"] for c in reasons])
+        update: dict[str, Any] = {
+            "unsupported_claims": report.problems, "claims_checked": report.checked, "claims": report.supported,
+            "rejected_claims": report.rejected, "grounding_gaps": report.gaps, "grounding_level": report.level,
+            "answer_text": report.answer, "anchored": report.anchored, "retry_reasons": reasons,
+        }  # fmt: skip
+        if reasons:
+            update["rejected_drafts"] = [*state["rejected_drafts"], {"draft": state["draft"], "unsupported_claims": reasons}]
         return update
 
     def _regenerate(self, state: AgentState) -> dict[str, Any]:
@@ -236,7 +262,7 @@ class PidAgent:
             f"[{step.step}] {step.tool}({json.dumps(step.input, ensure_ascii=False)}) -> {json.dumps(step.result, ensure_ascii=False)}"
             for step in state["trace"] if step.executed
         ) or "(no tool results were collected)"
-        claims = "\n".join(f"- {c['claim']}: {c['reason']}" for c in state["unsupported_claims"])
+        claims = "\n".join(f"- {c['claim']}: {c['reason']}" for c in state["retry_reasons"])
         messages = [
             {"role": "system", "content": REGENERATION_SYSTEM_PROMPT},
             {"role": "user", "content": REGENERATION_USER_TEMPLATE.format(question=state["question"], evidence=evidence, draft=state["draft"], claims=claims)},
@@ -254,10 +280,12 @@ class PidAgent:
 
     def _finalize(self, state: AgentState) -> dict[str, Any]:
         draft, unsupported = state["draft"], state["unsupported_claims"]
-        if draft and not unsupported:
+        if draft and not unsupported and state["anchored"]:
             status = "regenerated" if state["grounding_attempts"] else "grounded"
-            return {"answer": draft, "grounding_status": status}
-        return {"answer": self._fallback_answer(state), "grounding_status": "fallback"}
+            return {"answer": state["answer_text"] or draft, "grounding_status": status}
+        # Fail closed: nothing the model wrote is shown, and no claim is reported as supported.
+        level = "insufficient_evidence" if draft else "not_validated"
+        return {"answer": self._fallback_answer(state), "grounding_status": "fallback", "grounding_level": level, "claims": []}
 
     # ----------------------------------------------------------- routing
     def _limit_reason(self, state: AgentState) -> str | None:
@@ -290,7 +318,7 @@ class PidAgent:
 
     @staticmethod
     def _after_validate(state: AgentState) -> str:
-        if state["unsupported_claims"] and state["grounding_attempts"] == 0:
+        if state["retry_reasons"] and state["grounding_attempts"] == 0:
             return "regenerate"
         return "finalize"
 
@@ -351,6 +379,8 @@ class PidAgent:
             )
         elif unsupported:
             head = f"{NO_ANSWER} A drafted answer was withheld because {len(unsupported)} of its claims were not supported by the graph evidence."
+        elif state["draft"]:
+            head = OUT_OF_SCOPE
         else:
             head = f"{NO_ANSWER} The model did not produce a usable answer."
         lines = render_evidence(state["observations"])
@@ -373,6 +403,13 @@ def format_transcript(result: AgentResult, show_results: bool = True) -> str:
         out.append("")
     out += ["FINAL ANSWER", result.answer, ""]
     out.append(f"GROUNDING: {result.grounding_status} ({result.claims_checked} plant-specific claims checked, {len(result.unsupported_claims)} unsupported)")
+    out.append(f"GROUNDING LEVEL: {result.grounding_level}")
+    for item in result.claims:
+        out.append(f"  supported claim: {item['text']}")
+        for fact in item["facts"]:
+            out.append(f"      <- {fact['id']} {fact['predicate']} [{fact.get('evidence_id', '')}] {fact.get('source_graph', '')}: {', '.join(fact.get('source_object_ids', []))}")
+    for gap in result.grounding_gaps:
+        out.append(f"  token-level only: {gap['claim']} ({gap['reason']})")
     for claim in result.unsupported_claims:
         out.append(f"  unsupported: {claim['claim']} ({claim['reason']})")
     for rejected in result.rejected_drafts:

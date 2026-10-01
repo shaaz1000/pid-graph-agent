@@ -17,9 +17,14 @@ from pid_agent.agent.workflow import AgentLimits, PidAgent, format_transcript
 from pid_agent.llm.base import LLMError, LLMResponse
 
 
+# These tests script a model that answers in prose without a claims block, so they exercise the
+# token-level layer on its own. Claim-level grounding is tested in test_claims.py.
+PROSE_ONLY = AgentLimits(claims_retry=False)
+
+
 def run(tools, question, *turns, limits=None):
     llm = ScriptedLLM(*turns)
-    result = PidAgent(llm, tools, limits).ask(question, question_id="t1")
+    result = PidAgent(llm, tools, limits or PROSE_ONLY).ask(question, question_id="t1")
     return result, llm
 
 
@@ -392,7 +397,7 @@ def test_maximum_iterations_forces_an_answer(tools):
     valves = iter(f"BallValve-{i}" for i in range(1, 6))
     endless = lambda messages: [call("get_entity", entity_id=next(valves))]  # noqa: E731
     llm = ScriptedLLM(endless, endless, endless, "BallValve-1, BallValve-2 and BallValve-3 are ball valves.")
-    result = PidAgent(llm, tools, AgentLimits(max_iterations=3)).ask("Tell me everything.")
+    result = PidAgent(llm, tools, AgentLimits(max_iterations=3, claims_retry=False)).ask("Tell me everything.")
     assert result.iterations == 3 and len(llm.calls) == 4
     assert len(executed(result)) == 3
     assert result.limit_reached == "the limit of 3 planning steps was reached"
@@ -403,7 +408,7 @@ def test_maximum_iterations_forces_an_answer(tools):
 def test_tool_call_budget_is_enforced_within_a_turn(tools):
     many = [call("get_entity", entity_id=f"BallValve-{i}") for i in range(1, 6)]
     llm = ScriptedLLM(many, "BallValve-1 and BallValve-2 are ball valves.")
-    result = PidAgent(llm, tools, AgentLimits(max_tool_calls=2)).ask("q")
+    result = PidAgent(llm, tools, AgentLimits(max_tool_calls=2, claims_retry=False)).ask("q")
     assert len(executed(result)) == 2
     assert [s.status for s in result.trace] == ["success", "success", "skipped", "skipped", "skipped"]
     assert result.limit_reached == "the limit of 2 tool calls was reached"
@@ -412,7 +417,7 @@ def test_tool_call_budget_is_enforced_within_a_turn(tools):
 def test_model_that_never_stops_calling_tools_still_terminates(tools):
     counter = iter(range(1000))
     endless = lambda messages: [call("find_entities", query=f"thing {next(counter)}")]  # noqa: E731
-    result = PidAgent(ScriptedLLM(endless), tools).ask("q")
+    result = PidAgent(ScriptedLLM(endless), tools, PROSE_ONLY).ask("q")
     assert result.iterations == 8 and result.grounding_status == "fallback"
     assert result.failure_reason.startswith("no_answer_generated")
 

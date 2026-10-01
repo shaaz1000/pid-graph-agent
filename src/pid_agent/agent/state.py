@@ -7,6 +7,8 @@ from typing import Any, Literal, TypedDict
 from pydantic import BaseModel, Field
 
 GroundingStatus = Literal["grounded", "regenerated", "fallback", "not_validated"]
+# What the deterministic validation established about the final answer. Not a model confidence.
+GroundingLevel = Literal["grounded", "limited", "ambiguous", "insufficient_evidence", "not_validated"]
 
 
 class TraceStep(BaseModel):
@@ -41,6 +43,13 @@ class AgentState(TypedDict, total=False):
     rejected_drafts: list[dict[str, Any]]
     grounding_attempts: int
     grounding_status: GroundingStatus
+    grounding_level: GroundingLevel
+    answer_text: str | None  # the draft without its claims block
+    claims: list[dict[str, Any]]  # structured claims that typed facts support, with those facts
+    rejected_claims: list[dict[str, Any]]
+    grounding_gaps: list[dict[str, Any]]  # text that passed only the token-level check
+    retry_reasons: list[dict[str, Any]]
+    anchored: bool
     failure_reason: str | None
     failure_category: str | None
     usage: dict[str, int]
@@ -54,6 +63,11 @@ class AgentResult(BaseModel):
     evidence: list[dict[str, Any]]
     resolved_entities: dict[str, dict[str, Any]] = Field(default_factory=dict)
     grounding_status: GroundingStatus
+    grounding_level: GroundingLevel = "not_validated"
+    # Each supported claim with the typed facts (and their graph provenance) that entail it.
+    claims: list[dict[str, Any]] = Field(default_factory=list)
+    rejected_claims: list[dict[str, Any]] = Field(default_factory=list)
+    grounding_gaps: list[dict[str, Any]] = Field(default_factory=list)
     claims_checked: int = 0
     unsupported_claims: list[dict[str, Any]] = Field(default_factory=list)
     # Drafts that failed validation and were replaced, with the claims that failed.

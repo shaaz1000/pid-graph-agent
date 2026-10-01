@@ -81,6 +81,21 @@ class EvidenceView:
 
 
 @dataclass
+class FactView:
+    id: str
+    statement: str
+    evidence_id: str
+    source_graph: str
+    source_object_ids: list[str]
+
+
+@dataclass
+class ClaimView:
+    text: str
+    facts: list[FactView]
+
+
+@dataclass
 class GroundingView:
     status: str
     ok: bool
@@ -88,6 +103,10 @@ class GroundingView:
     detail: str
     rejected: list[str] = field(default_factory=list)
     unsupported: list[str] = field(default_factory=list)
+    # Deterministic validation state (grounded / limited / ambiguous / insufficient_evidence).
+    level: str = "not_validated"
+    claims: list[ClaimView] = field(default_factory=list)
+    gaps: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -247,19 +266,41 @@ def _fact(fact: Any) -> str:
     return " · ".join(parts)
 
 
+def _fact_view(fact: dict[str, Any]) -> FactView:
+    qualifiers = fact.get("qualifiers") or {}
+    parts = [str(fact.get("subject", "?")), str(fact.get("predicate", "?"))]
+    if qualifiers.get("property"):
+        parts.append(str(qualifiers["property"]))
+    for name in ("object", "value"):
+        if fact.get(name) not in (None, ""):
+            parts.append(_text(fact[name]))
+    shown = {k: v for k, v in qualifiers.items() if k in (*FACT_KEYS, "direction", "distance", "connection", "missing_end", "entered_chamber", "blocked_chamber", "candidates")}
+    statement = " ".join(parts) + (" (" + ", ".join(f"{k}: {_text(v)}" for k, v in shown.items()) + ")" if shown else "")
+    return FactView(fact.get("id", "?"), statement, fact.get("evidence_id", ""), fact.get("source_graph", ""), list(fact.get("source_object_ids") or []))
+
+
 def _grounding(data: dict[str, Any]) -> GroundingView:
     status = data.get("grounding_status", "not_validated")
+    level = data.get("grounding_level") or "not_validated"
     checked = data.get("claims_checked", 0)
     unsupported = [f"{c.get('claim', '?')} ({c.get('reason', 'not in the tool results')})" for c in data.get("unsupported_claims") or []]
     rejected = [", ".join(str(c.get("claim", "?")) for c in d.get("unsupported_claims", [])) for d in data.get("rejected_drafts") or []]
-    counted = f"{checked} plant-specific claims checked, {len(unsupported)} unsupported."
-    if status == "grounded":
-        return GroundingView(status, True, "Grounded against graph evidence", counted)
-    if status == "regenerated":
-        return GroundingView(status, True, "Grounded after one rewrite", f"The first draft contained unsupported claims and was rewritten from the evidence. {counted}", rejected, unsupported)
+    claims = [ClaimView(c.get("text", ""), [_fact_view(f) for f in c.get("facts") or []]) for c in data.get("claims") or []]
+    gaps = [f"{g.get('claim', '?')}: {g.get('reason', '')}" for g in data.get("grounding_gaps") or []]
+    rewrite = " A first draft was rejected and rewritten once." if status == "regenerated" else ""
+    extra = {"rejected": rejected, "unsupported": unsupported, "claims": claims, "gaps": gaps}
     if status == "fallback" and not data.get("failure_category"):
-        return GroundingView(status, False, "Draft withheld", f"The answer above is assembled from tool results, not model text. {counted}", rejected, unsupported)
-    return GroundingView(status, False, "Not validated", "No model answer was produced, so there was nothing to check.", rejected, unsupported)
+        return GroundingView(status, False, "Insufficient evidence: draft withheld", "The answer above is assembled from tool results, not model text.", level="insufficient_evidence", **extra)
+    if status not in ("grounded", "regenerated"):
+        return GroundingView(status, False, "Not validated", "No model answer was produced, so there was nothing to check.", level="not_validated", **extra)
+    if level == "not_validated":
+        # A result saved before claim-level grounding existed: only the token-level check ran.
+        return GroundingView(status, True, "Token-level check passed", f"This run predates structured claims. {checked} identifiers and values were found in the tool results.{rewrite}", level="limited", **extra)
+    if level == "grounded":
+        return GroundingView(status, True, "Grounded: every claim matched graph evidence", f"{len(claims)} structured claims, each entailed by a typed graph fact.{rewrite}", level=level, **extra)
+    if level == "ambiguous":
+        return GroundingView(status, True, "Ambiguous: the graph returned several matches", f"{len(claims)} structured claims validated; no single entity was selected.{rewrite}", level=level, **extra)
+    return GroundingView(status, False, "Partially grounded (limited)", f"{len(claims)} structured claims validated; {len(gaps)} item(s) in the text were only found in the tool results, not matched to a claim.{rewrite}", level="limited", **extra)
 
 
 def build_view(result: AgentResult | dict[str, Any]) -> AnswerView:

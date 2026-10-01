@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from pid_agent.agent.state import AgentResult
-from pid_agent.agent.workflow import PidAgent
+from pid_agent.agent.workflow import AgentLimits, PidAgent
 from pid_agent.config import PROJECT_ROOT
 from pid_agent.llm.base import LLMError
 from pid_agent.ui.view_model import EXAMPLE_QUESTIONS, build_view, error_view, graph_facts, summarize_result
@@ -13,7 +13,7 @@ from fakes import ScriptedLLM, call
 
 
 def view_for(tools, question, *turns):
-    return build_view(PidAgent(ScriptedLLM(*turns), tools).ask(question))
+    return build_view(PidAgent(ScriptedLLM(*turns), tools, AgentLimits(claims_retry=False)).ask(question))
 
 
 def kinds(view):
@@ -61,11 +61,31 @@ def test_evidence_points_back_to_graph_objects(tools):
 
 
 def test_grounded_answer_is_reported_without_a_confidence_score(tools):
+    final = 'P4711 is CentrifugalPump-1.\n\n```claims\n[{"predicate": "identified_as", "subject": "CentrifugalPump-1", "value": "P4711"}]\n```'
+    view = view_for(tools, "q", [call("find_entities", query="P4711")], final)
+    g = view.grounding
+    assert (g.status, g.level, g.ok, g.label) == ("grounded", "grounded", True, "Grounded: every claim matched graph evidence")
+    assert view.answer == "P4711 is CentrifugalPump-1."
+    assert not hasattr(view, "confidence") and "confidence" not in g.detail.lower()
+    # answer claim -> structured claim -> evidence id -> graph source
+    claim = g.claims[0]
+    assert claim.text == "identified_as(CentrifugalPump-1, = P4711)"
+    fact = claim.facts[0]
+    assert fact.evidence_id == "CentrifugalPump-1" and fact.source_graph == "plant_graph" and fact.source_object_ids == ["CentrifugalPump-1"]
+    assert "identified_as" in fact.statement and "P4711" in fact.statement
+
+
+def test_prose_without_claims_is_shown_as_limited_not_grounded(tools):
     view = view_for(tools, "q", [call("find_entities", query="P4711")], "P4711 is CentrifugalPump-1.")
     g = view.grounding
-    assert (g.status, g.ok, g.label) == ("grounded", True, "Grounded against graph evidence")
-    assert "0 unsupported" in g.detail
-    assert not hasattr(view, "confidence") and "confidence" not in g.detail.lower()
+    assert (g.status, g.level, g.ok, g.label) == ("grounded", "limited", False, "Partially grounded (limited)")
+    assert g.claims == [] and any("no claims block" in gap for gap in g.gaps)
+
+
+def test_result_saved_before_claim_grounding_is_labelled_as_token_level_only():
+    old = {"question": "q", "answer": "a", "grounding_status": "grounded", "claims_checked": 14, "trace": [], "evidence": []}
+    g = build_view(old).grounding
+    assert (g.level, g.label) == ("limited", "Token-level check passed") and "predates structured claims" in g.detail
 
 
 def test_rejected_draft_then_rewrite_is_visible(tools):
@@ -76,15 +96,16 @@ def test_rejected_draft_then_rewrite_is_visible(tools):
         "P4711 needs 75.0 kW.",
         "P4711 has a designShaftPower of 60.0 kW.",
     )
-    assert view.grounding.status == "regenerated" and view.grounding.ok
-    assert view.grounding.rejected == ["75.0 kW"]
+    assert view.grounding.status == "regenerated" and view.grounding.level == "limited"
+    assert view.grounding.rejected == ["75.0 kW"] and "rewritten once" in view.grounding.detail
     assert view.state == "answered"
 
 
 def test_withheld_draft_is_not_presented_as_a_model_answer(tools):
     view = view_for(tools, "What power does P4711 need?", [call("find_entities", query="P4711")], "P4711 needs 75.0 kW.", "P4711 needs 75.0 kW.")
     assert view.state == "withheld"
-    assert (view.grounding.ok, view.grounding.label) == (False, "Draft withheld")
+    assert (view.grounding.ok, view.grounding.level, view.grounding.label) == (False, "insufficient_evidence", "Insufficient evidence: draft withheld")
+    assert view.grounding.claims == []
     assert kinds(view)[0] == "withheld"
     assert any("75.0 kW" in claim for claim in view.grounding.unsupported)
 
@@ -173,7 +194,8 @@ def test_app_renders_and_answers_through_the_existing_agent(tools, monkeypatch):
     import streamlit as st
     from pid_agent.ui import session
 
-    llm = ScriptedLLM([call("find_entities", query="P4711")], "P4711 is CentrifugalPump-1.")
+    final = 'P4711 is CentrifugalPump-1.\n\n```claims\n[{"predicate": "identified_as", "subject": "CentrifugalPump-1", "value": "P4711"}]\n```'
+    llm = ScriptedLLM([call("find_entities", query="P4711")], final)
     monkeypatch.setattr(session, "build_agent", lambda settings, graph_tools: PidAgent(llm, graph_tools))
     st.cache_resource.clear()
     app = AppTest.from_file(str(PROJECT_ROOT / "src/pid_agent/ui/app.py"), default_timeout=60).run()
@@ -182,6 +204,8 @@ def test_app_renders_and_answers_through_the_existing_agent(tools, monkeypatch):
     app.chat_input[0].set_value("What is P4711?").run()
     assert not app.exception
     rendered = " ".join(m.value for m in app.markdown)
-    assert "P4711 is CentrifugalPump-1." in rendered and "Grounded against graph evidence" in rendered
+    assert "P4711 is CentrifugalPump-1." in rendered and "```" not in rendered
+    assert "Grounded: every claim matched graph evidence" in rendered
+    assert "identified_as(CentrifugalPump-1, = P4711)" in rendered and "plant_graph" in rendered  # claim -> evidence -> graph source
     assert len(llm.calls) == 2  # exactly one agent run; nothing else called the model
     st.cache_resource.clear()

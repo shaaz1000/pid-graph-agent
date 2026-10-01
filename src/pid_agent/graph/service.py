@@ -254,6 +254,7 @@ class GraphService:
         if reach is None:
             result.status = "empty"
             result.message = f"No {direction} piping path from {source.id} to {target.id} exists in the P&ID graph."
+            result.meta["no_path"] = {"source": source.id, "target": target.id, "direction": direction}
             if direction != "any":
                 opposite = "upstream" if direction == "downstream" else "downstream"
                 if target.id in self._flow.bfs(source.id, opposite, self._max_depth_limit).reached:  # type: ignore[arg-type]
