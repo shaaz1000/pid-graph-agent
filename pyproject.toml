@@ -20,11 +20,19 @@ dependencies = [
 
 [project.scripts]
 pid-agent = "pid_agent.main:main"
+pid-agent-ui = "pid_agent.ui.launch:main"
 
 [dependency-groups]
 dev = [
     "pytest>=8.2.0",
 ]
+ui = [
+    "streamlit>=1.40",
+]
+
+# The local chat UI is optional presentation; `uv sync` installs it together with dev tools.
+[tool.uv]
+default-groups = ["dev", "ui"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pid_agent"]

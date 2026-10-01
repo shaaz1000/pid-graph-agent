@@ -230,7 +230,7 @@ Totals: 3 model calls, 3 tool calls, 8,411 tokens, 2.4 s.
 | Grounding check, one regeneration, evidence-only fallback | A grounding check that understands sentence meaning |
 | Three provider adapters behind one interface | Automatic provider failover |
 | 15-question evaluation with a deterministic scorer | A complete evaluation run on `openai/gpt-oss-20b` |
-| CLI | OCR, image input, web UI, visual highlighting, hosting |
+| CLI and a local chat UI (added after the evaluation; presentation only, [`ui/`](../src/pid_agent/ui/)) | OCR, image input, visual highlighting, hosting |
 | | Live process state, access control, monitoring |
 
 ---
@@ -1521,7 +1521,7 @@ All from the DeepSeek run.
 
 ## Testing strategy
 
-424 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
+440 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
 
 | Layer | File | Tests | What it pins down |
 |---|---|---|---|
@@ -1538,6 +1538,7 @@ All from the DeepSeek run.
 | Agent | `test_agent.py` | 59 | The workflow with a scripted model: tools, ambiguity, not found, missing data, loops, limits, malformed output, provider failure, grounding failure |
 | Providers | `test_llm.py`, `test_openrouter.py`, `test_deepseek.py` | 51 | Adapters against mocks: requests, parsing, usage, error categories, no key leakage, no failover |
 | Evaluation | `test_eval.py` | 26 | Gold facts re-derived from the graph; scorer behaviour |
+| Chat UI adapter | `test_ui_adapter.py` | 16 | Result-to-display mapping: steps, evidence, grounding, ambiguity, not found, provider error, missing fields; one scripted run of the page |
 
 **What the tests give confidence in.**
 
@@ -1680,7 +1681,7 @@ The method each time: reproduce the failure, classify the cause (planning, tool 
 | Lexical grounding check | Catches invented values with no second model | False positives and blind spots | Structured claim extraction, still checked deterministically |
 | No vector database | Nothing to maintain; exact lookups | No semantic search over descriptions | Retrieval only for free-text documents |
 | No OCR | The XML is authoritative | Cannot ingest a scanned drawing | OCR for entity discovery only, never for topology |
-| No UI | Time went to correctness | CLI only | A trace viewer with the drawing highlighted |
+| Thin local UI only | The UI renders the existing result; no agent logic lives in it | No hosting, no conversation memory | A trace viewer with the drawing highlighted |
 | No automatic failover | Every run attributable to one model | A provider outage stops the run | Failover in production with the model recorded per answer; never in evaluation |
 
 ---

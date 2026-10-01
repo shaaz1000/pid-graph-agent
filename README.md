@@ -11,6 +11,16 @@ DEXPI reference P&ID `C01V04-VER.EX01.xml`.
 Every answer comes with the tool calls that produced it, the graph facts it rests on, and the
 result of a grounding check.
 
+| Looking for | Go to |
+|---|---|
+| Install and ask a question | [How to run](#how-to-run) |
+| Optional local chat UI | [Local chat UI](#local-chat-ui) |
+| Design note | [Design note](#design-note) |
+| Transcripts, including failures | [Example transcripts](#example-transcripts) |
+| Evaluation set, scorer and score | [Evaluation](#evaluation) |
+| A 10-minute explanation with diagrams | [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) |
+| Requirement-by-requirement audit | [docs/SUBMISSION_AUDIT.md](docs/SUBMISSION_AUDIT.md) |
+
 ## How to run
 
 ```bash
@@ -27,9 +37,26 @@ Without any API key you can still call the graph tools directly and run the test
 
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
-uv run pytest                                    # 424 deterministic tests, no network
+uv run pytest                                    # 440 deterministic tests, no network
 uv run python evals/evaluator.py                 # re-score the saved evaluation runs
 ```
+
+### Local chat UI
+
+```bash
+uv run pid-agent-ui
+```
+
+Opens a local [Streamlit](https://streamlit.io) page (installed by `uv sync`). It is a
+presentation layer over the same agent: it calls `PidAgent.ask` and shows the answer, then, in
+expandable sections, the tool calls with their inputs and results, the graph evidence, the
+grounding outcome and any graph notes (ambiguity, missing properties, open ends, truncated
+searches). Each question is an independent agent run; earlier messages stay on screen but are
+not sent to the model. The UI was added after the evaluation below and played no part in it.
+
+![Local chat UI showing a saved evaluation answer](docs/images/chat-ui.jpeg)
+
+*The screenshot shows the UI rendering the saved DeepSeek evaluation answer for question 12.*
 
 ### Configuration
 
@@ -315,14 +342,18 @@ hard enough to separate good from excellent:
 - **No "enough evidence" detector.** The model may make redundant calls; budgets bound it.
 - **Provider and model variance**, and Groq's free daily limit covers roughly one and a half
   15-question runs.
-- **Not built:** OCR ingestion, a UI, visual highlighting, hosting.
+- **Not built:** OCR ingestion, visual highlighting on the drawing, hosting (the bonus item),
+  conversational memory between questions. The chat UI is local only.
 
 ## Development notes
 
 - Real commit history is kept. [prompts/](prompts/) holds the assignment and the instructions
   given to the AI coding tool, in order; one early instruction was not saved and is marked so.
-- [docs/ARCHITECTURE_DEEP_DIVE.md](docs/ARCHITECTURE_DEEP_DIVE.md) is a long, file-by-file
-  walk-through of the implementation.
+- [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) is a short explanation with diagrams and two
+  worked questions. [docs/ARCHITECTURE_DEEP_DIVE.md](docs/ARCHITECTURE_DEEP_DIVE.md) is the
+  long, file-by-file reference.
+- [docs/SUBMISSION_AUDIT.md](docs/SUBMISSION_AUDIT.md) checks each requirement of the
+  assignment; [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) is a five-minute demo.
 - pyDEXPI is AGPL-3.0.
 
 **Time spent.** Approximately 5–6 hours of hands-on work across understanding
