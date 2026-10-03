@@ -80,6 +80,19 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", "", text.casefold()).strip(".,;:")
 
 
+# Any character an identifier token cannot contain ends one (see MIXED_TOKEN), for example the
+# superscripts in "PIS⁺Z⁺A275003". Evidence is cut at the same characters, so both sides agree.
+IDENTIFIER_BOUNDARY = re.compile(r"[^\w.\-/]+")
+
+
+def identifier_pieces(text: str) -> set[str]:
+    """The normalized pieces of ``text`` that an answer token can match: the whole string and its parts."""
+    pieces = set()
+    for token in {*re.split(r"[\s,;()>=']+", text), *IDENTIFIER_BOUNDARY.split(text)}:
+        pieces |= {token, *token.split("/"), *token.split("-"), *re.split(r"[/\-]", token)}
+    return {p for p in map(_normalize, pieces) if p}
+
+
 def _unit(unit: str) -> str:
     return unit.casefold().replace("³", "3").replace("²", "2")
 
@@ -185,16 +198,12 @@ class EvidenceCorpus:
         self.terms.add(_normalize(text))
         for match in NUMBER_WITH_UNIT.finditer(text):
             self.quantities.add((float(match.group(1)), _unit(match.group(2))))
-        for token in re.split(r"[\s,;()>=']+", text):
-            for piece in {token, *token.split("/"), *token.split("-"), *re.split(r"[/\-]", token)}:
-                piece = _normalize(piece)
-                if not piece:
-                    continue
-                self.terms.add(piece)
-                try:
-                    self.numbers.add(float(piece))
-                except ValueError:
-                    pass
+        for piece in identifier_pieces(text):
+            self.terms.add(piece)
+            try:
+                self.numbers.add(float(piece))
+            except ValueError:
+                pass
 
     def supports(self, claim: Claim) -> bool:
         if claim.key in self.terms:

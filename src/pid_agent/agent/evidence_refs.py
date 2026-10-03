@@ -38,7 +38,18 @@ from pid_agent.agent.claims import (
     validate_claim,
 )
 from pid_agent.agent.compact import _connection_line
-from pid_agent.agent.grounding import DISCLAIMER, GENERIC_PROPERTY_WORDS, SENTENCE_SPLIT, TYPOGRAPHY, Claim, EvidenceCorpus, _role_problems, extract_claims
+from pid_agent.agent.grounding import (
+    DISCLAIMER,
+    GENERIC_PROPERTY_WORDS,
+    PATTERNS,
+    SENTENCE_SPLIT,
+    TYPOGRAPHY,
+    Claim,
+    EvidenceCorpus,
+    _role_problems,
+    extract_claims,
+    identifier_pieces,
+)
 
 REF = r"[ER]\d+(?:\.\d+)?"
 CITATION = re.compile(rf"\[\s*({REF}(?:\s*[,;]\s*{REF})*)\s*\]")
@@ -230,21 +241,34 @@ def _positions(text: str, mentions: dict[str, str]) -> list[tuple[int, str]]:
     return sorted(found)
 
 
+def _masked(text: str) -> str:
+    """``text`` with every identifier, value and type name blanked out, same length.
+
+    Relation words are then found in the prose only, never inside a name such as
+    "ActuatingFunction-1" or "FlowInPipeOffPageConnector-1".
+    """
+    text = text.translate(TYPOGRAPHY)  # one character for one, so positions are kept
+    for _, pattern in PATTERNS:
+        text = pattern.sub(lambda m: "#" * len(m.group(0)), text)
+    return text
+
+
 def _relation_checks(text: str, mentions: dict[str, str], cited: Scope, everything: Scope, index: FactIndex, has_refs: bool, out: SentenceResult) -> None:
     named = set(mentions.values())
+    where = _positions(text, mentions)
+    shown, text = text, _masked(text)
     if len(named) < 2 or DISCLAIMER.search(text):
         return  # a negated or hedged relation is not asserted; it is not verified either
-    where = _positions(text, mentions)
 
     def judge(holds_cited: bool, holds_anywhere: bool, contradicted: bool, claim: str, missing: str) -> None:
         if holds_cited:
             return
         if contradicted:
-            out.problems.append(_note(claim, "relationship", missing, text))
+            out.problems.append(_note(claim, "relationship", missing, shown))
         elif holds_anywhere and has_refs:
-            out.gaps.append(_note(claim, "uncited_relationship", "the tool results support this, but not the evidence this sentence cites", text))
+            out.gaps.append(_note(claim, "uncited_relationship", "the tool results support this, but not the evidence this sentence cites", shown))
         elif not holds_anywhere:
-            out.problems.append(_note(claim, "relationship", missing, text))
+            out.problems.append(_note(claim, "relationship", missing, shown))
 
     for match in OPERATES.finditer(text):
         before = [e for pos, e in where if pos < match.start()]
@@ -267,7 +291,7 @@ def _relation_checks(text: str, mentions: dict[str, str], cited: Scope, everythi
         side = match.group(1).lower()
         reference = next((e for pos, e in where if match.end() <= pos <= match.end() + SIDE_REACH), None)
         if reference is None:
-            out.gaps.append(_note(match.group(0), "unclear_relationship", "name the item right after 'downstream of' / 'upstream of' so the direction can be checked", text))
+            out.gaps.append(_note(match.group(0), "unclear_relationship", "name the item right after 'downstream of' / 'upstream of' so the direction can be checked", shown))
             continue
         for other in sorted(named - {reference}):
             wanted = (reference, other) if side == "downstream" else (other, reference)
@@ -283,7 +307,7 @@ def _relation_checks(text: str, mentions: dict[str, str], cited: Scope, everythi
         after = [e for pos, e in where if pos >= match.end()]
         if not before or not after:
             if not SIDE.search(text):
-                out.gaps.append(_note(match.group(0), "unclear_relationship", "write it as '<item> feeds <item>' so the direction can be checked", text))
+                out.gaps.append(_note(match.group(0), "unclear_relationship", "write it as '<item> feeds <item>' so the direction can be checked", shown))
             continue
         # The subject is one of the items named before the verb (after it, in the passive).
         sources, targets = (before, after) if not passive else (after[:1], before[-1:])
@@ -323,6 +347,26 @@ def _misattributed(token: Claim, carriers: list[Fact], everything: Scope, text: 
     return f"this value belongs to {', '.join(sorted(own))} in the tool results, but the sentence describes {', '.join(named)}"
 
 
+def _written_identifier_owner(token: Claim, text: str, cited: Scope, everything: Scope) -> str | None:
+    """The item whose complete identifier the sentence writes out and ``token`` is only part of.
+
+    "K 2750" is read as the tokens "K" and "2750"; the number is then not a value of its own but
+    the tag of one item. The cited facts must give that identifier to the item, and no tool
+    result may give it to any other item.
+    """
+    text = text.translate(TYPOGRAPHY)
+    written = set()
+    for fact in cited.facts:
+        value = str(fact.value or "")
+        if fact.predicate != "identified_as" or key(value) == token.key or token.key not in identifier_pieces(value):
+            continue
+        spelled = r"\s*".join(re.escape(c) for c in re.sub(r"\s+", "", value))
+        if re.search(rf"(?<!\w){spelled}(?!\w)", text, re.IGNORECASE):
+            written.add(key(value))
+    owners = {f.subject for f in everything.facts if f.predicate == "identified_as" and key(f.value) in written}
+    return owners.pop() if len(owners) == 1 else None
+
+
 def check_sentence(sentence: str, index: FactIndex, extra: list[Fact], corpus: EvidenceCorpus, question_terms: set[str]) -> SentenceResult:
     refs: list[str] = []
     for match in CITATION.finditer(sentence):
@@ -352,19 +396,34 @@ def check_sentence(sentence: str, index: FactIndex, extra: list[Fact], corpus: E
 
     mentions: dict[str, str] = {}  # token text -> entity id
     values: list[Claim] = []
+    shared: list[tuple[Claim, list[str]]] = []  # identifiers that several entities carry
     for token in tokens:
         ids, how = index.resolve(token.text)
+        whole = _written_identifier_owner(token, text, cited, everything)
         if how in ("entity", "object"):
             mentions[token.text] = ids[0]
-        elif how == "ambiguous" and not any(f.predicate == "ambiguous" and key(f.value) == token.key for f in cited.facts):
-            out.problems.append(_note(token.text, "ambiguous_identifier", f"matches several entities ({', '.join(ids)}); the graph selected none", text))
-        elif how != "ambiguous":
+        elif whole:
+            mentions[token.text] = whole  # "2750" of "K 2750": the sentence names the item, not a value
+        elif how == "ambiguous":
+            if not any(f.predicate == "ambiguous" and key(f.value) == token.key for f in cited.facts):
+                shared.append((token, ids))
+        else:
             owners = {f.subject for f in everything.carriers(token)}
             if len(owners) == 1 and all(f.predicate == "identified_as" for f in everything.carriers(token)):
                 mentions[token.text] = owners.pop()  # part of one item's identifier, e.g. "SV 104.01"
             else:
                 values.append(token)
     named = set(mentions.values())
+
+    for token, ids in shared:
+        # A shared identifier (a loop number on every instrument of the loop) may be stated about
+        # the items the sentence names, when the cited facts give it to those very items.
+        backing = [f for f in cited.carriers(token) if f.subject in named & set(ids)]
+        if backing:
+            out.used += backing[:2]
+            out.anchored = True
+        else:
+            out.problems.append(_note(token.text, "ambiguous_identifier", f"matches several entities ({', '.join(ids)}); the graph selected none", text))
 
     for token_text, entity_id in mentions.items():
         facts = cited.mentions(entity_id)
