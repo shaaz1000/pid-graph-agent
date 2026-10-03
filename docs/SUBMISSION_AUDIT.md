@@ -52,7 +52,7 @@ open-weight model) and a few optional items are listed at the end.
 | README: 5 to 10 transcripts, at least two failing or struggling | Met | README "Example transcripts": 9 from the final evaluation run, of which 1 struggle and 2 failures; full files linked | Open the linked transcript files | Earlier development failures are kept under `examples/` |
 | Eval: 10 to 20 questions with expected answers | Met | `evals/questions.json`: 15 questions, 41 required facts | `tests/test_eval.py` re-derives the facts from the graph | Questions written by the author |
 | Eval: a script that scores them | Met | `evals/evaluator.py` (deterministic, no LLM judge) | `uv run python evals/evaluator.py` re-scores saved runs without a key | Checks presence of required facts, not everything else in the answer |
-| Eval: the score | Met | README "Evaluation": NVIDIA `nvidia/nemotron-3-super-120b-a12b`, 12 of 15 fully correct, 13.42 of 15 points, mean 0.894; 14 grounded, 1 limited, 0 unsupported claims | `uv run python evals/evaluator.py` | One run. Three partial answers are documented. Median latency 21.4 s, p95 140.8 s |
+| Eval: the score | Met | README "Evaluation": NVIDIA `nvidia/nemotron-3-super-120b-a12b`, 12 of 15 fully correct, 13.42 of 15 points, mean 0.894; 14 grounded, 1 limited, 0 unsupported claims detected by the checks used for the run | `uv run python evals/evaluator.py` | One run. Three partial answers are documented. Median latency 21.4 s, p95 140.8 s. Produced before the post-evaluation validator hardening; artifacts unchanged |
 | Eval set frozen before the run | Met | Questions and scorer date from commit `407d6ba` and were not changed for the final run | `git log -- evals/questions.json` | The final run was made from an uncommitted working tree, so its recorded commit (`1fb4106`) is the one before the code that ran; documented in the README. The evaluator now records a dirty flag and diff hash |
 | Bonus: hosted link | **Not implemented** | n/a | n/a | The chat UI runs locally only |
 
@@ -60,7 +60,7 @@ open-weight model) and a few optional items are listed at the end.
 
 | Criterion | Evidence |
 |---|---|
-| Works on questions it was not designed for | Generic tools; the evaluation questions differ from the examples and from development questions. Not proven beyond those |
+| Works on questions it was not designed for | Generic tools; the evaluation questions differ from the examples and from development questions. Cross-P&ID: all 35 official DEXPI 1.3 examples pass deterministic ingestion; 37 new questions on eight of them scored 30 fully correct (0.811) with the same pipeline (README "Cross-P&ID Generalization"). Not proven beyond those |
 | Uses the real graph and handles its messiness | Open ends recovered and marked; chamber-aware traversal; untagged valves found through derived identifiers; ambiguity returned, not guessed |
 | Clean design, clear responsibilities | Layers: ingestion → normalizer → resolver/traversal → service → tools → agent → grounding. The UI and CLI are presentation only |
 | Honest about limits; the eval measures something real | README "Limitations" and "How much to read into this" |
@@ -76,6 +76,8 @@ The first evaluation (DeepSeek, and one question on Groq) ran against the agent 
 - Truncated model output is detected, the per-call timeout is configurable, and answers that only repeat result rows are printed by the application.
 - A second evaluation run, on the current agent and the NVIDIA default, is recorded separately under `evals/runs/`. The earlier runs are unchanged and describe the earlier agent.
 - The UI shows no confidence score, because the agent does not compute one.
+- Cross-P&ID support: `--pid` selects any DEXPI file; `SignalLineFunction` is mapped like `SignalConveyingFunction`; four generic validator robustness fixes (tags with spaces, non-ASCII identifiers, relation words inside names, shared identifiers). A 37-question run on eight official DEXPI examples is recorded under `evals/datasets/`.
+- Post-evaluation hardening, after both recorded NVIDIA runs: hedge words no longer disable relation checks, relation wordings come from a fixed vocabulary checked in their direction, and statements about the plant with nothing checkable make an answer at most `limited`. The recorded results predate it and were not re-run.
 
 ## Findings
 
@@ -87,7 +89,7 @@ The first evaluation (DeepSeek, and one question on Groq) ran against the agent 
 2. *Latency.* NVIDIA-hosted inference took from half a minute to several minutes per question during testing.
 3. *"Feeds" can stop at a fitting.* The model sometimes reports the adjacent tee instead of traversing to equipment.
 
-**Optional** (not built, on purpose): hosting; conversation memory between questions; multi-hop instrumentation traversal in one call; a second DEXPI file; highlighting on the drawing.
+**Optional** (not built, on purpose): hosting; conversation memory between questions; multi-hop instrumentation traversal in one call; highlighting on the drawing.
 
 ## Fresh-clone check
 
@@ -97,8 +99,8 @@ Run from a new clone of this repository, without an API key:
 |---|---|
 | `uv sync` | installs |
 | `uv run pid-agent tool find_entities '{"query": "P4711"}'` | returns `CentrifugalPump-1` |
-| `uv run pytest` | 556 passed, 4 deselected |
-| `uv run python evals/evaluator.py` | re-scores both saved runs |
+| `uv run pytest` | 688 passed, 4 deselected (count updated after the post-evaluation hardening) |
+| `uv run python evals/evaluator.py` | re-scores every saved run (C01 and the eight cross-P&ID suites) |
 | `uv run pid-agent-ui` | page loads and shows the graph |
 | `uv run pid-agent "..."` without a key | one-line error naming the variable to set |
 

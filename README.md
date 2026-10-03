@@ -5,8 +5,9 @@ graph that [pyDEXPI](https://github.com/process-intelligence-research/pyDEXPI) b
 DEXPI reference P&ID `C01V04-VER.EX01.xml`.
 
 > The LLM interprets intent and plans graph operations; it is not the source of plant
-> knowledge. All factual answers are derived from deterministic operations over the pyDEXPI
-> graph.
+> knowledge. Plant-specific facts are retrieved from deterministic operations over the pyDEXPI
+> graph. A deterministic grounding validator checks cited identifiers, values and supported
+> relation classes before model-generated prose is shown.
 
 Every answer comes with the tool calls that produced it, the graph facts it rests on, and the
 result of a grounding check.
@@ -38,15 +39,26 @@ uv run pid-agent "What is P4711 connected to, and through which pipes?"
 ```
 
 `uv run pid-agent` without a question opens an interactive prompt. Add `--no-trace` for the
-answer only or `--json` for the full structured result.
+answer only or `--json` for the full structured result. `--pid FILE` loads another DEXPI file
+instead of C01 (or set `PID_DATA_FILE`), for example one of the official examples:
+
+```bash
+uv run pid-agent --pid data/dexpi-1.3-examples/I03V01-VER.EX01.xml "Which valve does LICSA03 act on?"
+```
 
 Without any API key you can still call the graph tools directly and run the tests:
 
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
-uv run pytest                                    # 556 deterministic tests, no network
-uv run python evals/evaluator.py                 # re-score the saved evaluation runs
+uv run pytest                                    # 688 deterministic tests, no network
+uv run python evals/evaluator.py                 # re-score every saved evaluation run
+uv run python scripts/ingestion_matrix.py        # all 35 DEXPI 1.3 examples through ingestion
 ```
+
+Re-running an evaluation needs a key and makes live model calls: `uv run python
+evals/evaluator.py --run` for C01, `--dataset-name c02 --run` (or `c03`, `i03`, `i05`, `e12`,
+`e06`, `p02`, `p04`) for a cross-P&ID suite; see
+[Cross-P&ID Generalization](#cross-pid-generalization).
 
 ### Local chat UI
 
@@ -153,8 +165,12 @@ property, value, qualifiers, graph source). The answer cites ids instead of rest
 evidence: "P4711 feeds H1007 through line 47122. [E2.3]". For each sentence, code resolves the
 ids and checks association, not just presence: an identifier or value must be in the cited
 facts; a value must belong to an item the sentence names (so "P4712's line is DN 80" fails
-even though both tokens exist in the evidence); and a stated relation (connected, feeds,
-downstream of, operates) must be one a tool result shows, in that direction. Adjacent pipes
+even though both tokens exist in the evidence); and a relation stated with a wording from a
+small fixed vocabulary (connected; feeds, supplies, discharges to, sends fluid to, flows to,
+fed by; downstream/upstream of; operates, actuates, controls; sends its signal to; senses or
+measures at) must be one a tool result shows, in that direction. Relations worded otherwise
+are checked only for the items and values they name, and a statement about the plant with
+nothing checkable in it makes the answer at most `limited`. Adjacent pipes
 may be followed only under the chamber rule; `800.0 mm` never supports `DN 800`; nothing is
 converted. Tool inputs, messages and warnings never become facts. No model judges the answer.
 A fully cited answer that passes is `grounded`; one that passes only against all evidence,
@@ -322,7 +338,7 @@ Transcripts from earlier development, including three failures on older builds, 
 | Points | **13.42 of 15** (mean score 0.894) |
 | Partially correct | 3 (scores 0.25, 0.67, 0.50) |
 | Grounding | 14 grounded (11 on the first attempt, 3 after one rewrite), 1 limited |
-| Unsupported claims in final answers | 0 |
+| Unsupported claims detected in final answers | 0 (by the evaluation and grounding checks used for this run) |
 | Truncated outputs, provider failures | 0, 0 |
 | Model calls / graph tool calls | 52 / 33 (3.5 / 2.2 per question) |
 | Latency per question | median 21.4 s, mean 51.9 s, p95 140.8 s (fastest 13.7 s, slowest 242.5 s) |
@@ -341,6 +357,8 @@ failures and one is a planning failure. They are left as they are.
 **Latency.** The graph tools took about 0.15 s in total across the whole run. Hosted model
 inference accounted for effectively all of the 779 s. The spread comes from the provider: two
 questions of the same shape took 14 s and 109 s.
+
+These results predate the [post-evaluation hardening](#post-evaluation-hardening) of the validator.
 
 **Provenance.** [run.json](evals/runs/nvidia-nvidia-nemotron-3-super-120b-a12b/run.json) records commit `1fb4106`, but the run was made from
 the working tree before it was committed; the code that ran is the commit that follows it,
@@ -413,10 +431,11 @@ retries, no question rewrites, no per-dataset prompts or routing; C01 not rerun)
 
 "Withheld" means the validator rejected the drafts and the agent returned a "could not
 determine" answer with the raw tool results; the six claims it rejected never reached an
-answer. Provider failures and truncated outputs: 0. Runs are under `evals/datasets/<suite>/runs/`.
+answer. "Unsupported claims in answers" counts what the evaluation and grounding checks used
+for the recorded run detected, not a proof that every sentence is true. Provider failures and truncated outputs: 0. Runs are under `evals/datasets/<suite>/runs/`.
 
 **C01 baseline (kept separate, not rerun):** 15 questions, 12 fully correct, 13.42/15 points
-(mean 0.894), 14 grounded, 1 limited, 0 unsupported claims.
+(mean 0.894), 14 grounded, 1 limited, 0 unsupported claims detected.
 
 **What had to change, all generic:**
 
@@ -471,6 +490,27 @@ commits that follow it.
 *TrainingTestCases*, `dexpi 1.3/example pids/` (https://gitlab.com/dexpi/TrainingTestCases),
 licensed CC BY 4.0; see [NOTICE](NOTICE).
 
+## Post-evaluation hardening
+
+The published evaluation results were produced before the post-evaluation validator hardening
+below. Evaluation artifacts are preserved unchanged; the 0.894 (C01) and 0.811 (cross-P&ID)
+scores belong to the evaluated commits, and nothing was re-run.
+
+After an external-style review, three gaps in the relation check were closed:
+
+- A hedge word ("if", "your") anywhere in a sentence used to switch relation checking off, so
+  "If you follow the piping, H1007 feeds P4711." passed although the flow runs the other way.
+  Now only a negation (for the rest of its clause: "P4711 does not feed T4750", "..., not
+  T4750") or a clause reporting the user's words or an assumption is treated as not asserted.
+- Relation wordings come from a small data-driven vocabulary, each mapped to one canonical
+  relation and checked in its direction, so "H1007 sends fluid to P4711." is rejected.
+- A statement about the plant with no identifier, value or checkable relation ("It is the
+  main cooling water pump.") is reported as unchecked; the answer is then at most `limited`.
+
+Tests: `tests/test_relation_grounding.py`. Two existing tests changed: a cost test whose
+scripted answer had relied on the hedge bypass, and the documented gloss limitation, which is
+now detected as unchecked instead of passing as grounded.
+
 ## Limitations
 
 - **The graph, not the plant.** "Downstream" is drawn piping direction. Valve positions and
@@ -490,12 +530,16 @@ licensed CC BY 4.0; see [NOTICE](NOTICE).
   direct neighbour (a tee) and does not traverse to the equipment beyond it. The answer is
   true and grounded but shallow. The generic operation exists
   (`traverse` with `stop_at_types=["equipment"]`); choosing it is up to the model.
-- **What the grounding check cannot prove.** A sentence with no identifier, number or
-  relation word it recognises (a general-knowledge gloss such as expanding the instrument code
-  "TICSA") is not checked. Relation checking covers a fixed set of wordings (connected, feeds,
-  downstream/upstream of, operates, route); a relation phrased differently is only checked
-  for the presence of its items and values. Several items with several values in one sentence
-  can be mis-paired among themselves. A fact is only as right as the graph: errors in the
+- **What the grounding check cannot prove.** It checks identifiers, values and a fixed
+  relation vocabulary; it does not prove that a sentence is true. A statement about the plant
+  with nothing checkable in it (an invented purpose, a general-knowledge gloss such as
+  expanding the instrument code "TICSA") is not verified; it only makes the answer `limited`,
+  and a gloss added to a sentence that also names a checked item ("P4711 is the main cooling
+  pump") is not caught. A relation worded outside the vocabulary is only checked for its items
+  and values. Relations are never chained: "the loop actuates the valve" through a signal line
+  and an operated-valve link is rejected unless one tool result shows it, and the drawing ends
+  of a traversal are not counted as downstream of its start. Several items with several values
+  in one sentence can be mis-paired among themselves. A fact is only as right as the graph: errors in the
   source P&ID pass through, and "not in the graph" does not mean "not in the plant".
 - **Answers without evidence ids** are checked against all tool results and labelled
   `limited`.

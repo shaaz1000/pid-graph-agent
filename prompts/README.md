@@ -33,6 +33,7 @@ written; later prompts never overwrite earlier ones.
 | `25-cross-pid-generalization-request.md` | Reviewer follow-up: show the same architecture works on more DEXPI files; audit, dataset discovery and plan before any live runs | Preserved development instruction |
 | `26-broad-and-deep-generalization-plan.md` | Ingest all 35 official DEXPI 1.3 files, generic dataset selection, SignalLineFunction fix, representative datasets with smoke tests | Preserved development instruction |
 | `27-validator-fixes-and-cross-pid-evaluation.md` | Fix the four generic validator defects found by the smoke test, then one full 37-question cross-P&ID run | Preserved development instruction |
+| `28-post-evaluation-hardening.md` | After the frozen evaluation: close the hedge-word and relation-synonym bypasses, stop token-free factual prose from counting as grounded, correct stale documentation | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 

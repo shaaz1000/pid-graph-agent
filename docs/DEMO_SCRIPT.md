@@ -89,11 +89,13 @@ What the graph says: `PT4712.02` senses at `BlindFlange-2`; the signal goes thro
 
 What to point out:
 
-- The answer is right, but count the tool calls. In the saved evaluation run this took ten;
-  about six were needed.
-- Two honest limits show here: following an instrument chain costs one call per hop, and
-  nothing tells the model it already has enough evidence. Budgets (8 planning turns, 16 tool
-  calls) stop it running away.
+- This is a known weak spot. In the recorded NVIDIA run (eval-13) the planner stopped after
+  two tool calls and reported the transmitter and actuating function, not the sensing point and
+  the valve, so it scored 0.5. An earlier DeepSeek run got it right but needed ten calls where
+  about six would do.
+- Two honest limits show here: following an instrument chain costs one call per hop (there is
+  no multi-hop instrumentation tool), and nothing tells the model it already has enough
+  evidence. Budgets (8 planning turns, 16 tool calls) stop it running away.
 
 Optional sixth, missing data: "How much does heat exchanger H1007 weigh?" The answer should
 say the P&ID does not contain a weight.
@@ -102,8 +104,10 @@ say the P&ID does not contain a weight.
 
 "The model never sees the drawing. It chooses from seven generic graph operations, plain
 Python runs them on the pyDEXPI graph, and every identifier and number in the answer is
-checked against what those operations returned. When the graph does not contain something,
-such as a weight, a destination off the drawing or a unique match, the system says so. The
-evaluation is fifteen questions with expected facts taken from the graph and a deterministic
-scorer; the complete run scored fifteen of fifteen on DeepSeek, and I say plainly that the
-open-weight model run was cut short by the provider's free quota."
+checked against the cited evidence for identifiers, values and a fixed set of relations
+before it is shown. When the graph does not contain something, such as a weight, a
+destination off the drawing or a unique match, the system says so. The evaluation uses
+expected facts taken from the graph and a deterministic scorer. On C01, Nemotron 3 Super got
+12 of 15 fully correct (0.894). On eight other official DEXPI examples, 37 new questions, it
+got 30 fully correct (0.811), with no unsupported claim detected in a final answer; the
+misses are documented, mostly answers withheld by a strict validator."

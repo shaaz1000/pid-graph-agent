@@ -7,9 +7,9 @@ P&ID XML -> pyDEXPI -> NetworkX graphs -> LLM planner -> deterministic graph too
 This project answers natural-language questions about one plant drawing, the DEXPI reference P&ID "C01". pyDEXPI parses the drawing into NetworkX graphs. A language model reads the question and decides which of seven generic graph operations to run. Deterministic code runs them, returns structured results with evidence, and then checks the drafted answer against that evidence. Every answer is returned with the tool calls that produced it.
 
 > **Key idea**
-> The LLM interprets intent and plans graph operations; it is not the source of plant knowledge. All factual answers are derived from deterministic operations over the pyDEXPI graph.
+> The LLM interprets intent and plans graph operations; it is not the source of plant knowledge. Plant-specific facts are retrieved from deterministic operations over the pyDEXPI graph. A deterministic grounding validator checks cited identifiers, values and supported relation classes before model-generated prose is shown.
 
-This document describes the code at the frozen implementation commit `a8d56b3` (nothing under `src/` has changed since). The [README](../README.md) is the short version. Entity names such as `P4711` appear freely here because this document explains the dataset; none of this text is sent to the model.
+This document was written for the C01 implementation at commit `a8d56b3`. The code has changed since: evidence-reference grounding, the NVIDIA provider, cross-P&ID support (`--pid`, `SignalLineFunction`, validator robustness fixes) and the post-evaluation validator hardening. The README describes those changes; where the two differ, the README and the code are authoritative. The [README](../README.md) is the short version. Entity names such as `P4711` appear freely here because this document explains the dataset; none of this text is sent to the model.
 
 ---
 
@@ -1179,7 +1179,7 @@ Problems trigger the one rewrite and, if they remain, the fallback. Gaps trigger
 
 **Reasoning tokens.** Nemotron's hidden reasoning counts against the output limit. Calls that only write up collected evidence (rewrites, forced answers) request NVIDIA's documented low-effort mode (`NvidiaProvider.synthesis_options`); planning calls keep the default.
 
-**Limits.** Relation checking recognises a fixed set of wordings. A negated or hedged relation is not verified. Several items with several values in one sentence can be mis-paired among themselves. Prose with no identifier, number or relation word is not checked.
+**Limits.** Relation checking recognises a fixed vocabulary of wordings (`RELATIONS` in `evidence_refs.py`), each checked in its direction. A negated clause, or a clause reporting the user's words or an assumption, is not verified; other hedge words ("if", "your") do not switch the check off. Several items with several values in one sentence can be mis-paired among themselves. Prose with no identifier, number or recognised relation is not verified; a statement about the plant of that kind makes the answer at most `limited`.
 
 ---
 
@@ -1280,7 +1280,7 @@ Two more guards run on the prose: an assertion about current operating state ("i
 |---|---|
 | `grounded` | Every claim supported and every token in the text covered by one |
 | `ambiguous` | As above, and the answer reports an ambiguous lookup |
-| `limited` | Nothing unsupported, but some text passed only the token-level check (no claims block, or values without a claim) |
+| `limited` | Nothing unsupported, but some text is not tied to the evidence it cites: a sentence without evidence ids, a fact supported only by an uncited tool result, or a statement about the plant with nothing checkable in it |
 | `insufficient_evidence` | Unsupported content remained after one rewrite, or no graph-supported statement was produced; the model's text is withheld |
 | `not_validated` | No answer was produced (provider failure) |
 
@@ -1288,7 +1288,7 @@ Two more guards run on the prose: an assertion about current operating state ("i
 
 ### Limits
 
-- The claims the model lists are checked; whether it listed everything it said is enforced only for tokens (identifiers, numbers, units). A sentence with none is not checked.
+- The claims the model lists are checked; whether it listed everything it said is enforced only for tokens (identifiers, numbers, units). A sentence with none is not verified; if it states something about the plant, the answer is at most `limited`.
 - Meaning outside the eighteen predicates cannot be expressed, so it cannot be validated either.
 - A claim is as right as the graph. Errors in the source P&ID pass through, and absence from the graph is not absence from the plant.
 - The claims format has deterministic tests and a seven-question live smoke test ([examples/live-smoke/](../examples/live-smoke/)), not a scored evaluation. An answer without usable claims degrades to `limited`.
@@ -1556,9 +1556,9 @@ The trace is a record of operations, not of reasoning. `--json` gives the same a
 | How was scoring performed? | A deterministic script: required facts and forbidden facts, with partial credit |
 | Was an LLM judge used? | No |
 | Was the set frozen before the run? | Yes. Questions, gold and scorer are in commit `407d6ba`; the run came after |
-| Which model and provider? | Complete run: DeepSeek, `deepseek-chat`. Partial run: Groq, `openai/gpt-oss-20b` |
+| Which model and provider? | Final run: NVIDIA-hosted `nvidia/nemotron-3-super-120b-a12b`, 12 of 15 fully correct (0.894). Historical, not comparable (older token-level grounding): DeepSeek `deepseek-chat`, 15 of 15; Groq `openai/gpt-oss-20b`, 1 question before the quota ran out |
 | What happened with GPT-OSS? | Question 1 scored full credit; then Groq's daily token quota stopped the run. No GPT-OSS score is claimed |
-| What are the limits? | One run; one complete model; questions written by the author; a presence-based scorer |
+| What are the limits? | One run per question; questions written by the author; a presence-based scorer. Cross-P&ID results (8 more DEXPI files, 37 questions, 0.811) are in the README |
 
 ```mermaid
 flowchart LR
@@ -1605,7 +1605,7 @@ score = max(0, required facts found - forbidden facts found) / required facts
 
 ### Results
 
-**Final run** (NVIDIA `nvidia/nemotron-3-super-120b-a12b`, current agent): 12 of 15 fully correct, 13.42 of 15 points, mean 0.894; 14 grounded, 1 limited, 0 unsupported claims; 52 model calls, 33 tool calls; median latency 21.4 s, mean 51.9 s, p95 140.8 s. Three partial answers: an incomplete list of drawing ends (answer writing), a route that omits its valve (answer writing), and a control loop followed one lookup short (planning). Graph tools took about 0.15 s in total; hosted inference took the rest.
+**Final run** (NVIDIA `nvidia/nemotron-3-super-120b-a12b`, the evidence-reference agent, before the post-evaluation validator hardening): 12 of 15 fully correct, 13.42 of 15 points, mean 0.894; 14 grounded, 1 limited, 0 unsupported claims detected; 52 model calls, 33 tool calls; median latency 21.4 s, mean 51.9 s, p95 140.8 s. Three partial answers: an incomplete list of drawing ends (answer writing), a route that omits its valve (answer writing), and a control loop followed one lookup short (planning). Graph tools took about 0.15 s in total; hosted inference took the rest.
 
 The table below is the **earlier** pair of runs, made with the first agent and its token-level grounding check. They are not comparable with the final run.
 
@@ -1682,7 +1682,7 @@ All from the DeepSeek run.
 
 ## Testing strategy
 
-556 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
+688 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
 
 | Layer | File | Tests | What it pins down |
 |---|---|---|---|
@@ -1697,11 +1697,15 @@ All from the DeepSeek run.
 | Compaction | `test_compaction.py` | 22 | The model-facing view keeps what reasoning needs and drops bookkeeping |
 | Grounding | `test_grounding.py` | 43 | Claim extraction; supported and invented facts; inputs and warnings are not evidence; roles; attribution; dashes |
 | Agent | `test_agent.py` | 59 | The workflow with a scripted model: tools, ambiguity, not found, missing data, loops, limits, malformed output, provider failure, grounding failure |
-| Providers | `test_llm.py`, `test_openrouter.py`, `test_deepseek.py` | 51 | Adapters against mocks: requests, parsing, usage, error categories, no key leakage, no failover |
+| Providers | `test_llm.py`, `test_openrouter.py`, `test_deepseek.py`, `test_nvidia.py` | 68 | Adapters against mocks: requests, parsing, usage, error categories, no key leakage, no failover |
 | Evaluation | `test_eval.py` | 26 | Gold facts re-derived from the graph; scorer behaviour |
 | Evidence references | `test_evidence_refs.py` | 55 | Finish reasons and truncation; valid, unknown, malformed and duplicate ids; enumeration at several real sizes; pairing, relation and direction; invented items; traversal through fittings, stop at equipment, drawing ends; application-rendered answers |
-| Typed claims | `test_claims.py` | 59 | Twenty adversarial cases that must not become supported, the matching positive cases, guardrails (scope, injection, tool allowlist, operating state), and the agent loop with scripted claims |
+| Typed claims | `test_claims.py` | 42 | Twenty adversarial cases that must not become supported, the matching positive cases, guardrails (scope, injection, tool allowlist, operating state), and the agent loop with scripted claims |
 | Chat UI adapter | `test_ui_adapter.py` | 18 | Result-to-display mapping: steps, evidence, grounding, ambiguity, not found, provider error, missing fields; one scripted run of the page |
+| DEXPI examples | `test_dexpi_examples.py` | 42 | All 34 official examples pass every ingestion stage; `SignalLineFunction` links; `--pid`; no suite names in code |
+| Cross-P&ID suites | `test_datasets.py` | 38 | Each suite names a real file; every gold fact re-derived from that file's graph |
+| Identifier robustness | `test_validator_identifiers.py` | 19 | Tags with spaces, superscript identifiers, relation words inside names, shared loop numbers; the must-reject cases on those identifiers |
+| Relation grounding | `test_relation_grounding.py` | 33 | Hedge words do not disable relation checks; negation scope; the relation vocabulary in both directions; statements with nothing checkable are at most limited |
 
 **What the tests give confidence in.**
 

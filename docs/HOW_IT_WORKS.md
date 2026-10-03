@@ -354,7 +354,7 @@ Add to the above:
 - **Chamber-aware search**: the search state is (entity, chamber), so a path cannot enter one side of an exchanger and leave the other. The boundary is reported as evidence.
 - **Traversal results carry path facts**: distance, equipment passed through, real ends, and whether the search was cut off by its depth limit. Those exist because a real model misread a truncated search as "the line ends here".
 - **Grounding** uses evidence ids: code labels every result row, the answer cites the ids, and each sentence is checked against the typed facts behind them for pairing (value belongs to the named item) and relation (shown by a tool result, in that direction). Simple results are printed by the application from the rows, without model prose.
-- **Evaluation**: 15 questions with gold facts read from the graph, a deterministic scorer, no LLM judge. The final run on NVIDIA-hosted Nemotron 3 Super got 12 of 15 fully correct (13.42 of 15 points), 14 grounded and 1 limited, with no unsupported claims. An earlier run on DeepSeek scored 15 of 15 with a weaker grounding check, so the two are not comparable.
+- **Evaluation**: 15 questions with gold facts read from the graph, a deterministic scorer, no LLM judge. The final run on NVIDIA-hosted Nemotron 3 Super got 12 of 15 fully correct (13.42 of 15 points), 14 grounded and 1 limited, with no unsupported claims detected by the checks used for that run (it predates the post-evaluation validator hardening described in the README). An earlier run on DeepSeek scored 15 of 15 with a weaker grounding check, so the two are not comparable.
 - **Honest limits**: NVIDIA-hosted inference is slow at times (a question can take minutes); the model sometimes answers "feeds" with the adjacent fitting; prose with nothing checkable is not detected; the model can make redundant calls; only C01 has been tested; one evaluation run.
 
 ### Questions you will be asked
@@ -372,7 +372,7 @@ One has the right shape for following flow, the other has the complete facts. Ne
 To map arbitrary wording onto graph operations and chain several of them. That is the part that has to work on questions nobody anticipated.
 
 **How do you prevent hallucinations?**
-The model has no plant knowledge to draw on and must call a tool first. Its answer cites evidence ids, and code checks each sentence against the facts those ids stand for: the value must belong to the item named, and a stated relation must be one a tool result shows. Unsupported content gets one rewrite and is then withheld. That reduces hallucination; it does not make it impossible: a sentence with nothing checkable in it gets through.
+The model has no plant knowledge to draw on and must call a tool first. Its answer cites evidence ids, and code checks each sentence against the facts those ids stand for: the value must belong to the item named, and a stated relation must be one a tool result shows. Unsupported content gets one rewrite and is then withheld. That reduces hallucination; it does not make it impossible: a sentence with nothing checkable in it is not verified (it only makes the answer "limited"), and a relation worded outside the validator's fixed vocabulary is checked only for the items it names.
 
 **What does downstream mean?**
 Following pipes in the direction they are drawn, source to target. It does not mean fluid is currently flowing; valve positions are not in a P&ID.
