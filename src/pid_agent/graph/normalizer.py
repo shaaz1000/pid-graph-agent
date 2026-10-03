@@ -40,6 +40,9 @@ PIPING_CONNECTION_LABELS = {"Pipe": "pipe", "DirectPipingConnection": "direct_pi
 INSTRUMENTATION_EDGE_TYPES: dict[str, ConnectionType] = {
     "MeasuringLineFunction": "measuring_line",
     "SignalConveyingFunction": "signal_line",
+    # DEXPI also models a signal link as a SignalLineFunction (used throughout the official
+    # measurement and control examples); it means the same thing.
+    "SignalLineFunction": "signal_line",
     "OperatedValveReference": "operated_valve_reference",
 }
 # Attributes added by GraphLoader / GraphAbstractor that are bookkeeping, not plant facts.
