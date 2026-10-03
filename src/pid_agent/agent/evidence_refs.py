@@ -58,16 +58,65 @@ MALFORMED_CITATION = re.compile(r"\[\s*[ER]\s*[\d.][^\]]*\]|\[\s*(?:ref|evidence
 TRAILING_CITATION = re.compile(rf"([.!?:;])(\s*)((?:\[\s*{REF}(?:\s*[,;]\s*{REF})*\s*\]\s*)+)")
 # Words that state a relation between the items a sentence names.
 DIRECT = re.compile(r"\b(?:directly|immediately|adjacent)\b", re.IGNORECASE)
+SIDE = re.compile(r"\b(downstream|upstream)\s+(?:of|from)\b", re.IGNORECASE)
+SIDE_REACH = 80  # characters after "downstream of" within which the reference item is named
+
+
+@dataclass(frozen=True)
+class Relation:
+    """One canonical relation and the wordings that state it.
+
+    ``check`` says how it is verified: "flow" (the item named first is upstream of the one
+    named after it along the drawn piping), "fed_by" (the passive of flow), or "link" (an
+    instrumentation fact with ``predicate`` from the first item to the second; "by" after the
+    phrase reverses it: "operated by").
+    """
+
+    name: str
+    check: str
+    phrases: str
+    predicate: str | None = None
+
+
+# The relation vocabulary: what the validator recognises and how each wording is checked.
+# Wordings are generic topology and instrumentation terms; anything else is only checked for
+# the items and values it names.
+RELATIONS: tuple[Relation, ...] = (
+    Relation("feeds", "flow", r"feeds?|feeding|supplies|supplying|discharges?(?:\s+(?:in)?to)?|discharging|delivers?|delivering|"
+             r"sends?\s+(?:the\s+)?(?:fluid|flow|product|medium)\s+(?:on\s+)?to|flows?\s+(?:in)?to|flowing\s+(?:in)?to"),
+    Relation("fed_by", "fed_by", r"(?:fed|supplied)\s+(?:by|from)|receives?\s+(?:its\s+|the\s+)?(?:fluid|flow|feed|product|medium)\s+from"),
+    Relation("operates", "link", r"operat\w*|actuat\w*|acts?\s+on|controls|controlling|controlled", "operates"),
+    Relation("sends_signal_to", "link", r"sends?\s+(?:its\s+|a\s+|the\s+)?(?:signal|output)s?\s+to|signals?\s+to|transmits?\s+(?:\w+\s+)?to", "sends_signal_to"),
+    Relation("measurement_input_to", "link", r"(?:sends?|passes|feeds?)\s+(?:its\s+|the\s+)?measurements?\s+to", "measurement_input_to"),
+    Relation("senses_at", "link", r"senses?(?:\s+at)?|sensed\s+at|measures?\s+at|measuring\s+at|takes?\s+(?:its\s+|the\s+)?measurements?\s+at", "senses_at"),
+)
+RELATION_PHRASES = [(relation, re.compile(rf"\b(?:{relation.phrases})\b", re.IGNORECASE)) for relation in RELATIONS]
+# Any wording that says two named items are related, checked as "the tool results relate them".
 RELATION = re.compile(
-    r"\b(?:connect\w*|link\w*|join\w*|attach\w*|feeds?|feeding|fed|discharg\w*|supply|supplies|supplying|deliver\w*|flows?|flowing|leads?|leading|"
-    r"routes?|routed|path|between|downstream|upstream|reach\w*)\b|→|->",
+    r"\b(?:connect\w*|link\w*|join\w*|attach\w*|fed|discharg\w*|supply|deliver\w*|flows?|flowing|leads?|leading|"
+    r"routes?|routed|path|between|downstream|upstream|reach\w*)\b|→|->|" + "|".join(rf"\b(?:{r.phrases})\b" for r in RELATIONS),
     re.IGNORECASE,
 )
-SIDE = re.compile(r"\b(downstream|upstream)\s+(?:of|from)\b", re.IGNORECASE)
-FEEDS = re.compile(r"\b(feeds?|feeding|discharges?|discharging|supplies|supplying|delivers?|delivering)\b", re.IGNORECASE)
-FED_BY = re.compile(r"\b(?:fed|supplied)\s+(?:by|from)\b", re.IGNORECASE)
-OPERATES = re.compile(r"\b(?:operat\w*|actuat\w*|acts?\s+on)\b", re.IGNORECASE)
-SIDE_REACH = 80  # characters after "downstream of" within which the reference item is named
+# What a sentence does not assert. A negation covers the rest of its clause ("P4711 does not
+# feed T4750", "... H1007, not T4750"); a clause that reports the user's words or an assumption
+# is not asserted at all. A hedge such as "if" or "your" elsewhere in the sentence changes nothing.
+CLAUSE_BREAK = re.compile(r"[,;:()]|\s(?:but|however|whereas|while|although|though)\s|\s[-–—]\s", re.IGNORECASE)
+NEGATION = re.compile(r"n['’]t\b|\b(?:not|no|never|nor|neither|cannot|without|rather\s+than|instead\s+of)\b", re.IGNORECASE)
+ATTRIBUTED = re.compile(
+    r"\byou\s+(?:said|stated|mentioned|asked|wrote|assumed|suggested)\b|\byour\s+(?:assumption|premise|question|statement)\b|"
+    r"\bassum\w*|\bhypothetical\w*|\bun(?:verified|confirmed)\b|\bdid\s+you\s+mean\b",
+    re.IGNORECASE,
+)
+# A sentence about the plant: it names a kind of plant item or a role. Without an identifier,
+# value or checked relation the validator cannot tie it to evidence.
+PLANT_STATEMENT = re.compile(
+    r"\b(?:pumps?|compressors?|exchangers?|tanks?|vessels?|columns?|reactors?|drums?|heaters?|coolers?|filters?|separators?|"
+    r"valves?|lines?|pipes?|piping|nozzles?|chambers?|flanges?|tees?|reducers?|fittings?|connectors?|equipment|"
+    r"instruments?|transmitters?|controllers?|sensors?|actuators?|loops?|signals?|"
+    r"main|primary|principal|purpose|used\s+(?:for|to)|serves?|responsible|designed|intended|role|duty)\b",
+    re.IGNORECASE,
+)
+CONNECTIVE = re.compile(r":\s*$|\b(?:listed|shown)\s+below\b|\bas\s+follows\b|\bthe\s+following\b", re.IGNORECASE)
 MAX_FACTS_SHOWN = 12
 
 
@@ -253,12 +302,39 @@ def _masked(text: str) -> str:
     return text
 
 
+def _asserted(text: str) -> str:
+    """``text`` with what it does not assert blanked out ("~"), same length.
+
+    A negation blanks the rest of its clause; a clause that reports the user's words or an
+    assumption is blanked whole. Everything else is checked, whatever hedge words it contains.
+    """
+    chars, start = list(text), 0
+    for end in [m.start() for m in CLAUSE_BREAK.finditer(text)] + [len(text)]:
+        clause = text[start:end]
+        negation = NEGATION.search(clause)
+        cut = start if ATTRIBUTED.search(clause) else start + negation.start() if negation else end
+        chars[cut:end] = "~" * (end - cut)
+        start = end
+    return "".join(chars)
+
+
+def _relation_mentions(text: str) -> list[tuple[re.Match[str], Relation]]:
+    """The relation phrases in ``text``, left to right; a longer phrase wins over one inside it."""
+    found = sorted(((m, r) for r, pattern in RELATION_PHRASES for m in pattern.finditer(text)), key=lambda x: (x[0].start(), -len(x[0].group(0))))
+    kept: list[tuple[re.Match[str], Relation]] = []
+    for match, relation in found:
+        if not kept or match.start() >= kept[-1][0].end():
+            kept.append((match, relation))
+    return kept
+
+
 def _relation_checks(text: str, mentions: dict[str, str], cited: Scope, everything: Scope, index: FactIndex, has_refs: bool, out: SentenceResult) -> None:
-    named = set(mentions.values())
-    where = _positions(text, mentions)
-    shown, text = text, _masked(text)
-    if len(named) < 2 or DISCLAIMER.search(text):
-        return  # a negated or hedged relation is not asserted; it is not verified either
+    shown, text = text, _asserted(_masked(text))
+    # Items named where the sentence asserts something; a negated "not T4750" names nothing.
+    where = [(pos, e) for pos, e in _positions(shown, mentions) if text[pos] != "~"]
+    named = {e for _, e in where}
+    if len(named) < 2:
+        return
 
     def judge(holds_cited: bool, holds_anywhere: bool, contradicted: bool, claim: str, missing: str) -> None:
         if holds_cited:
@@ -270,22 +346,27 @@ def _relation_checks(text: str, mentions: dict[str, str], cited: Scope, everythi
         elif not holds_anywhere:
             out.problems.append(_note(claim, "relationship", missing, shown))
 
-    for match in OPERATES.finditer(text):
+    phrases = _relation_mentions(text)
+    linked = False
+    for match, relation in phrases:
+        if relation.check != "link":
+            continue
         before = [e for pos, e in where if pos < match.start()]
         after = [e for pos, e in where if pos >= match.end() and e != (before[-1] if before else None)]
         if not before or not after:
             continue
         if re.match(r"\s*(?:by|from)\b", text[match.end() :]):  # "X is operated by Y"
             before, after = after[:1], before[-1:]
-        actor = before[-1]
+        actor, predicate, linked = before[-1], relation.predicate, True
 
-        def operated(scope: Scope) -> bool:
-            return any(f.predicate == "operates" and f.subject == actor and f.object in after for f in scope.facts)
+        def holds(scope: Scope) -> bool:
+            return any(f.predicate == predicate and f.subject == actor and f.object in after for f in scope.facts)
 
-        reverse = any(f.predicate == "operates" and f.object == actor and f.subject in after for f in everything.facts)
-        judge(operated(cited), operated(everything), reverse, f"{_name(index, actor)} operates {', '.join(_name(index, e) for e in after)}",
-              "the link runs the other way in the tool results" if reverse else "no tool result shows an operated-valve link between these items")  # fmt: skip
-        return
+        reverse = any(f.predicate == predicate and f.object == actor and f.subject in after for f in everything.facts)
+        judge(holds(cited), holds(everything), reverse, f"{_name(index, actor)} {relation.name.replace('_', ' ')} {', '.join(_name(index, e) for e in after)}",
+              "the link runs the other way in the tool results" if reverse else f"no tool result shows a '{relation.name.replace('_', ' ')}' link between these items")  # fmt: skip
+    if linked:
+        return  # instrumentation links are not piping; the flow checks below do not apply
 
     for match in SIDE.finditer(text):
         side = match.group(1).lower()
@@ -301,8 +382,9 @@ def _relation_checks(text: str, mentions: dict[str, str], cited: Scope, everythi
             judge(wanted in cited_pairs, wanted in all_pairs, contradicted, f"{_name(index, other)} {side} of {_name(index, reference)}",
                   f"the tool results show it {'upstream' if side == 'downstream' else 'downstream'}, not {side}" if contradicted else f"no tool result shows it {side} of that item")  # fmt: skip
 
-    for match in [*FEEDS.finditer(text), *FED_BY.finditer(text)]:
-        passive = match.re is FED_BY
+    for match, relation in phrases:
+        if relation.check not in ("flow", "fed_by"):
+            continue
         before = [e for pos, e in where if pos < match.start()]
         after = [e for pos, e in where if pos >= match.end()]
         if not before or not after:
@@ -310,7 +392,7 @@ def _relation_checks(text: str, mentions: dict[str, str], cited: Scope, everythi
                 out.gaps.append(_note(match.group(0), "unclear_relationship", "write it as '<item> feeds <item>' so the direction can be checked", shown))
             continue
         # The subject is one of the items named before the verb (after it, in the passive).
-        sources, targets = (before, after) if not passive else (after[:1], before[-1:])
+        sources, targets = (before, after) if relation.check == "flow" else (after[:1], before[-1:])
         cited_pairs, all_pairs = cited.downstream_pairs(), everything.downstream_pairs()
         for target in sorted(set(targets) - set(sources)):
             contradicted = not any((s, target) in all_pairs for s in sources) and all((target, s) in all_pairs for s in sources)
@@ -391,6 +473,11 @@ def check_sentence(sentence: str, index: FactIndex, extra: list[Fact], corpus: E
         if all(t.key != token.key for t in tokens):
             tokens.append(token)
     if not tokens:
+        # Nothing here can be tied to evidence. A statement about the plant ("It is the main
+        # cooling water pump") is then unchecked, and the answer can be at most limited.
+        if PLANT_STATEMENT.search(_asserted(text.translate(TYPOGRAPHY))) and not CONNECTIVE.search(text):
+            out.factual, out.checked = True, 1
+            out.gaps.append(_note(text[:80], "unchecked_statement", "a statement about the plant with no identifier, value or relation the validator can check against the evidence", text))
         return out
     out.factual, out.checked = True, len(tokens)
 

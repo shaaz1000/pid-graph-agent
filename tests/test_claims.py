@@ -223,11 +223,11 @@ def test_18_unsupported_engineering_knowledge(tools):
     assert report.level == "insufficient_evidence" and any(p["claim"] == "16 bar" for p in report.problems)
 
 
-def test_18b_known_limit_a_gloss_without_any_checkable_value_is_not_detected(tools):
-    """Documented limitation: prose with no identifier, number or claim cannot be checked."""
+def test_18b_a_gloss_without_any_checkable_value_is_at_most_limited(tools):
+    """Prose with no identifier, number or relation cannot be checked; it is never "grounded"."""
     obs = observe(tools, find("swing check valve"))
     report = check_answer(answer("SwingCheckValve-1 is a swing check valve. Such valves prevent reverse flow.", claim("is_a", "SwingCheckValve-1", value="SwingCheckValve")), "q", obs)
-    assert report.level == "grounded"
+    assert report.level == "limited" and "unchecked_statement" in {g["kind"] for g in report.gaps}
 
 
 def run_agent(tools, question, *turns):

@@ -565,7 +565,7 @@ def test_planner_that_walks_hop_by_hop_gets_the_same_facts_at_higher_cost(tools)
     direct, _ = run(
         tools, "Where does P4712 ultimately discharge?",
         [call("traverse", start_entity_id="ReciprocatingPump-1", direction="downstream", entity_types=["equipment"])],
-        "Downstream of P4712 the piping reaches T4750 and H1008 without passing other equipment, and leaves the drawing at FlowOutPipeOffPageConnector-1.",
+        "Downstream of P4712 the piping reaches T4750 and H1008 without passing other equipment.",
     )
     assert walking.usage["llm_calls"] == 5 and direct.usage["llm_calls"] == 2
     assert walking.grounding_status == direct.grounding_status == "grounded"
