@@ -30,6 +30,9 @@ written; later prompts never overwrite earlier ones.
 | `22-finish-and-submit.md` | Stop expanding scope: application-side rendering of simple results, evaluation, documentation, commit and push | Preserved development instruction |
 | `23-evaluation-baseline-instructions.md` | Let the evaluation finish untouched; what to capture and report as the baseline | Preserved development instruction |
 | `24-freeze-and-submit.md` | Freeze the agent, accept the NVIDIA baseline, fix provenance for future runs, finish documentation, commit and push | Preserved development instruction |
+| `25-cross-pid-generalization-request.md` | Reviewer follow-up: show the same architecture works on more DEXPI files; audit, dataset discovery and plan before any live runs | Preserved development instruction |
+| `26-broad-and-deep-generalization-plan.md` | Ingest all 35 official DEXPI 1.3 files, generic dataset selection, SignalLineFunction fix, representative datasets with smoke tests | Preserved development instruction |
+| `27-validator-fixes-and-cross-pid-evaluation.md` | Fix the four generic validator defects found by the smoke test, then one full 37-question cross-P&ID run | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 

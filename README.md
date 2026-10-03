@@ -369,6 +369,108 @@ knowing the graph and the tools. Hosted models are not deterministic. The scorer
 required facts are present, not everything else the answer says; that is the grounding
 check's job, and it has the limits listed below.
 
+## Cross-P&ID Generalization
+
+**Objective.** Review feedback: "A single file is not a strong indicator of performance." The
+question is whether the same pipeline (ingestion, graph tools, agent, grounding validator)
+works on P&IDs it was not built against, with no dataset-specific logic.
+
+**Ingestion: 35/35.** All 35 official DEXPI 1.3 examples were exercised through the
+deterministic ingestion/graph pipeline; eight structurally diverse datasets were selected for
+live agent reasoning evaluation. Every file completes every stage (parse, GraphLoader,
+GraphAbstractor, normalize, GraphService); per-file counts are in
+[evals/ingestion/matrix.md](evals/ingestion/matrix.md) (`uv run python scripts/ingestion_matrix.py`).
+The only links still dropped are one "composition" connector reference each in C02 and P02.
+
+**The eight evaluated datasets** ([evals/datasets/](evals/datasets/), 37 questions, gold facts
+re-derived from each file by `tests/test_datasets.py`):
+
+| Suite | File | Why it was chosen | Questions |
+|---|---|---|---|
+| c02 | C02V03-VER.EX02 (BASF) | Column with nozzles and a chamber; tags with spaces (`K 2750`), superscripts (`PIS⁺Z⁺A275003`), placeholder line numbers | 7 |
+| c03 | C03V04-VER.EX02 (Equinor) | Piping with no equipment tags; flanges, orifice, ESD valve, off-page connector | 6 |
+| i03 | I03V01 | Level loop whose controller-to-actuator link is a `SignalLineFunction` | 4 |
+| i05 | I05V01 | Flow-ratio control; one loop number (031) shared by four instruments | 4 |
+| e12 | E12V01 | Plate heat exchanger with chambers and nozzles | 4 |
+| e06 | E06V01 | Pump to exchanger through nozzles | 4 |
+| p02 | P02V01 | Reuses C01's tag P4712 for a different pump type (leakage test) | 4 |
+| p04 | P04V01 | Open pipe ends; tag `H-1008`, close to C01's `H1008` | 4 |
+
+**Live run** (NVIDIA `nvidia/nemotron-3-super-120b-a12b`, each of the 37 questions asked once, no
+retries, no question rewrites, no per-dataset prompts or routing; C01 not rerun):
+
+| Suite | Q | Fully correct | Partial | Incorrect / withheld | Points | Mean | Grounded (of which after a rewrite) | Limited | Unsupported claims in answers | Latency median / mean | LLM / tool calls |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| c02 | 7 | 7 | 0 | 0 / 0 | 7.0 | 1.00 | 7 (2) | 0 | 0 | 17.1 s / 17.1 s | 30 / 21 |
+| c03 | 6 | 5 | 0 | 1 / 0 | 5.0 | 0.83 | 6 (0) | 0 | 0 | 9.6 s / 11.4 s | 23 / 17 |
+| i03 | 4 | 2 | 0 | 0 / 2 | 2.0 | 0.50 | 2 (1) | 0 | 0 | 22.2 s / 26.7 s | 23 / 15 |
+| i05 | 4 | 3 | 0 | 0 / 1 | 3.0 | 0.75 | 3 (0) | 0 | 0 | 31.6 s / 38.9 s | 23 / 18 |
+| e12 | 4 | 3 | 0 | 0 / 1 | 3.0 | 0.75 | 3 (0) | 0 | 0 | 7.0 s / 7.6 s | 14 / 9 |
+| e06 | 4 | 4 | 0 | 0 / 0 | 4.0 | 1.00 | 4 (0) | 0 | 0 | 8.1 s / 9.4 s | 13 / 9 |
+| p02 | 4 | 3 | 0 | 0 / 1 | 3.0 | 0.75 | 3 (0) | 0 | 0 | 13.6 s / 17.1 s | 21 / 16 |
+| p04 | 4 | 3 | 0 | 1 / 0 | 3.0 | 0.75 | 4 (3) | 0 | 0 | 18.5 s / 20.3 s | 20 / 13 |
+| **Cross-P&ID (excl. C01)** | **37** | **30** | **0** | **2 / 5** | **30.0** | **0.811** | **32 (6)** | **0** | **0** | **12.7 s / 18.1 s** (668 s total) | **167 / 118** |
+
+"Withheld" means the validator rejected the drafts and the agent returned a "could not
+determine" answer with the raw tool results; the six claims it rejected never reached an
+answer. Provider failures and truncated outputs: 0. Runs are under `evals/datasets/<suite>/runs/`.
+
+**C01 baseline (kept separate, not rerun):** 15 questions, 12 fully correct, 13.42/15 points
+(mean 0.894), 14 grounded, 1 limited, 0 unsupported claims.
+
+**What had to change, all generic:**
+
+- *Schema:* DEXPI also writes signal links as `SignalLineFunction`; the normalizer now maps it
+  to `signal_line` like `SignalConveyingFunction`. I03, I05 and I12 had dropped these links
+  before; C01 is unchanged.
+- *Validator, four robustness fixes* (found by a 16-question pre-fix smoke test, kept under
+  `evals/datasets/*/smoke-pre-fix/`):
+  1. a number inside a written-out tag ("2750" of "K 2750") names that item when the cited
+     facts give the tag to exactly one item; it is no longer a free-floating value;
+  2. answer and evidence cut identifiers at the same characters, so `PIS⁺Z⁺A275003` is
+     matched (distinct identifiers stay distinct);
+  3. relation words are looked for in the prose only, with names masked, so
+     "ActuatingFunction-1" no longer reads as "actuates";
+  4. an identifier shared by several items (loop 031) is accepted only when the sentence names
+     items that the cited facts give it to; otherwise it is still rejected as ambiguous.
+
+  The existing adversarial tests (DN moved to another line, invented ids and lines, unsupported
+  or reversed relations, wrong values, nonexistent citations) still fail validation, and
+  `tests/test_validator_identifiers.py` repeats them on the new identifiers.
+
+**Remaining failures** (classified, not fixed; A planning, B entity resolution, C retrieval, D
+abstraction/schema, E direction, F missing data, G synthesis, H validator, I eval expectation,
+J parser/schema):
+
+| Question | Class | What happened |
+|---|---|---|
+| c03-04 | I | "The pipe fitting" matches seven items, because flanges, the orifice and the reducer are DEXPI pipe fittings too. The agent asked which one, which is a fair answer to an ambiguous question (in the pre-fix smoke test it picked `PipeFitting-1` and scored 1.0) |
+| p04-03 | I | The answer is right ("a plate heat exchanger, not a tubular one"), but the forbidden pattern also matched the hedged clause "whether H1008 is a tubular heat exchanger" |
+| i03-01 | A (and H) | The agent looked for instrumentation on the tank itself, did not reach the blind flange where the level is sensed, and hit the 8-step limit. Its draft ("no instrumentation") was wrong, and it was withheld only because it cited `E2.0`, the status id of an *empty* result, which the validator does not recognise |
+| e12-04 | H | Correct draft ("H1201 has no connections") withheld for the same reason: the status id `E2.0` of an empty result is not a known reference |
+| i03-02 | H | "LICSA03 actuates GlobeValve-1" is true for the loop, but the controller reaches the valve through `ActuatingFunction-1`; the validator does not chain a signal line and an operated-valve link |
+| i05-01 | H, G | The signal chain was right and every hop cited, but the summary sentence named the valve and two instruments without the actuating function between them, and "loop 031" was cited only against the valve row (fix 4 correctly still rejects that) |
+| p02-03 | D | The connector number 123 sits on the connector's reference object; the composition link between the two is the one link still dropped for P02, so the value cannot be paired with the connector |
+
+On the 16 pre-fix smoke questions the score went from 11.5 to 13.0: c02-03 and c02-05 now
+pass, and p04-04 (the DN 150 premise) was answered fully this time without any change for it.
+c03-04 went the other way as described above. i03-02 and i05-01 still fail, for the
+reasons in the table, not for the identifier defects.
+
+Known validator limitation, unchanged: when a sentence names two items and a value that the
+tool results give to *another* line of one of them, the value is reported as "uncited" (answer
+at most limited) rather than rejected. Fix 1 gives spaced tags such as `K 2750` the same
+treatment single-token tags already had.
+
+**Provenance.** The suites' `run.json` record commit `1ea8f1b` with `dirty: true`: the run was
+made from the working tree before these changes were committed. The code that ran is the
+commits that follow it.
+
+**Source and licence.** The 34 example files in
+[data/dexpi-1.3-examples/](data/dexpi-1.3-examples/) are copied unchanged from DEXPI e.V.,
+*TrainingTestCases*, `dexpi 1.3/example pids/` (https://gitlab.com/dexpi/TrainingTestCases),
+licensed CC BY 4.0; see [NOTICE](NOTICE).
+
 ## Limitations
 
 - **The graph, not the plant.** "Downstream" is drawn piping direction. Valve positions and
