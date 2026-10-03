@@ -1,0 +1,140 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 4,
+  "scored_questions": 4,
+  "mean_score": 0.75,
+  "outcomes": {
+    "abstained": 1,
+    "correct": 3
+  },
+  "totals": {
+    "model_calls": 23,
+    "tool_calls": 18,
+    "tokens": 100897
+  },
+  "rows": [
+    {
+      "id": "i05-01",
+      "category": "instrumentation chain",
+      "question": "Which valve does the flow ratio control loop 031 ultimately act on, and through which functions does the signal pass?",
+      "expected": [
+        "the globe valve",
+        "via YC031.4"
+      ],
+      "answer": "I could not determine that from the supplied P&ID graph. A drafted answer was withheld because 2 of its claims were not supported by the graph evidence.\n\nWhat the graph tools returned:\n- find_entities: '031' matches 4 entities and does not identify a single one. Use an entity id, or add line/type context.\n- ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4, ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031., ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2, ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1, ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4) -> ActuatingFunction-1 [signal_line]\n- ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.) -> ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4) [signal_line]\n- ActuatingFunction-1 -> GlobeValve-1 [operated_valve_reference]\n- ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2) -> ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.) [signal_line]\n- ProcessSignalGeneratingFunction-1 -> ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2) [measuring_line]",
+      "score": 0.0,
+      "required": [
+        {
+          "fact": "the globe valve",
+          "found": false
+        },
+        {
+          "fact": "via YC031.4",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "outcome": "abstained",
+      "model_calls": 7,
+      "tool_calls": 5,
+      "tokens": 33716,
+      "latency_ms": 67776.0,
+      "grounding": "fallback",
+      "regenerated": true,
+      "fallback": true,
+      "turn_limit": null,
+      "unsupported_claims": [
+        "031",
+        "GlobeValve-1 / ProcessInstrumentationFunction-2 (031.) / ProcessInstrumentationFunction-3 (031)"
+      ]
+    },
+    {
+      "id": "i05-02",
+      "category": "instrumentation",
+      "question": "Which instrument functions send signals into FFIC031.?",
+      "expected": [
+        "FI031.2",
+        "FI031.1"
+      ],
+      "answer": "The instrument functions that send signals into FFIC031 are FI031.2 and FI031.1. [E2.3, E2.4]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "FI031.2",
+          "found": true
+        },
+        {
+          "fact": "FI031.1",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11703,
+      "latency_ms": 24633.4,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "i05-03",
+      "category": "instrumentation",
+      "question": "What does flow indication FI031.1 get its measurement from?",
+      "expected": [
+        "a process signal generating function"
+      ],
+      "answer": "FI031.1 receives its measurement from ProcessSignalGeneratingFunction-2 via a measuring line, where the measurement taken by the signal generating function is the input to the flow indication [E2.3].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "a process signal generating function",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 7,
+      "tool_calls": 6,
+      "tokens": 29595,
+      "latency_ms": 26117.8,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "i05-04",
+      "category": "missing data",
+      "question": "What is the set point of the flow ratio controller FFIC031.?",
+      "expected": [
+        "no set point in the P&ID"
+      ],
+      "answer": "The set point of the flow ratio controller FFIC031 is not present in the loaded P&ID. [R2]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "no set point in the P&ID",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 6,
+      "tool_calls": 5,
+      "tokens": 25883,
+      "latency_ms": 37168.6,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

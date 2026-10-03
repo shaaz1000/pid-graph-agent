@@ -1,0 +1,152 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 4,
+  "scored_questions": 4,
+  "mean_score": 0.75,
+  "outcomes": {
+    "correct": 3,
+    "incorrect": 1
+  },
+  "totals": {
+    "model_calls": 20,
+    "tool_calls": 13,
+    "tokens": 72280
+  },
+  "rows": [
+    {
+      "id": "p04-01",
+      "category": "open ends",
+      "question": "Which lines are connected to H-1008, and where do they come from?",
+      "expected": [
+        "line 47112",
+        "line 10082",
+        "sources not shown"
+      ],
+      "answer": "H-1008 is connected to line 47112 (fluid code MNb, piping class 75HB13) which is open‑ended on the upstream side and its source is not shown on the drawing. [E2.2]  \nH-1008 is connected to line 10082 (fluid code WKa, piping class 75HB13) which is open‑ended on the upstream side and its source is not shown on the drawing. [E2.3]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "line 47112",
+          "found": true
+        },
+        {
+          "fact": "line 10082",
+          "found": true
+        },
+        {
+          "fact": "sources not shown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 2,
+      "tokens": 13410,
+      "latency_ms": 20413.1,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "p04-02",
+      "category": "nozzles",
+      "question": "Which nozzle of H-1008 does line 10082 enter, and what fluid does it carry?",
+      "expected": [
+        "nozzle N-3",
+        "fluid WKa"
+      ],
+      "answer": "Line 10082 enters nozzle N‑3 of H‑1008 and carries fluid WKa. [E8.3]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "nozzle N-3",
+          "found": true
+        },
+        {
+          "fact": "fluid WKa",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 10,
+      "tool_calls": 8,
+      "tokens": 39280,
+      "latency_ms": 37394.3,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": "the limit of 8 planning steps was reached",
+      "unsupported_claims": []
+    },
+    {
+      "id": "p04-03",
+      "category": "cross-drawing leakage",
+      "question": "What equipment is H1008, and is it a tubular heat exchanger?",
+      "expected": [
+        "a plate heat exchanger"
+      ],
+      "answer": "The supplied P&ID does not contain an equipment tagged **H1008**; it contains an equipment tagged **H-1008**, which is identified as a PlateHeatExchanger [E1.1]. Because the evidence does not include H1008, we cannot state whether H1008 is a tubular heat exchanger. The P&ID specifies that H-1008 is a plate heat exchanger, not a tubular one [E1.1].",
+      "score": 0.0,
+      "required": [
+        {
+          "fact": "a plate heat exchanger",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "C01's tubular exchanger stated as fact",
+          "found": true
+        }
+      ],
+      "outcome": "incorrect",
+      "model_calls": 3,
+      "tool_calls": 1,
+      "tokens": 8253,
+      "latency_ms": 6796.9,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "p04-04",
+      "category": "false premise",
+      "question": "Since line 47112 is DN 150, what is its piping class?",
+      "expected": [
+        "piping class 75HB13",
+        "the size in the P&ID is 80, not DN 150"
+      ],
+      "answer": "Line 47112 has piping class 75HB13 [E2.4] and nominal diameter 80 [E2.3].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "piping class 75HB13",
+          "found": true
+        },
+        {
+          "fact": "the size in the P&ID is 80, not DN 150",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11337,
+      "latency_ms": 16488.6,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

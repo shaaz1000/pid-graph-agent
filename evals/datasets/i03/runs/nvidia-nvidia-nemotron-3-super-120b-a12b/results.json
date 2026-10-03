@@ -1,0 +1,141 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 4,
+  "scored_questions": 4,
+  "mean_score": 0.5,
+  "outcomes": {
+    "abstained": 2,
+    "correct": 2
+  },
+  "totals": {
+    "model_calls": 23,
+    "tool_calls": 15,
+    "tokens": 80758
+  },
+  "rows": [
+    {
+      "id": "i03-01",
+      "category": "instrumentation",
+      "question": "Which instrument function takes its measurement at the tank, where exactly, and which function receives that measurement?",
+      "expected": [
+        "measures at the blind flange",
+        "feeds LICSA03"
+      ],
+      "answer": "I could not determine that from the supplied P&ID graph. A drafted answer was withheld because 1 of its claims were not supported by the graph evidence.\n\nWhat the graph tools returned:\n- Tank-1 (Tank-1, Tank)\n- get_connections: Tank-1 has no instrumentation connections in direction 'both'.\n- Tank-1 -> BlindFlange-1 [direct_piping_connection]\n- find_entities: No entity in the P&ID graph matches 'ProcessInstrumentationFunction'. Similar identifiers exist (see resolution.suggestions); none was selected.\n- find_entities: No entity in the P&ID graph matches 'ProcessSignalGeneratingFunction'. Similar identifiers exist (see resolution.suggestions); none was selected.",
+      "score": 0.0,
+      "required": [
+        {
+          "fact": "measures at the blind flange",
+          "found": false
+        },
+        {
+          "fact": "feeds LICSA03",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "outcome": "abstained",
+      "model_calls": 10,
+      "tool_calls": 7,
+      "tokens": 36447,
+      "latency_ms": 31704.1,
+      "grounding": "fallback",
+      "regenerated": true,
+      "fallback": true,
+      "turn_limit": "the limit of 8 planning steps was reached",
+      "unsupported_claims": [
+        "E2.0"
+      ]
+    },
+    {
+      "id": "i03-02",
+      "category": "instrumentation chain",
+      "question": "Which valve does the level control loop LICSA03 act on?",
+      "expected": [
+        "the globe valve LV 03"
+      ],
+      "answer": "I could not determine that from the supplied P&ID graph. A drafted answer was withheld because 1 of its claims were not supported by the graph evidence.\n\nWhat the graph tools returned:\n- ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction LICSA03, ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction LICSA03) -> ActuatingFunction-1 [signal_line]\n- ProcessSignalGeneratingFunction-1 -> ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction LICSA03) [measuring_line]\n- ActuatingFunction-1 -> GlobeValve-1 [operated_valve_reference]",
+      "score": 0.0,
+      "required": [
+        {
+          "fact": "the globe valve LV 03",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "outcome": "abstained",
+      "model_calls": 5,
+      "tool_calls": 3,
+      "tokens": 17067,
+      "latency_ms": 50979.2,
+      "grounding": "fallback",
+      "regenerated": true,
+      "fallback": true,
+      "turn_limit": null,
+      "unsupported_claims": [
+        "ProcessInstrumentationFunction-1 (03) operates GlobeValve-1"
+      ]
+    },
+    {
+      "id": "i03-03",
+      "category": "open ends",
+      "question": "What is valve LV 03 connected to on the piping side?",
+      "expected": [
+        "its pipes are open-ended / not shown"
+      ],
+      "answer": "Valve LV 03 (GlobeValve-1) has no piping connections shown on this drawing; both its upstream and downstream sides are open ends, indicating the pipe continues but is not represented here. [E2.2, E2.3]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "its pipes are open-ended / not shown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 10907,
+      "latency_ms": 12708.5,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "i03-04",
+      "category": "false premise",
+      "question": "Assume this tank is T4750. What feeds it?",
+      "expected": [
+        "T4750 is not in this drawing"
+      ],
+      "answer": "The only tank in the P&ID is Tank-1 (id Tank-1) [R2]. Assuming this tank is T4750 (user's unverified assumption), it has no upstream piping connections [R3], so nothing feeds it.",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "T4750 is not in this drawing",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "C01 equipment",
+          "found": false
+        }
+      ],
+      "outcome": "correct",
+      "model_calls": 5,
+      "tool_calls": 3,
+      "tokens": 16337,
+      "latency_ms": 11454.8,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

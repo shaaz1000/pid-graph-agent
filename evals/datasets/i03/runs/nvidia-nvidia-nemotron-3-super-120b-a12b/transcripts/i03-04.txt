@@ -1,0 +1,71 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1ea8f1b
+
+QUESTION [i03-04]
+Assume this tank is T4750. What feeds it?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "T4750", "entity_type": "tank"}
+Status: not_found
+Result: {
+  "status": "not_found",
+  "result_ref": "R1",
+  "status_ref": "E1.0",
+  "message": "No entity in the P&ID graph matches 'T4750'.",
+  "resolution": {
+    "status": "none",
+    "ambiguous": false,
+    "match_count": 0,
+    "suggestions": []
+  }
+}
+
+STEP 2
+Tool:   list_entities
+Input:  {"entity_type": "tank"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "entities": [
+    {
+      "id": "Tank-1",
+      "name": "Tank-1",
+      "type": "Tank",
+      "category": "equipment",
+      "ref": "E2.1"
+    }
+  ],
+  "meta": {
+    "count": 1
+  }
+}
+
+STEP 3
+Tool:   get_connections
+Input:  {"entity_id": "Tank-1", "direction": "upstream", "relationship": "piping"}
+Status: empty
+Result: {
+  "status": "empty",
+  "result_ref": "R3",
+  "status_ref": "E3.0",
+  "message": "Tank-1 has no piping connections in direction 'upstream'."
+}
+
+FINAL ANSWER
+The only tank in the P&ID is Tank-1 (id Tank-1) [R2]. Assuming this tank is T4750 (user's unverified assumption), it has no upstream piping connections [R3], so nothing feeds it.
+
+GROUNDING: regenerated (2 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: limited
+  grounded statement: The only tank in the P&ID is Tank-1 (id Tank-1)  . [R2]
+      <- F2 identified_as [Tank-1] plant_graph: Tank-1
+      <- F3 is_a [Tank-1] plant_graph: Tank-1
+  grounded statement: Assuming this tank is T4750 (user's unverified assumption), it has no upstream piping connections  , so nothing feeds it. [R3]
+  token-level only: T4750 (supported by a tool result that this sentence does not cite)
+  a draft was rejected for unsupported claims: E3.0, T4750
+
+EVIDENCE (1 graph facts)
+  [entity] Tank-1  <- plant_graph: Tank-1
+
+USAGE: 5 model calls, 16337 tokens, 11455 ms

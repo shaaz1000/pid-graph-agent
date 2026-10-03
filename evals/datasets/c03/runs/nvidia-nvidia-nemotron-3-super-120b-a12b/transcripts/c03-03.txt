@@ -1,0 +1,75 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1ea8f1b
+
+QUESTION [c03-03]
+What lies directly downstream of the restriction orifice, and on which line?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "restriction orifice"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R1",
+  "status_ref": "E1.0",
+  "entities": [
+    {
+      "id": "RestrictionOrifice-1",
+      "name": "RestrictionOrifice-1",
+      "type": "RestrictionOrifice",
+      "category": "piping_component",
+      "match_tier": "type",
+      "match_reason": "type = 'restriction orifice'",
+      "identifier_kind": "type",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1
+      },
+      "ref": "E1.1"
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_connections
+Input:  {"entity_id": "RestrictionOrifice-1", "direction": "downstream", "relationship": "piping"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "connections": [
+    {
+      "id": "PipingNetworkSegment-3/connections/3",
+      "from": "RestrictionOrifice-1",
+      "to": "BallValve-1",
+      "type": "direct_piping_connection",
+      "relationship": "piping",
+      "ref": "E2.2",
+      "neighbor_is": "downstream",
+      "neighbor_category": "piping_component",
+      "lineNumber": "13L37007A",
+      "segmentNumber": "S1",
+      "fluidCode": "PB",
+      "pipingClassCode": "FS720",
+      "insulationType": "0F",
+      "insulationThickness": "0.0 mm"
+    }
+  ]
+}
+
+FINAL ANSWER
+BallValve-1 lies directly downstream of the restriction orifice on line 13L37007A [E2.2].
+
+GROUNDING: grounded (2 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  grounded statement: BallValve-1 lies directly downstream of the restriction orifice on line 13L37007A  . [E2.2]
+      <- F4 identified_as [BallValve-1] plant_graph: BallValve-1
+      <- F5 is_a [BallValve-1] plant_graph: BallValve-1
+      <- F15 has_property [PipingNetworkSegment-3/connections/3] conceptual_graph: PipingNetworkSegment-3/connections/3, PipingNetworkSegment-3, PipingNetworkSystem-2
+      <- F16 flows_to [PipingNetworkSegment-3/connections/3] conceptual_graph: PipingNetworkSegment-3/connections/3, PipingNetworkSegment-3, PipingNetworkSystem-2
+
+EVIDENCE (2 graph facts)
+  [entity] RestrictionOrifice-1  <- plant_graph: RestrictionOrifice-1
+  [connection] PipingNetworkSegment-3/connections/3  <- conceptual_graph: PipingNetworkSegment-3/connections/3, PipingNetworkSegment-3, PipingNetworkSystem-2
+
+USAGE: 3 model calls, 10821 tokens, 5634 ms

@@ -1,0 +1,141 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 4,
+  "scored_questions": 4,
+  "mean_score": 1.0,
+  "outcomes": {
+    "correct": 4
+  },
+  "totals": {
+    "model_calls": 13,
+    "tool_calls": 9,
+    "tokens": 47493
+  },
+  "rows": [
+    {
+      "id": "e06-01",
+      "category": "adjacency",
+      "question": "What does pump P-4713 feed, and through which line?",
+      "expected": [
+        "H-1009",
+        "line 47132"
+      ],
+      "answer": "Pump P-4713 feeds plate heat exchanger H-1009 through line 47132 [E2.2].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "H-1009",
+          "found": true
+        },
+        {
+          "fact": "line 47132",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11137,
+      "latency_ms": 4164.9,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "e06-02",
+      "category": "nozzles",
+      "question": "Between which nozzles does the pipe from P-4713 to H-1009 run?",
+      "expected": [
+        "pump nozzle N-2",
+        "exchanger nozzle N-1"
+      ],
+      "answer": "The pipe runs from nozzle N-2 on P-4713 to nozzle N-1 on H-1009. [E3.2]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "pump nozzle N-2",
+          "found": true
+        },
+        {
+          "fact": "exchanger nozzle N-1",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tokens": 14776,
+      "latency_ms": 10794.9,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "e06-03",
+      "category": "line properties",
+      "question": "What fluid code and piping class does line 47132 carry?",
+      "expected": [
+        "MNb",
+        "75HB13"
+      ],
+      "answer": "Line 47132 carries fluid code MNb and piping class 75HB13. [E2.1, E2.4]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "MNb",
+          "found": true
+        },
+        {
+          "fact": "75HB13",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 10774,
+      "latency_ms": 5429.5,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "e06-04",
+      "category": "upstream",
+      "question": "What is upstream of H-1009?",
+      "expected": [
+        "the pump P-4713"
+      ],
+      "answer": "Upstream of H-1009 is the centrifugal pump P-4713 (entity ID CentrifugalPump-1) connected via line 47132 [E2.2].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "the pump P-4713",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 10806,
+      "latency_ms": 17286.5,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

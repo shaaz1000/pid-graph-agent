@@ -1,0 +1,252 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 7,
+  "scored_questions": 7,
+  "mean_score": 1.0,
+  "outcomes": {
+    "correct": 7
+  },
+  "totals": {
+    "model_calls": 30,
+    "tool_calls": 21,
+    "tokens": 124815
+  },
+  "rows": [
+    {
+      "id": "c02-01",
+      "category": "entity resolution",
+      "question": "What kind of equipment is K 2750, and what are its upper and lower design pressure limits?",
+      "expected": [
+        "it is a process column",
+        "upper limit 6.0 bar",
+        "lower limit -1.0 bar"
+      ],
+      "answer": "K 2750 is a ProcessColumn. [E1.1]  \nIts lower design pressure limit is -1.0 bar. [E2.16]  \nIts upper design pressure limit is 6.0 bar. [E2.19]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "it is a process column",
+          "found": true
+        },
+        {
+          "fact": "upper limit 6.0 bar",
+          "found": true
+        },
+        {
+          "fact": "lower limit -1.0 bar",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11731,
+      "latency_ms": 11307.3,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c02-02",
+      "category": "type lookup",
+      "question": "What is the maximum design temperature of the column?",
+      "expected": [
+        "150.0 °C"
+      ],
+      "answer": "The maximum design temperature of the column is 150.0 °C [E2.20].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "150.0 °C",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 2,
+      "tokens": 13120,
+      "latency_ms": 5531.2,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c02-03",
+      "category": "adjacency",
+      "question": "What is connected directly to nozzle N1 of K 2750, and what is the nominal diameter of that pipe?",
+      "expected": [
+        "the pipe reducer",
+        "DN 200"
+      ],
+      "answer": "The pipe reducer (PipeReducer-1) is directly connected to nozzle N1 of K 2750, and the pipe has a nominal diameter of DN 200 [E5.5].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "the pipe reducer",
+          "found": true
+        },
+        {
+          "fact": "DN 200",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 6,
+      "tool_calls": 5,
+      "tokens": 26374,
+      "latency_ms": 21602.3,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c02-04",
+      "category": "route",
+      "question": "Follow the piping from K 2750 to where it leaves the drawing: which items does it pass, and what pipe sizes are used along the way?",
+      "expected": [
+        "passes the pipe reducer",
+        "DN 200 then DN 150",
+        "DN 150 after the reducer",
+        "leaves via the off-page connector"
+      ],
+      "answer": "From K 2750 (ProcessColumn-1) the downstream piping splits into four branches that end at the drawing, as shown by the traversal results. [R3]  \n\n- Branch 1: K 2750 → BlindFlange-1 (DN 80) → OperatedValve-2 (DN 25) → BlindFlange-2 (DN 25), where the line terminates at the drawing. [E3.11, E3.17, E3.19]  \n- Branch 2: K 2750 → BlindFlange-3 (DN 80) → OperatedValve-3 (DN 25) → BlindFlange-4 (DN 25), ending at the drawing. [E3.12, E3.18, E3.20]  \n- Branch 3: K 2750 → PipeReducer-1 (DN 200) → FlowOutPipeOffPageConnector-1 (DN 150), which is an off‑page connector indicating the pipe leaves the drawing. [E3.13, E3.15]  \n- Branch 4: K 2750 → PipeTee-1 (DN 150) → OperatedValve-1 (DN 80), terminating at the drawing. [E3.14, E3.16]  \n- Additionally, the PipeTee-1 has an open‑ended continuation of DN 150 that is not represented on this drawing. [E3.21]  \n\nEach segment lists the items passed and the nominal diameter of the pipe segment, using only the evidence provided.",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "passes the pipe reducer",
+          "found": true
+        },
+        {
+          "fact": "DN 200 then DN 150",
+          "found": true
+        },
+        {
+          "fact": "DN 150 after the reducer",
+          "found": true
+        },
+        {
+          "fact": "leaves via the off-page connector",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 5,
+      "tool_calls": 3,
+      "tokens": 25455,
+      "latency_ms": 34617.6,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c02-05",
+      "category": "instrumentation",
+      "question": "Where is the measurement for PI(Z)275003A taken, and which instrument function does it send its signal to?",
+      "expected": [
+        "measured at BlindFlange-2",
+        "signal to PIS⁺Z⁺A275003"
+      ],
+      "answer": "The measurement for PI(Z)275003A is taken at BlindFlange-2 [E4.2, E2.3].  \nPI(Z)275003A sends its signal to the instrument function PIS⁺Z⁺A275003 [E2.2].",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "measured at BlindFlange-2",
+          "found": true
+        },
+        {
+          "fact": "signal to PIS⁺Z⁺A275003",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 5,
+      "tool_calls": 4,
+      "tokens": 20420,
+      "latency_ms": 22728.2,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c02-06",
+      "category": "ambiguity",
+      "question": "Which line is valve H658B1UV on?",
+      "expected": [
+        "two valves share the name",
+        "both are reported"
+      ],
+      "answer": "Valve H658B1UV (OperatedValve-2) is on line *at P3* (PipingNetworkSystem-3). [E2.1]  \nValve H658B1UV (OperatedValve-3) is on line *at P4* (PipingNetworkSystem-4). [E3.1]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "two valves share the name",
+          "found": true
+        },
+        {
+          "fact": "both are reported",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tokens": 15997,
+      "latency_ms": 17109.0,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c02-07",
+      "category": "missing data",
+      "question": "How much does column K 2750 weigh?",
+      "expected": [
+        "weight not in the P&ID"
+      ],
+      "answer": "The P&ID does not provide a weight value for column K 2750. [R2]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "weight not in the P&ID",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "an invented weight",
+          "found": false
+        }
+      ],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11718,
+      "latency_ms": 7070.1,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

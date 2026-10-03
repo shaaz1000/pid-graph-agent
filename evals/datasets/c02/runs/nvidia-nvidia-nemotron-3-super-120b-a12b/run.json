@@ -1,0 +1,5703 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "dirty": true,
+  "diff_sha256": "922ab1ce401cef830a7f7848e061e2b8da1824995d28074fccce5c940bd6039d",
+  "untracked_source_files": [],
+  "data_file": "data/dexpi-1.3-examples/C02V03-VER.EX02.xml",
+  "started": "2026-10-03 13:19:10",
+  "results": [
+    {
+      "question_id": "c02-01",
+      "question": "What kind of equipment is K 2750, and what are its upper and lower design pressure limits?",
+      "answer": "K 2750 is a ProcessColumn. [E1.1]  \nIts lower design pressure limit is -1.0 bar. [E2.16]  \nIts upper design pressure limit is 6.0 bar. [E2.19]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "K 2750"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "ProcessColumn-1",
+                "name": "K 2750",
+                "type": "ProcessColumn",
+                "category": "equipment",
+                "tag": "K 2750",
+                "identifiers": {
+                  "tagName": "K 2750"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'K 2750'",
+                "links": {
+                  "piping_downstream": 4
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 2.79,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_properties",
+          "input": {
+            "ids": [
+              "ProcessColumn-1"
+            ]
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "properties": {
+              "ProcessColumn-1": {
+                "found": [
+                  {
+                    "ref": "E2.1",
+                    "property": "tagName",
+                    "value": "K 2750"
+                  },
+                  {
+                    "ref": "E2.2",
+                    "property": "tagNamePrefix",
+                    "value": "K"
+                  },
+                  {
+                    "ref": "E2.3",
+                    "property": "tagNameSequenceNumber",
+                    "value": "2750"
+                  },
+                  {
+                    "ref": "E2.4",
+                    "property": "tagNameSuffix",
+                    "value": ""
+                  },
+                  {
+                    "ref": "E2.5",
+                    "property": "subTagName",
+                    "value": "H1",
+                    "on": "Nozzle-1",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.6",
+                    "property": "subTagName",
+                    "value": "N1",
+                    "on": "Nozzle-2",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.7",
+                    "property": "subTagName",
+                    "value": "N2",
+                    "on": "Nozzle-3",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.8",
+                    "property": "subTagName",
+                    "value": "N3",
+                    "on": "Nozzle-4",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.9",
+                    "property": "subTagName",
+                    "value": "N4",
+                    "on": "Nozzle-5",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.10",
+                    "property": "subTagName",
+                    "value": "N5",
+                    "on": "Nozzle-6",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.11",
+                    "property": "subTagName",
+                    "value": "N7",
+                    "on": "Nozzle-7",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.12",
+                    "property": "subTagName",
+                    "value": "P3",
+                    "on": "Nozzle-8",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.13",
+                    "property": "subTagName",
+                    "value": "P4",
+                    "on": "Nozzle-9",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.14",
+                    "property": "height",
+                    "value": "14000.0 mm",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.15",
+                    "property": "insideDiameter",
+                    "value": "500.0 mm",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.16",
+                    "property": "lowerLimitDesignPressure",
+                    "value": "-1.0 bar",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.17",
+                    "property": "materialOfConstructionCode",
+                    "value": "1.4571",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.18",
+                    "property": "subTagName",
+                    "value": "Chamber 1",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.19",
+                    "property": "upperLimitDesignPressure",
+                    "value": "6.0 bar",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.20",
+                    "property": "upperLimitDesignTemperature",
+                    "value": "150.0 °C",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  }
+                ],
+                "missing": []
+              }
+            }
+          },
+          "duration_ms": 1.25,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessColumn-1",
+          "fact": {
+            "type": "ProcessColumn",
+            "name": "K 2750",
+            "tagName": "K 2750"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagName",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagName",
+            "value": "K 2750",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNamePrefix",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNamePrefix",
+            "value": "K",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNameSequenceNumber",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNameSequenceNumber",
+            "value": "2750",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNameSuffix",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNameSuffix",
+            "value": "",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-1.subTagName",
+          "fact": {
+            "object_id": "Nozzle-1",
+            "property": "subTagName",
+            "value": "H1",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-2.subTagName",
+          "fact": {
+            "object_id": "Nozzle-2",
+            "property": "subTagName",
+            "value": "N1",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-3.subTagName",
+          "fact": {
+            "object_id": "Nozzle-3",
+            "property": "subTagName",
+            "value": "N2",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-3"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-4.subTagName",
+          "fact": {
+            "object_id": "Nozzle-4",
+            "property": "subTagName",
+            "value": "N3",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-4"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-5.subTagName",
+          "fact": {
+            "object_id": "Nozzle-5",
+            "property": "subTagName",
+            "value": "N4",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-5"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-6.subTagName",
+          "fact": {
+            "object_id": "Nozzle-6",
+            "property": "subTagName",
+            "value": "N5",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-6"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-7.subTagName",
+          "fact": {
+            "object_id": "Nozzle-7",
+            "property": "subTagName",
+            "value": "N7",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-7"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-8.subTagName",
+          "fact": {
+            "object_id": "Nozzle-8",
+            "property": "subTagName",
+            "value": "P3",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-8"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-9.subTagName",
+          "fact": {
+            "object_id": "Nozzle-9",
+            "property": "subTagName",
+            "value": "P4",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-9"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.height",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "height",
+            "value": "14000.0 mm",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.insideDiameter",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "insideDiameter",
+            "value": "500.0 mm",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.lowerLimitDesignPressure",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "lowerLimitDesignPressure",
+            "value": "-1.0 bar",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.materialOfConstructionCode",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "materialOfConstructionCode",
+            "value": "1.4571",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.subTagName",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "subTagName",
+            "value": "Chamber 1",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.upperLimitDesignPressure",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "upperLimitDesignPressure",
+            "value": "6.0 bar",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.upperLimitDesignTemperature",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "upperLimitDesignTemperature",
+            "value": "150.0 °C",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessColumn-1": {
+          "name": "K 2750",
+          "type": "ProcessColumn",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E1.1"
+            ]
+          },
+          "text": "K 2750 is a ProcessColumn  . [E1.1]",
+          "refs": [
+            "E1.1"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "ProcessColumn-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "K 2750",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0"
+              ]
+            },
+            {
+              "id": "F3",
+              "predicate": "is_a",
+              "subject": "ProcessColumn-1",
+              "value": "ProcessColumn",
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.16"
+            ]
+          },
+          "text": "Its lower design pressure limit is -1.0 bar  . [E2.16]",
+          "refs": [
+            "E2.16"
+          ],
+          "facts": [
+            {
+              "id": "F20",
+              "predicate": "has_property",
+              "subject": "Chamber-1",
+              "value": "-1.0 bar",
+              "qualifiers": {
+                "property": "lowerLimitDesignPressure",
+                "owner": "ProcessColumn-1",
+                "scope": "child:Chamber"
+              },
+              "tool": "get_properties",
+              "evidence_id": "Chamber-1.lowerLimitDesignPressure",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "Chamber-1"
+              ],
+              "refs": [
+                "E2.16"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.19"
+            ]
+          },
+          "text": "Its upper design pressure limit is 6.0 bar  . [E2.19]",
+          "refs": [
+            "E2.19"
+          ],
+          "facts": [
+            {
+              "id": "F23",
+              "predicate": "has_property",
+              "subject": "Chamber-1",
+              "value": "6.0 bar",
+              "qualifiers": {
+                "property": "upperLimitDesignPressure",
+                "owner": "ProcessColumn-1",
+                "scope": "child:Chamber"
+              },
+              "tool": "get_properties",
+              "evidence_id": "Chamber-1.upperLimitDesignPressure",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "Chamber-1"
+              ],
+              "refs": [
+                "E2.19"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 4,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 11043,
+        "completion_tokens": 688,
+        "total_tokens": 11731,
+        "reasoning_tokens": 566
+      },
+      "duration_ms": 11307.3,
+      "answered_at": "2026-10-03 13:19:21"
+    },
+    {
+      "question_id": "c02-02",
+      "question": "What is the maximum design temperature of the column?",
+      "answer": "The maximum design temperature of the column is 150.0 °C [E2.20].",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "list_entities",
+          "input": {
+            "entity_type": "column"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "ProcessColumn-1",
+                "name": "K 2750",
+                "type": "ProcessColumn",
+                "category": "equipment",
+                "tag": "K 2750",
+                "identifiers": {
+                  "tagName": "K 2750"
+                },
+                "ref": "E1.1"
+              }
+            ],
+            "meta": {
+              "count": 1
+            }
+          },
+          "duration_ms": 0.54,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_properties",
+          "input": {
+            "ids": "ProcessColumn-1"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "properties": {
+              "ProcessColumn-1": {
+                "found": [
+                  {
+                    "ref": "E2.1",
+                    "property": "tagName",
+                    "value": "K 2750"
+                  },
+                  {
+                    "ref": "E2.2",
+                    "property": "tagNamePrefix",
+                    "value": "K"
+                  },
+                  {
+                    "ref": "E2.3",
+                    "property": "tagNameSequenceNumber",
+                    "value": "2750"
+                  },
+                  {
+                    "ref": "E2.4",
+                    "property": "tagNameSuffix",
+                    "value": ""
+                  },
+                  {
+                    "ref": "E2.5",
+                    "property": "subTagName",
+                    "value": "H1",
+                    "on": "Nozzle-1",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.6",
+                    "property": "subTagName",
+                    "value": "N1",
+                    "on": "Nozzle-2",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.7",
+                    "property": "subTagName",
+                    "value": "N2",
+                    "on": "Nozzle-3",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.8",
+                    "property": "subTagName",
+                    "value": "N3",
+                    "on": "Nozzle-4",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.9",
+                    "property": "subTagName",
+                    "value": "N4",
+                    "on": "Nozzle-5",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.10",
+                    "property": "subTagName",
+                    "value": "N5",
+                    "on": "Nozzle-6",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.11",
+                    "property": "subTagName",
+                    "value": "N7",
+                    "on": "Nozzle-7",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.12",
+                    "property": "subTagName",
+                    "value": "P3",
+                    "on": "Nozzle-8",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.13",
+                    "property": "subTagName",
+                    "value": "P4",
+                    "on": "Nozzle-9",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.14",
+                    "property": "height",
+                    "value": "14000.0 mm",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.15",
+                    "property": "insideDiameter",
+                    "value": "500.0 mm",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.16",
+                    "property": "lowerLimitDesignPressure",
+                    "value": "-1.0 bar",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.17",
+                    "property": "materialOfConstructionCode",
+                    "value": "1.4571",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.18",
+                    "property": "subTagName",
+                    "value": "Chamber 1",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.19",
+                    "property": "upperLimitDesignPressure",
+                    "value": "6.0 bar",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.20",
+                    "property": "upperLimitDesignTemperature",
+                    "value": "150.0 °C",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  }
+                ],
+                "missing": []
+              }
+            }
+          },
+          "duration_ms": 1.66,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessColumn-1",
+          "fact": {
+            "type": "ProcessColumn",
+            "name": "K 2750",
+            "tagName": "K 2750"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagName",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagName",
+            "value": "K 2750",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNamePrefix",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNamePrefix",
+            "value": "K",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNameSequenceNumber",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNameSequenceNumber",
+            "value": "2750",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNameSuffix",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNameSuffix",
+            "value": "",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-1.subTagName",
+          "fact": {
+            "object_id": "Nozzle-1",
+            "property": "subTagName",
+            "value": "H1",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-2.subTagName",
+          "fact": {
+            "object_id": "Nozzle-2",
+            "property": "subTagName",
+            "value": "N1",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-3.subTagName",
+          "fact": {
+            "object_id": "Nozzle-3",
+            "property": "subTagName",
+            "value": "N2",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-3"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-4.subTagName",
+          "fact": {
+            "object_id": "Nozzle-4",
+            "property": "subTagName",
+            "value": "N3",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-4"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-5.subTagName",
+          "fact": {
+            "object_id": "Nozzle-5",
+            "property": "subTagName",
+            "value": "N4",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-5"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-6.subTagName",
+          "fact": {
+            "object_id": "Nozzle-6",
+            "property": "subTagName",
+            "value": "N5",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-6"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-7.subTagName",
+          "fact": {
+            "object_id": "Nozzle-7",
+            "property": "subTagName",
+            "value": "N7",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-7"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-8.subTagName",
+          "fact": {
+            "object_id": "Nozzle-8",
+            "property": "subTagName",
+            "value": "P3",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-8"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-9.subTagName",
+          "fact": {
+            "object_id": "Nozzle-9",
+            "property": "subTagName",
+            "value": "P4",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-9"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.height",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "height",
+            "value": "14000.0 mm",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.insideDiameter",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "insideDiameter",
+            "value": "500.0 mm",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.lowerLimitDesignPressure",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "lowerLimitDesignPressure",
+            "value": "-1.0 bar",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.materialOfConstructionCode",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "materialOfConstructionCode",
+            "value": "1.4571",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.subTagName",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "subTagName",
+            "value": "Chamber 1",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.upperLimitDesignPressure",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "upperLimitDesignPressure",
+            "value": "6.0 bar",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.upperLimitDesignTemperature",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "upperLimitDesignTemperature",
+            "value": "150.0 °C",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessColumn-1": {
+          "name": "K 2750",
+          "type": "ProcessColumn",
+          "step": 1
+        }
+      },
+      "grounding_status": "regenerated",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.20"
+            ]
+          },
+          "text": "The maximum design temperature of the column is 150.0 °C  . [E2.20]",
+          "refs": [
+            "E2.20"
+          ],
+          "facts": [
+            {
+              "id": "F24",
+              "predicate": "has_property",
+              "subject": "Chamber-1",
+              "value": "150.0 °C",
+              "qualifiers": {
+                "property": "upperLimitDesignTemperature",
+                "owner": "ProcessColumn-1",
+                "scope": "child:Chamber"
+              },
+              "tool": "get_properties",
+              "evidence_id": "Chamber-1.upperLimitDesignTemperature",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "Chamber-1"
+              ],
+              "refs": [
+                "E2.20"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 1,
+      "unsupported_claims": [],
+      "rejected_drafts": [
+        {
+          "draft": "The maximum design temperature of the column (K 2750) is 150.0 °C [E2.20].",
+          "unsupported_claims": [
+            {
+              "claim": "2750",
+              "kind": "uncited",
+              "reason": "supported by a tool result that this sentence does not cite",
+              "sentence": "The maximum design temperature of the column (K 2750) is 150.0 °C  ."
+            }
+          ]
+        }
+      ],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 4,
+        "prompt_tokens": 12632,
+        "completion_tokens": 488,
+        "total_tokens": 13120,
+        "reasoning_tokens": 374
+      },
+      "duration_ms": 5531.2,
+      "answered_at": "2026-10-03 13:19:28"
+    },
+    {
+      "question_id": "c02-03",
+      "question": "What is connected directly to nozzle N1 of K 2750, and what is the nominal diameter of that pipe?",
+      "answer": "The pipe reducer (PipeReducer-1) is directly connected to nozzle N1 of K 2750, and the pipe has a nominal diameter of DN 200 [E5.5].",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "K 2750"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "ProcessColumn-1",
+                "name": "K 2750",
+                "type": "ProcessColumn",
+                "category": "equipment",
+                "tag": "K 2750",
+                "identifiers": {
+                  "tagName": "K 2750"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'K 2750'",
+                "links": {
+                  "piping_downstream": 4
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 7.6,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_entity",
+          "input": {
+            "entity_id": "ProcessColumn-1",
+            "include_children": true
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "entities": [
+              {
+                "id": "ProcessColumn-1",
+                "type": "ProcessColumn",
+                "type_hierarchy": [
+                  "ProcessColumn",
+                  "Equipment"
+                ],
+                "category": "equipment",
+                "tag": "K 2750",
+                "name": "K 2750",
+                "identifiers": {
+                  "tagName": "K 2750"
+                },
+                "properties": {
+                  "tagName": "K 2750",
+                  "tagNamePrefix": "K",
+                  "tagNameSequenceNumber": "2750",
+                  "tagNameSuffix": ""
+                },
+                "children": [
+                  {
+                    "id": "Nozzle-1",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "H1"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-2",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N1"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-3",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N2"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-4",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N3"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-5",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N4"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-6",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N5"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-7",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N7"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-8",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "P3"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-9",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "P4"
+                    }
+                  },
+                  {
+                    "id": "Chamber-1",
+                    "type": "Chamber",
+                    "relation": "chambers",
+                    "properties": {
+                      "height": "14000.0 mm",
+                      "insideDiameter": "500.0 mm",
+                      "lowerLimitDesignPressure": "-1.0 bar",
+                      "materialOfConstructionCode": "1.4571",
+                      "subTagName": "Chamber 1",
+                      "upperLimitDesignPressure": "6.0 bar",
+                      "upperLimitDesignTemperature": "150.0 °C"
+                    }
+                  },
+                  {
+                    "id": "SubTaggedColumnSection-1",
+                    "type": "SubTaggedColumnSection",
+                    "relation": "columnSections",
+                    "properties": {}
+                  },
+                  {
+                    "id": "ColumnPackingsArrangement-1",
+                    "type": "ColumnPackingsArrangement",
+                    "relation": "internals",
+                    "properties": {}
+                  }
+                ],
+                "links": {
+                  "piping_downstream": 4
+                },
+                "ref": "E2.1"
+              }
+            ]
+          },
+          "duration_ms": 2.97,
+          "executed": true
+        },
+        {
+          "step": 3,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "Nozzle-2",
+            "direction": "both",
+            "relationship": "piping"
+          },
+          "status": "not_found",
+          "result": {
+            "status": "not_found",
+            "result_ref": "R3",
+            "status_ref": "E3.0",
+            "message": "No entity 'Nozzle-2' exists in the P&ID graph.",
+            "resolution": {
+              "status": "none",
+              "suggestions": []
+            }
+          },
+          "duration_ms": 6.76,
+          "executed": true
+        },
+        {
+          "step": 4,
+          "tool": "get_properties",
+          "input": {
+            "ids": "Nozzle-2"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R4",
+            "status_ref": "E4.0",
+            "properties": {
+              "Nozzle-2": {
+                "found": [
+                  {
+                    "ref": "E4.1",
+                    "property": "subTagName",
+                    "value": "N1"
+                  }
+                ],
+                "missing": []
+              }
+            }
+          },
+          "duration_ms": 3.67,
+          "executed": true
+        },
+        {
+          "step": 5,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "ProcessColumn-1",
+            "direction": "both",
+            "relationship": "piping"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R5",
+            "status_ref": "E5.0",
+            "connections": [
+              {
+                "id": "PipingNetworkSegment-6/connections/1",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "BlindFlange-1",
+                "type": "direct_piping_connection",
+                "relationship": "piping",
+                "ref": "E5.2",
+                "neighbor_is": "downstream",
+                "neighbor_category": "piping_component",
+                "lineNumber": "*at P3*",
+                "segmentNumber": "*S1*",
+                "nominalDiameterRepresentation": "DN 80",
+                "nominalDiameterStandard": "DN 80 (DIN 2448)",
+                "from_nozzle": "P3"
+              },
+              {
+                "id": "PipingNetworkSegment-3/connections/1",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "PipeTee-1 (PipeTee *at N3*/*C1*)",
+                "type": "pipe",
+                "relationship": "piping",
+                "ref": "E5.3",
+                "neighbor_is": "downstream",
+                "neighbor_category": "piping_component",
+                "lineNumber": "*at N3*",
+                "segmentNumber": "*S1*",
+                "nominalDiameterRepresentation": "DN 150",
+                "nominalDiameterStandard": "DN 150 (DIN 2448)",
+                "from_nozzle": "N3"
+              },
+              {
+                "id": "PipingNetworkSegment-8/connections/1",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "BlindFlange-3",
+                "type": "direct_piping_connection",
+                "relationship": "piping",
+                "ref": "E5.4",
+                "neighbor_is": "downstream",
+                "neighbor_category": "piping_component",
+                "lineNumber": "*at P4*",
+                "segmentNumber": "*S1*",
+                "nominalDiameterRepresentation": "DN 80",
+                "nominalDiameterStandard": "DN 80 (DIN 2448)",
+                "from_nozzle": "P4"
+              },
+              {
+                "id": "PipingNetworkSegment-1/connections/1",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "PipeReducer-1",
+                "type": "pipe",
+                "relationship": "piping",
+                "ref": "E5.5",
+                "neighbor_is": "downstream",
+                "neighbor_category": "piping_component",
+                "lineNumber": "2750.001.6",
+                "segmentNumber": "*S1*",
+                "nominalDiameterRepresentation": "DN 200",
+                "nominalDiameterStandard": "DN 200 (DIN 2448)",
+                "fluidCode": "8503",
+                "pipingClassCode": "10HB25T10B1",
+                "insulationType": "B40",
+                "from_nozzle": "N1"
+              }
+            ]
+          },
+          "duration_ms": 2.34,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessColumn-1",
+          "fact": {
+            "type": "ProcessColumn",
+            "name": "K 2750",
+            "tagName": "K 2750"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-1",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "H1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-2",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "N1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-2"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-3",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "N2"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-3"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-4",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "N3"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-4"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-5",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "N4"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-5"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-6",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "N5"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-6"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-7",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "N7"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-7"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-8",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "P3"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-8"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-9",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "ProcessColumn-1",
+            "subTagName": "P4"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-9"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Chamber-1",
+          "fact": {
+            "type": "Chamber",
+            "part_of": "ProcessColumn-1",
+            "height": "14000.0 mm",
+            "insideDiameter": "500.0 mm",
+            "lowerLimitDesignPressure": "-1.0 bar",
+            "materialOfConstructionCode": "1.4571",
+            "subTagName": "Chamber 1",
+            "upperLimitDesignPressure": "6.0 bar",
+            "upperLimitDesignTemperature": "150.0 °C"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "SubTaggedColumnSection-1",
+          "fact": {
+            "type": "SubTaggedColumnSection",
+            "part_of": "ProcessColumn-1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "SubTaggedColumnSection-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "ColumnPackingsArrangement-1",
+          "fact": {
+            "type": "ColumnPackingsArrangement",
+            "part_of": "ProcessColumn-1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ColumnPackingsArrangement-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-2.subTagName",
+          "fact": {
+            "object_id": "Nozzle-2",
+            "property": "subTagName",
+            "value": "N1",
+            "scope": "object"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-6/connections/1",
+          "fact": {
+            "source": "ProcessColumn-1",
+            "target": "BlindFlange-1",
+            "relationship": "piping",
+            "connection_type": "direct_piping_connection",
+            "segment_id": "PipingNetworkSegment-6",
+            "nominalDiameterNumericalValueRepresentation": "80",
+            "nominalDiameterRepresentation": "DN 80",
+            "nominalDiameterStandard": "DN 80 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S1*",
+            "lineNumber": "*at P3*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-6/connections/1",
+            "PipingNetworkSegment-6",
+            "PipingNetworkSystem-3"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-3/connections/1",
+          "fact": {
+            "source": "ProcessColumn-1",
+            "target": "PipeTee-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-3",
+            "nominalDiameterNumericalValueRepresentation": "150",
+            "nominalDiameterRepresentation": "DN 150",
+            "nominalDiameterStandard": "DN 150 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S1*",
+            "lineNumber": "*at N3*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-3/connections/1",
+            "PipingNetworkSegment-3",
+            "PipingNetworkSystem-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-8/connections/1",
+          "fact": {
+            "source": "ProcessColumn-1",
+            "target": "BlindFlange-3",
+            "relationship": "piping",
+            "connection_type": "direct_piping_connection",
+            "segment_id": "PipingNetworkSegment-8",
+            "nominalDiameterNumericalValueRepresentation": "80",
+            "nominalDiameterRepresentation": "DN 80",
+            "nominalDiameterStandard": "DN 80 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S1*",
+            "lineNumber": "*at P4*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-8",
+            "PipingNetworkSystem-4"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-1/connections/1",
+          "fact": {
+            "source": "ProcessColumn-1",
+            "target": "PipeReducer-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-1",
+            "nominalDiameterNumericalValueRepresentation": "200",
+            "nominalDiameterRepresentation": "DN 200",
+            "nominalDiameterStandard": "DN 200 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S1*",
+            "fluidCode": "8503",
+            "insulationType": "B40",
+            "lineNumber": "2750.001.6",
+            "pipingClassCode": "10HB25T10B1"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1/connections/1",
+            "PipingNetworkSegment-1",
+            "PipingNetworkSystem-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessColumn-1": {
+          "name": "K 2750",
+          "type": "ProcessColumn",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E5.5"
+            ]
+          },
+          "text": "The pipe reducer (PipeReducer-1) is directly connected to nozzle N1 of K 2750, and the pipe has a nominal diameter of DN 200  . [E5.5]",
+          "refs": [
+            "E5.5"
+          ],
+          "facts": [
+            {
+              "id": "F69",
+              "predicate": "identified_as",
+              "subject": "PipeReducer-1",
+              "value": "PipeReducer-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipeReducer-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipeReducer-1"
+              ],
+              "refs": [
+                "E5.5"
+              ]
+            },
+            {
+              "id": "F70",
+              "predicate": "is_a",
+              "subject": "PipeReducer-1",
+              "value": "PipeReducer",
+              "tool": "get_connections",
+              "evidence_id": "PipeReducer-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipeReducer-1"
+              ],
+              "refs": [
+                "E5.5"
+              ]
+            },
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "ProcessColumn-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.0",
+                "E5.1",
+                "E5.2",
+                "E5.3",
+                "E5.4",
+                "E5.5"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "K 2750",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.0",
+                "E5.1",
+                "E5.2",
+                "E5.3",
+                "E5.4",
+                "E5.5"
+              ]
+            },
+            {
+              "id": "F73",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-1/connections/1",
+              "value": "DN 200",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E5.5"
+              ]
+            },
+            {
+              "id": "F81",
+              "predicate": "flows_to",
+              "subject": "ProcessColumn-1",
+              "object": "PipeReducer-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-1/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-1",
+                "nominalDiameterNumericalValueRepresentation": "200",
+                "nominalDiameterRepresentation": "DN 200",
+                "nominalDiameterStandard": "DN 200 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S1*",
+                "fluidCode": "8503",
+                "insulationType": "B40",
+                "lineNumber": "2750.001.6",
+                "pipingClassCode": "10HB25T10B1",
+                "from_nozzle": [
+                  "N1",
+                  "Nozzle-2"
+                ]
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E5.5"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 4,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 6,
+      "usage": {
+        "llm_calls": 6,
+        "prompt_tokens": 24784,
+        "completion_tokens": 1590,
+        "total_tokens": 26374,
+        "reasoning_tokens": 1343
+      },
+      "duration_ms": 21602.3,
+      "answered_at": "2026-10-03 13:19:51"
+    },
+    {
+      "question_id": "c02-04",
+      "question": "Follow the piping from K 2750 to where it leaves the drawing: which items does it pass, and what pipe sizes are used along the way?",
+      "answer": "From K 2750 (ProcessColumn-1) the downstream piping splits into four branches that end at the drawing, as shown by the traversal results. [R3]  \n\n- Branch 1: K 2750 → BlindFlange-1 (DN 80) → OperatedValve-2 (DN 25) → BlindFlange-2 (DN 25), where the line terminates at the drawing. [E3.11, E3.17, E3.19]  \n- Branch 2: K 2750 → BlindFlange-3 (DN 80) → OperatedValve-3 (DN 25) → BlindFlange-4 (DN 25), ending at the drawing. [E3.12, E3.18, E3.20]  \n- Branch 3: K 2750 → PipeReducer-1 (DN 200) → FlowOutPipeOffPageConnector-1 (DN 150), which is an off‑page connector indicating the pipe leaves the drawing. [E3.13, E3.15]  \n- Branch 4: K 2750 → PipeTee-1 (DN 150) → OperatedValve-1 (DN 80), terminating at the drawing. [E3.14, E3.16]  \n- Additionally, the PipeTee-1 has an open‑ended continuation of DN 150 that is not represented on this drawing. [E3.21]  \n\nEach segment lists the items passed and the nominal diameter of the pipe segment, using only the evidence provided.",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "K 2750"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "ProcessColumn-1",
+                "name": "K 2750",
+                "type": "ProcessColumn",
+                "category": "equipment",
+                "tag": "K 2750",
+                "identifiers": {
+                  "tagName": "K 2750"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'K 2750'",
+                "links": {
+                  "piping_downstream": 4
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 5.58,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "ProcessColumn-1",
+            "direction": "downstream",
+            "relationship": "piping"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "connections": [
+              {
+                "id": "PipingNetworkSegment-6/connections/1",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "BlindFlange-1",
+                "type": "direct_piping_connection",
+                "relationship": "piping",
+                "ref": "E2.2",
+                "neighbor_is": "downstream",
+                "neighbor_category": "piping_component",
+                "lineNumber": "*at P3*",
+                "segmentNumber": "*S1*",
+                "nominalDiameterRepresentation": "DN 80",
+                "nominalDiameterStandard": "DN 80 (DIN 2448)",
+                "from_nozzle": "P3"
+              },
+              {
+                "id": "PipingNetworkSegment-3/connections/1",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "PipeTee-1 (PipeTee *at N3*/*C1*)",
+                "type": "pipe",
+                "relationship": "piping",
+                "ref": "E2.3",
+                "neighbor_is": "downstream",
+                "neighbor_category": "piping_component",
+                "lineNumber": "*at N3*",
+                "segmentNumber": "*S1*",
+                "nominalDiameterRepresentation": "DN 150",
+                "nominalDiameterStandard": "DN 150 (DIN 2448)",
+                "from_nozzle": "N3"
+              },
+              {
+                "id": "PipingNetworkSegment-8/connections/1",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "BlindFlange-3",
+                "type": "direct_piping_connection",
+                "relationship": "piping",
+                "ref": "E2.4",
+                "neighbor_is": "downstream",
+                "neighbor_category": "piping_component",
+                "lineNumber": "*at P4*",
+                "segmentNumber": "*S1*",
+                "nominalDiameterRepresentation": "DN 80",
+                "nominalDiameterStandard": "DN 80 (DIN 2448)",
+                "from_nozzle": "P4"
+              },
+              {
+                "id": "PipingNetworkSegment-1/connections/1",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "PipeReducer-1",
+                "type": "pipe",
+                "relationship": "piping",
+                "ref": "E2.5",
+                "neighbor_is": "downstream",
+                "neighbor_category": "piping_component",
+                "lineNumber": "2750.001.6",
+                "segmentNumber": "*S1*",
+                "nominalDiameterRepresentation": "DN 200",
+                "nominalDiameterStandard": "DN 200 (DIN 2448)",
+                "fluidCode": "8503",
+                "pipingClassCode": "10HB25T10B1",
+                "insulationType": "B40",
+                "from_nozzle": "N1"
+              }
+            ]
+          },
+          "duration_ms": 10.85,
+          "executed": true
+        },
+        {
+          "step": 3,
+          "tool": "traverse",
+          "input": {
+            "start_entity_id": "ProcessColumn-1",
+            "direction": "downstream"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R3",
+            "status_ref": "E3.0",
+            "entities": [
+              {
+                "ref": "E3.1",
+                "id": "BlindFlange-1",
+                "name": "BlindFlange-1",
+                "type": "BlindFlange",
+                "category": "piping_component",
+                "distance": 1,
+                "via": "ProcessColumn-1",
+                "through_equipment": []
+              },
+              {
+                "ref": "E3.2",
+                "id": "BlindFlange-3",
+                "name": "BlindFlange-3",
+                "type": "BlindFlange",
+                "category": "piping_component",
+                "distance": 1,
+                "via": "ProcessColumn-1",
+                "through_equipment": []
+              },
+              {
+                "ref": "E3.3",
+                "id": "PipeReducer-1",
+                "name": "PipeReducer-1",
+                "type": "PipeReducer",
+                "category": "piping_component",
+                "distance": 1,
+                "via": "ProcessColumn-1",
+                "through_equipment": []
+              },
+              {
+                "ref": "E3.4",
+                "id": "PipeTee-1",
+                "name": "PipeTee *at N3*/*C1*",
+                "type": "PipeTee",
+                "category": "piping_component",
+                "distance": 1,
+                "via": "ProcessColumn-1",
+                "through_equipment": []
+              },
+              {
+                "ref": "E3.5",
+                "id": "FlowOutPipeOffPageConnector-1",
+                "name": "FlowOutPipeOffPageConnector-1",
+                "type": "FlowOutPipeOffPageConnector",
+                "category": "piping_component",
+                "distance": 2,
+                "via": "PipeReducer-1",
+                "through_equipment": [],
+                "terminal": true
+              },
+              {
+                "ref": "E3.6",
+                "id": "OperatedValve-1",
+                "name": "OperatedValve *at N3*/*C2*",
+                "type": "OperatedValve",
+                "category": "piping_component",
+                "distance": 2,
+                "via": "PipeTee-1",
+                "through_equipment": [],
+                "terminal": true
+              },
+              {
+                "ref": "E3.7",
+                "id": "OperatedValve-2",
+                "name": "OperatedValve-2",
+                "type": "OperatedValve",
+                "category": "piping_component",
+                "distance": 2,
+                "via": "BlindFlange-1",
+                "through_equipment": []
+              },
+              {
+                "ref": "E3.8",
+                "id": "OperatedValve-3",
+                "name": "OperatedValve-3",
+                "type": "OperatedValve",
+                "category": "piping_component",
+                "distance": 2,
+                "via": "BlindFlange-3",
+                "through_equipment": []
+              },
+              {
+                "ref": "E3.9",
+                "id": "BlindFlange-2",
+                "name": "BlindFlange-2",
+                "type": "BlindFlange",
+                "category": "piping_component",
+                "distance": 3,
+                "via": "OperatedValve-2",
+                "through_equipment": [],
+                "terminal": true
+              },
+              {
+                "ref": "E3.10",
+                "id": "BlindFlange-4",
+                "name": "BlindFlange-4",
+                "type": "BlindFlange",
+                "category": "piping_component",
+                "distance": 3,
+                "via": "OperatedValve-3",
+                "through_equipment": [],
+                "terminal": true
+              }
+            ],
+            "connections": [
+              {
+                "ref": "E3.11",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "BlindFlange-1",
+                "lineNumber": "*at P3*",
+                "nominalDiameterRepresentation": "DN 80"
+              },
+              {
+                "ref": "E3.12",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "BlindFlange-3",
+                "lineNumber": "*at P4*",
+                "nominalDiameterRepresentation": "DN 80"
+              },
+              {
+                "ref": "E3.13",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "PipeReducer-1",
+                "lineNumber": "2750.001.6",
+                "nominalDiameterRepresentation": "DN 200"
+              },
+              {
+                "ref": "E3.14",
+                "from": "ProcessColumn-1 (K 2750)",
+                "to": "PipeTee-1 (PipeTee *at N3*/*C1*)",
+                "lineNumber": "*at N3*",
+                "nominalDiameterRepresentation": "DN 150"
+              },
+              {
+                "ref": "E3.15",
+                "from": "PipeReducer-1",
+                "to": "FlowOutPipeOffPageConnector-1",
+                "lineNumber": "2750.001.6",
+                "nominalDiameterRepresentation": "DN 150"
+              },
+              {
+                "ref": "E3.16",
+                "from": "PipeTee-1 (PipeTee *at N3*/*C1*)",
+                "to": "OperatedValve-1 (OperatedValve *at N3*/*C2*)",
+                "lineNumber": "*at N3*",
+                "nominalDiameterRepresentation": "DN 80"
+              },
+              {
+                "ref": "E3.17",
+                "from": "BlindFlange-1",
+                "to": "OperatedValve-2",
+                "lineNumber": "*at P3*",
+                "nominalDiameterRepresentation": "DN 25"
+              },
+              {
+                "ref": "E3.18",
+                "from": "BlindFlange-3",
+                "to": "OperatedValve-3",
+                "lineNumber": "*at P4*",
+                "nominalDiameterRepresentation": "DN 25"
+              },
+              {
+                "ref": "E3.19",
+                "from": "OperatedValve-2",
+                "to": "BlindFlange-2",
+                "lineNumber": "*at P3*",
+                "nominalDiameterRepresentation": "DN 25"
+              },
+              {
+                "ref": "E3.20",
+                "from": "OperatedValve-3",
+                "to": "BlindFlange-4",
+                "lineNumber": "*at P4*",
+                "nominalDiameterRepresentation": "DN 25"
+              },
+              {
+                "ref": "E3.21",
+                "from": "PipeTee-1 (PipeTee *at N3*/*C1*)",
+                "to": null,
+                "lineNumber": "*at N3*",
+                "nominalDiameterRepresentation": "DN 150",
+                "open_end": "target",
+                "note": "This pipe exists in the DEXPI model but has no target item on this drawing, so pyDEXPI's conceptual graph omits it. Where it leads is not represented."
+              }
+            ],
+            "warnings": [
+              "1 connection(s) are open-ended: the pipe exists in the DEXPI model but its other end is not represented on this drawing, so no neighbour can be stated."
+            ],
+            "meta": {
+              "max_depth": 25,
+              "endpoints": [
+                "FlowOutPipeOffPageConnector-1",
+                "OperatedValve-1",
+                "BlindFlange-2",
+                "BlindFlange-4"
+              ],
+              "endpoint_details": [
+                {
+                  "id": "FlowOutPipeOffPageConnector-1",
+                  "name": "FlowOutPipeOffPageConnector-1",
+                  "type": "FlowOutPipeOffPageConnector",
+                  "category": "piping_component",
+                  "kind": "drawing_end"
+                },
+                {
+                  "id": "OperatedValve-1",
+                  "name": "OperatedValve *at N3*/*C2*",
+                  "type": "OperatedValve",
+                  "category": "piping_component",
+                  "kind": "end_of_drawn_piping"
+                },
+                {
+                  "id": "BlindFlange-2",
+                  "name": "BlindFlange-2",
+                  "type": "BlindFlange",
+                  "category": "piping_component",
+                  "kind": "end_of_drawn_piping"
+                },
+                {
+                  "id": "BlindFlange-4",
+                  "name": "BlindFlange-4",
+                  "type": "BlindFlange",
+                  "category": "piping_component",
+                  "kind": "end_of_drawn_piping"
+                }
+              ]
+            }
+          },
+          "duration_ms": 17.08,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessColumn-1",
+          "fact": {
+            "type": "ProcessColumn",
+            "name": "K 2750",
+            "tagName": "K 2750"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-6/connections/1",
+          "fact": {
+            "source": "ProcessColumn-1",
+            "target": "BlindFlange-1",
+            "relationship": "piping",
+            "connection_type": "direct_piping_connection",
+            "segment_id": "PipingNetworkSegment-6",
+            "nominalDiameterNumericalValueRepresentation": "80",
+            "nominalDiameterRepresentation": "DN 80",
+            "nominalDiameterStandard": "DN 80 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S1*",
+            "lineNumber": "*at P3*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-6/connections/1",
+            "PipingNetworkSegment-6",
+            "PipingNetworkSystem-3"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-3/connections/1",
+          "fact": {
+            "source": "ProcessColumn-1",
+            "target": "PipeTee-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-3",
+            "nominalDiameterNumericalValueRepresentation": "150",
+            "nominalDiameterRepresentation": "DN 150",
+            "nominalDiameterStandard": "DN 150 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S1*",
+            "lineNumber": "*at N3*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-3/connections/1",
+            "PipingNetworkSegment-3",
+            "PipingNetworkSystem-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-8/connections/1",
+          "fact": {
+            "source": "ProcessColumn-1",
+            "target": "BlindFlange-3",
+            "relationship": "piping",
+            "connection_type": "direct_piping_connection",
+            "segment_id": "PipingNetworkSegment-8",
+            "nominalDiameterNumericalValueRepresentation": "80",
+            "nominalDiameterRepresentation": "DN 80",
+            "nominalDiameterStandard": "DN 80 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S1*",
+            "lineNumber": "*at P4*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-8",
+            "PipingNetworkSystem-4"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-1/connections/1",
+          "fact": {
+            "source": "ProcessColumn-1",
+            "target": "PipeReducer-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-1",
+            "nominalDiameterNumericalValueRepresentation": "200",
+            "nominalDiameterRepresentation": "DN 200",
+            "nominalDiameterStandard": "DN 200 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S1*",
+            "fluidCode": "8503",
+            "insulationType": "B40",
+            "lineNumber": "2750.001.6",
+            "pipingClassCode": "10HB25T10B1"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1/connections/1",
+            "PipingNetworkSegment-1",
+            "PipingNetworkSystem-1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->BlindFlange-1",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "BlindFlange-1"
+            ],
+            "connections": [
+              "PipingNetworkSegment-6/connections/1"
+            ],
+            "distance": 1
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-6/connections/1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->BlindFlange-3",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "BlindFlange-3"
+            ],
+            "connections": [
+              "PipingNetworkSegment-8/connections/1"
+            ],
+            "distance": 1
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-8/connections/1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->PipeReducer-1",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "PipeReducer-1"
+            ],
+            "connections": [
+              "PipingNetworkSegment-1/connections/1"
+            ],
+            "distance": 1
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1/connections/1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->PipeTee-1",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "PipeTee-1"
+            ],
+            "connections": [
+              "PipingNetworkSegment-3/connections/1"
+            ],
+            "distance": 1
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-3/connections/1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->FlowOutPipeOffPageConnector-1",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "PipeReducer-1",
+              "FlowOutPipeOffPageConnector-1"
+            ],
+            "connections": [
+              "PipingNetworkSegment-1/connections/1",
+              "PipingNetworkSegment-2/connections/1"
+            ],
+            "distance": 2
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1/connections/1",
+            "PipingNetworkSegment-2/connections/1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->OperatedValve-1",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "PipeTee-1",
+              "OperatedValve-1"
+            ],
+            "connections": [
+              "PipingNetworkSegment-3/connections/1",
+              "PipingNetworkSegment-5/connections/1"
+            ],
+            "distance": 2
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-3/connections/1",
+            "PipingNetworkSegment-5/connections/1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->OperatedValve-2",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "BlindFlange-1",
+              "OperatedValve-2"
+            ],
+            "connections": [
+              "PipingNetworkSegment-6/connections/1",
+              "PipingNetworkSegment-7/connections/1"
+            ],
+            "distance": 2
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-6/connections/1",
+            "PipingNetworkSegment-7/connections/1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->OperatedValve-3",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "BlindFlange-3",
+              "OperatedValve-3"
+            ],
+            "connections": [
+              "PipingNetworkSegment-8/connections/1",
+              "PipingNetworkSegment-9/connections/1"
+            ],
+            "distance": 2
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-9/connections/1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->BlindFlange-2",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "BlindFlange-1",
+              "OperatedValve-2",
+              "BlindFlange-2"
+            ],
+            "connections": [
+              "PipingNetworkSegment-6/connections/1",
+              "PipingNetworkSegment-7/connections/1",
+              "PipingNetworkSegment-7/connections/2"
+            ],
+            "distance": 3
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-6/connections/1",
+            "PipingNetworkSegment-7/connections/1",
+            "PipingNetworkSegment-7/connections/2"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "ProcessColumn-1->BlindFlange-4",
+          "fact": {
+            "entities": [
+              "ProcessColumn-1",
+              "BlindFlange-3",
+              "OperatedValve-3",
+              "BlindFlange-4"
+            ],
+            "connections": [
+              "PipingNetworkSegment-8/connections/1",
+              "PipingNetworkSegment-9/connections/1",
+              "PipingNetworkSegment-9/connections/2"
+            ],
+            "distance": 3
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-9/connections/1",
+            "PipingNetworkSegment-9/connections/2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-2/connections/1",
+          "fact": {
+            "source": "PipeReducer-1",
+            "target": "FlowOutPipeOffPageConnector-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-2",
+            "fluidCode": "8503",
+            "inclination": "1.0 ???",
+            "insulationType": "B40",
+            "nominalDiameterNumericalValueRepresentation": "150",
+            "nominalDiameterRepresentation": "DN 150",
+            "nominalDiameterStandard": "DN 150 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "pipingClassCode": "10HB25T10B1",
+            "segmentNumber": "*S2*",
+            "lineNumber": "2750.001.6"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-2/connections/1",
+            "PipingNetworkSegment-2",
+            "PipingNetworkSystem-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-5/connections/1",
+          "fact": {
+            "source": "PipeTee-1",
+            "target": "OperatedValve-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-5",
+            "nominalDiameterNumericalValueRepresentation": "80",
+            "nominalDiameterRepresentation": "DN 80",
+            "nominalDiameterStandard": "DN 80 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S3*",
+            "lineNumber": "*at N3*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-5/connections/1",
+            "PipingNetworkSegment-5",
+            "PipingNetworkSystem-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-7/connections/1",
+          "fact": {
+            "source": "BlindFlange-1",
+            "target": "OperatedValve-2",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-7",
+            "nominalDiameterNumericalValueRepresentation": "25",
+            "nominalDiameterRepresentation": "DN 25",
+            "nominalDiameterStandard": "DN 25 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S2*",
+            "lineNumber": "*at P3*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-7/connections/1",
+            "PipingNetworkSegment-7",
+            "PipingNetworkSystem-3"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-9/connections/1",
+          "fact": {
+            "source": "BlindFlange-3",
+            "target": "OperatedValve-3",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-9",
+            "nominalDiameterNumericalValueRepresentation": "25",
+            "nominalDiameterRepresentation": "DN 25",
+            "nominalDiameterStandard": "DN 25 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S2*",
+            "lineNumber": "*at P4*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-9/connections/1",
+            "PipingNetworkSegment-9",
+            "PipingNetworkSystem-4"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-7/connections/2",
+          "fact": {
+            "source": "OperatedValve-2",
+            "target": "BlindFlange-2",
+            "relationship": "piping",
+            "connection_type": "direct_piping_connection",
+            "segment_id": "PipingNetworkSegment-7",
+            "nominalDiameterNumericalValueRepresentation": "25",
+            "nominalDiameterRepresentation": "DN 25",
+            "nominalDiameterStandard": "DN 25 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S2*",
+            "lineNumber": "*at P3*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-7/connections/2",
+            "PipingNetworkSegment-7",
+            "PipingNetworkSystem-3"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-9/connections/2",
+          "fact": {
+            "source": "OperatedValve-3",
+            "target": "BlindFlange-4",
+            "relationship": "piping",
+            "connection_type": "direct_piping_connection",
+            "segment_id": "PipingNetworkSegment-9",
+            "nominalDiameterNumericalValueRepresentation": "25",
+            "nominalDiameterRepresentation": "DN 25",
+            "nominalDiameterStandard": "DN 25 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S2*",
+            "lineNumber": "*at P4*"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-9/connections/2",
+            "PipingNetworkSegment-9",
+            "PipingNetworkSystem-4"
+          ]
+        },
+        {
+          "kind": "open_end",
+          "id": "PipingNetworkSegment-4/connections/1",
+          "fact": {
+            "source": "PipeTee-1",
+            "target": null,
+            "relationship": "piping",
+            "connection_type": "open_end",
+            "segment_id": "PipingNetworkSegment-4",
+            "lineNumber": "*at N3*",
+            "nominalDiameterNumericalValueRepresentation": "150",
+            "nominalDiameterRepresentation": "DN 150",
+            "nominalDiameterStandard": "DN 150 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "segmentNumber": "*S2*"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-4/connections/1",
+            "PipingNetworkSegment-4",
+            "PipingNetworkSystem-2"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessColumn-1": {
+          "name": "K 2750",
+          "type": "ProcessColumn",
+          "step": 1
+        },
+        "BlindFlange-1": {
+          "name": "BlindFlange-1",
+          "type": "BlindFlange",
+          "step": 3
+        },
+        "BlindFlange-3": {
+          "name": "BlindFlange-3",
+          "type": "BlindFlange",
+          "step": 3
+        },
+        "PipeReducer-1": {
+          "name": "PipeReducer-1",
+          "type": "PipeReducer",
+          "step": 3
+        },
+        "PipeTee-1": {
+          "name": "PipeTee *at N3*/*C1*",
+          "type": "PipeTee",
+          "step": 3
+        },
+        "FlowOutPipeOffPageConnector-1": {
+          "name": "FlowOutPipeOffPageConnector-1",
+          "type": "FlowOutPipeOffPageConnector",
+          "step": 3
+        },
+        "OperatedValve-1": {
+          "name": "OperatedValve *at N3*/*C2*",
+          "type": "OperatedValve",
+          "step": 3
+        },
+        "OperatedValve-2": {
+          "name": "OperatedValve-2",
+          "type": "OperatedValve",
+          "step": 3
+        },
+        "OperatedValve-3": {
+          "name": "OperatedValve-3",
+          "type": "OperatedValve",
+          "step": 3
+        },
+        "BlindFlange-2": {
+          "name": "BlindFlange-2",
+          "type": "BlindFlange",
+          "step": 3
+        },
+        "BlindFlange-4": {
+          "name": "BlindFlange-4",
+          "type": "BlindFlange",
+          "step": 3
+        }
+      },
+      "grounding_status": "regenerated",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "R3"
+            ]
+          },
+          "text": "From K 2750 (ProcessColumn-1) the downstream piping splits into four branches that end at the drawing, as shown by the traversal results  . [R3]",
+          "refs": [
+            "R3"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "ProcessColumn-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "K 2750",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E3.11",
+              "E3.17",
+              "E3.19"
+            ]
+          },
+          "text": "- Branch 1: K 2750 → BlindFlange-1 (DN 80) → OperatedValve-2 (DN 25) → BlindFlange-2 (DN 25), where the line terminates at the drawing  . [E3.11, E3.17, E3.19]",
+          "refs": [
+            "E3.11",
+            "E3.17",
+            "E3.19"
+          ],
+          "facts": [
+            {
+              "id": "F5",
+              "predicate": "identified_as",
+              "subject": "BlindFlange-1",
+              "value": "BlindFlange-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "BlindFlange-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-1"
+              ],
+              "refs": [
+                "E2.2",
+                "E3.1",
+                "E3.11",
+                "E3.17"
+              ]
+            },
+            {
+              "id": "F6",
+              "predicate": "is_a",
+              "subject": "BlindFlange-1",
+              "value": "BlindFlange",
+              "tool": "get_connections",
+              "evidence_id": "BlindFlange-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-1"
+              ],
+              "refs": [
+                "E2.2",
+                "E3.1",
+                "E3.11",
+                "E3.17"
+              ]
+            },
+            {
+              "id": "F65",
+              "predicate": "identified_as",
+              "subject": "OperatedValve-2",
+              "value": "OperatedValve-2",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "traverse",
+              "evidence_id": "OperatedValve-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-2"
+              ],
+              "refs": [
+                "E3.7",
+                "E3.17",
+                "E3.19"
+              ]
+            },
+            {
+              "id": "F67",
+              "predicate": "is_a",
+              "subject": "OperatedValve-2",
+              "value": "OperatedValve",
+              "tool": "traverse",
+              "evidence_id": "OperatedValve-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-2"
+              ],
+              "refs": [
+                "E3.7",
+                "E3.17",
+                "E3.19"
+              ]
+            },
+            {
+              "id": "F73",
+              "predicate": "identified_as",
+              "subject": "BlindFlange-2",
+              "value": "BlindFlange-2",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "traverse",
+              "evidence_id": "BlindFlange-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-2"
+              ],
+              "refs": [
+                "E3.9",
+                "E3.19",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F74",
+              "predicate": "is_a",
+              "subject": "BlindFlange-2",
+              "value": "BlindFlange",
+              "tool": "traverse",
+              "evidence_id": "BlindFlange-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-2"
+              ],
+              "refs": [
+                "E3.9",
+                "E3.19",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "ProcessColumn-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "K 2750",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F9",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-6/connections/1",
+              "value": "DN 80",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-6/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-6/connections/1",
+                "PipingNetworkSegment-6",
+                "PipingNetworkSystem-3"
+              ],
+              "refs": [
+                "E2.2",
+                "E3.11"
+              ]
+            },
+            {
+              "id": "F14",
+              "predicate": "flows_to",
+              "subject": "ProcessColumn-1",
+              "object": "BlindFlange-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-6/connections/1",
+                "connection_type": "direct_piping_connection",
+                "segment_id": "PipingNetworkSegment-6",
+                "nominalDiameterNumericalValueRepresentation": "80",
+                "nominalDiameterRepresentation": "DN 80",
+                "nominalDiameterStandard": "DN 80 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S1*",
+                "lineNumber": "*at P3*",
+                "from_nozzle": [
+                  "P3",
+                  "Nozzle-8"
+                ]
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-6/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-6/connections/1",
+                "PipingNetworkSegment-6",
+                "PipingNetworkSystem-3"
+              ],
+              "refs": [
+                "E2.2",
+                "E3.11"
+              ]
+            },
+            {
+              "id": "F101",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-7/connections/1",
+              "value": "DN 25",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-7/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-7/connections/1",
+                "PipingNetworkSegment-7",
+                "PipingNetworkSystem-3"
+              ],
+              "refs": [
+                "E3.17"
+              ]
+            },
+            {
+              "id": "F106",
+              "predicate": "flows_to",
+              "subject": "BlindFlange-1",
+              "object": "OperatedValve-2",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-7/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-7",
+                "nominalDiameterNumericalValueRepresentation": "25",
+                "nominalDiameterRepresentation": "DN 25",
+                "nominalDiameterStandard": "DN 25 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S2*",
+                "lineNumber": "*at P3*"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-7/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-7/connections/1",
+                "PipingNetworkSegment-7",
+                "PipingNetworkSystem-3"
+              ],
+              "refs": [
+                "E3.17"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E3.12",
+              "E3.18",
+              "E3.20"
+            ]
+          },
+          "text": "- Branch 2: K 2750 → BlindFlange-3 (DN 80) → OperatedValve-3 (DN 25) → BlindFlange-4 (DN 25), ending at the drawing  . [E3.12, E3.18, E3.20]",
+          "refs": [
+            "E3.12",
+            "E3.18",
+            "E3.20"
+          ],
+          "facts": [
+            {
+              "id": "F26",
+              "predicate": "identified_as",
+              "subject": "BlindFlange-3",
+              "value": "BlindFlange-3",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "BlindFlange-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-3"
+              ],
+              "refs": [
+                "E2.4",
+                "E3.2",
+                "E3.12",
+                "E3.18"
+              ]
+            },
+            {
+              "id": "F27",
+              "predicate": "is_a",
+              "subject": "BlindFlange-3",
+              "value": "BlindFlange",
+              "tool": "get_connections",
+              "evidence_id": "BlindFlange-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-3"
+              ],
+              "refs": [
+                "E2.4",
+                "E3.2",
+                "E3.12",
+                "E3.18"
+              ]
+            },
+            {
+              "id": "F69",
+              "predicate": "identified_as",
+              "subject": "OperatedValve-3",
+              "value": "OperatedValve-3",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "traverse",
+              "evidence_id": "OperatedValve-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-3"
+              ],
+              "refs": [
+                "E3.8",
+                "E3.18",
+                "E3.20"
+              ]
+            },
+            {
+              "id": "F71",
+              "predicate": "is_a",
+              "subject": "OperatedValve-3",
+              "value": "OperatedValve",
+              "tool": "traverse",
+              "evidence_id": "OperatedValve-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-3"
+              ],
+              "refs": [
+                "E3.8",
+                "E3.18",
+                "E3.20"
+              ]
+            },
+            {
+              "id": "F76",
+              "predicate": "identified_as",
+              "subject": "BlindFlange-4",
+              "value": "BlindFlange-4",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "traverse",
+              "evidence_id": "BlindFlange-4",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-4"
+              ],
+              "refs": [
+                "E3.10",
+                "E3.20",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F77",
+              "predicate": "is_a",
+              "subject": "BlindFlange-4",
+              "value": "BlindFlange",
+              "tool": "traverse",
+              "evidence_id": "BlindFlange-4",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-4"
+              ],
+              "refs": [
+                "E3.10",
+                "E3.20",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "ProcessColumn-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "K 2750",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F30",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-8/connections/1",
+              "value": "DN 80",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-8/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-8",
+                "PipingNetworkSystem-4"
+              ],
+              "refs": [
+                "E2.4",
+                "E3.12"
+              ]
+            },
+            {
+              "id": "F35",
+              "predicate": "flows_to",
+              "subject": "ProcessColumn-1",
+              "object": "BlindFlange-3",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-8/connections/1",
+                "connection_type": "direct_piping_connection",
+                "segment_id": "PipingNetworkSegment-8",
+                "nominalDiameterNumericalValueRepresentation": "80",
+                "nominalDiameterRepresentation": "DN 80",
+                "nominalDiameterStandard": "DN 80 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S1*",
+                "lineNumber": "*at P4*",
+                "from_nozzle": [
+                  "P4",
+                  "Nozzle-9"
+                ]
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-8/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-8",
+                "PipingNetworkSystem-4"
+              ],
+              "refs": [
+                "E2.4",
+                "E3.12"
+              ]
+            },
+            {
+              "id": "F109",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-9/connections/1",
+              "value": "DN 25",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-9/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-9/connections/1",
+                "PipingNetworkSegment-9",
+                "PipingNetworkSystem-4"
+              ],
+              "refs": [
+                "E3.18"
+              ]
+            },
+            {
+              "id": "F114",
+              "predicate": "flows_to",
+              "subject": "BlindFlange-3",
+              "object": "OperatedValve-3",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-9/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-9",
+                "nominalDiameterNumericalValueRepresentation": "25",
+                "nominalDiameterRepresentation": "DN 25",
+                "nominalDiameterStandard": "DN 25 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S2*",
+                "lineNumber": "*at P4*"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-9/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-9/connections/1",
+                "PipingNetworkSegment-9",
+                "PipingNetworkSystem-4"
+              ],
+              "refs": [
+                "E3.18"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E3.13",
+              "E3.15"
+            ]
+          },
+          "text": "- Branch 3: K 2750 → PipeReducer-1 (DN 200) → FlowOutPipeOffPageConnector-1 (DN 150), which is an off-page connector indicating the pipe leaves the drawing  . [E3.13, E3.15]",
+          "refs": [
+            "E3.13",
+            "E3.15"
+          ],
+          "facts": [
+            {
+              "id": "F36",
+              "predicate": "identified_as",
+              "subject": "PipeReducer-1",
+              "value": "PipeReducer-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipeReducer-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipeReducer-1"
+              ],
+              "refs": [
+                "E2.5",
+                "E3.3",
+                "E3.13",
+                "E3.15"
+              ]
+            },
+            {
+              "id": "F37",
+              "predicate": "is_a",
+              "subject": "PipeReducer-1",
+              "value": "PipeReducer",
+              "tool": "get_connections",
+              "evidence_id": "PipeReducer-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipeReducer-1"
+              ],
+              "refs": [
+                "E2.5",
+                "E3.3",
+                "E3.13",
+                "E3.15"
+              ]
+            },
+            {
+              "id": "F55",
+              "predicate": "identified_as",
+              "subject": "FlowOutPipeOffPageConnector-1",
+              "value": "FlowOutPipeOffPageConnector-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "traverse",
+              "evidence_id": "FlowOutPipeOffPageConnector-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "FlowOutPipeOffPageConnector-1"
+              ],
+              "refs": [
+                "E3.5",
+                "E3.15",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F56",
+              "predicate": "is_a",
+              "subject": "FlowOutPipeOffPageConnector-1",
+              "value": "FlowOutPipeOffPageConnector",
+              "tool": "traverse",
+              "evidence_id": "FlowOutPipeOffPageConnector-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "FlowOutPipeOffPageConnector-1"
+              ],
+              "refs": [
+                "E3.5",
+                "E3.15",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "ProcessColumn-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "K 2750",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F40",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-1/connections/1",
+              "value": "DN 200",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.5",
+                "E3.13"
+              ]
+            },
+            {
+              "id": "F48",
+              "predicate": "flows_to",
+              "subject": "ProcessColumn-1",
+              "object": "PipeReducer-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-1/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-1",
+                "nominalDiameterNumericalValueRepresentation": "200",
+                "nominalDiameterRepresentation": "DN 200",
+                "nominalDiameterStandard": "DN 200 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S1*",
+                "fluidCode": "8503",
+                "insulationType": "B40",
+                "lineNumber": "2750.001.6",
+                "pipingClassCode": "10HB25T10B1",
+                "from_nozzle": [
+                  "N1",
+                  "Nozzle-2"
+                ]
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.5",
+                "E3.13"
+              ]
+            },
+            {
+              "id": "F84",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-2/connections/1",
+              "value": "DN 150",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-2/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-2/connections/1",
+                "PipingNetworkSegment-2",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E3.15"
+              ]
+            },
+            {
+              "id": "F90",
+              "predicate": "flows_to",
+              "subject": "PipeReducer-1",
+              "object": "FlowOutPipeOffPageConnector-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-2/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-2",
+                "fluidCode": "8503",
+                "inclination": "1.0 ???",
+                "insulationType": "B40",
+                "nominalDiameterNumericalValueRepresentation": "150",
+                "nominalDiameterRepresentation": "DN 150",
+                "nominalDiameterStandard": "DN 150 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "10HB25T10B1",
+                "segmentNumber": "*S2*",
+                "lineNumber": "2750.001.6"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-2/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-2/connections/1",
+                "PipingNetworkSegment-2",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E3.15"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E3.14",
+              "E3.16"
+            ]
+          },
+          "text": "- Branch 4: K 2750 → PipeTee-1 (DN 150) → OperatedValve-1 (DN 80), terminating at the drawing  . [E3.14, E3.16]",
+          "refs": [
+            "E3.14",
+            "E3.16"
+          ],
+          "facts": [
+            {
+              "id": "F15",
+              "predicate": "identified_as",
+              "subject": "PipeTee-1",
+              "value": "PipeTee-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipeTee-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipeTee-1"
+              ],
+              "refs": [
+                "E2.3",
+                "E3.4",
+                "E3.14",
+                "E3.16",
+                "E3.21"
+              ]
+            },
+            {
+              "id": "F16",
+              "predicate": "identified_as",
+              "subject": "PipeTee-1",
+              "value": "PipeTee *at N3*/*C1*",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipeTee-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipeTee-1"
+              ],
+              "refs": [
+                "E2.3",
+                "E3.4",
+                "E3.14",
+                "E3.16",
+                "E3.21"
+              ]
+            },
+            {
+              "id": "F58",
+              "predicate": "identified_as",
+              "subject": "OperatedValve-1",
+              "value": "OperatedValve-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "traverse",
+              "evidence_id": "OperatedValve-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-1"
+              ],
+              "refs": [
+                "E3.6",
+                "E3.16",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F59",
+              "predicate": "identified_as",
+              "subject": "OperatedValve-1",
+              "value": "OperatedValve *at N3*/*C2*",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "traverse",
+              "evidence_id": "OperatedValve-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-1"
+              ],
+              "refs": [
+                "E3.6",
+                "E3.16",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "ProcessColumn-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessColumn-1",
+              "value": "K 2750",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessColumn-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4",
+                "E2.5",
+                "E3.11",
+                "E3.12",
+                "E3.13",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F20",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-3/connections/1",
+              "value": "DN 150",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-3/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-3/connections/1",
+                "PipingNetworkSegment-3",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E2.3",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F25",
+              "predicate": "flows_to",
+              "subject": "ProcessColumn-1",
+              "object": "PipeTee-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-3/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-3",
+                "nominalDiameterNumericalValueRepresentation": "150",
+                "nominalDiameterRepresentation": "DN 150",
+                "nominalDiameterStandard": "DN 150 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S1*",
+                "lineNumber": "*at N3*",
+                "from_nozzle": [
+                  "N3",
+                  "Nozzle-4"
+                ]
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-3/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-3/connections/1",
+                "PipingNetworkSegment-3",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E2.3",
+                "E3.14"
+              ]
+            },
+            {
+              "id": "F93",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-5/connections/1",
+              "value": "DN 80",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-5/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-5/connections/1",
+                "PipingNetworkSegment-5",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E3.16"
+              ]
+            },
+            {
+              "id": "F98",
+              "predicate": "flows_to",
+              "subject": "PipeTee-1",
+              "object": "OperatedValve-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-5/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-5",
+                "nominalDiameterNumericalValueRepresentation": "80",
+                "nominalDiameterRepresentation": "DN 80",
+                "nominalDiameterStandard": "DN 80 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S3*",
+                "lineNumber": "*at N3*"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-5/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-5/connections/1",
+                "PipingNetworkSegment-5",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E3.16"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E3.21"
+            ]
+          },
+          "text": "- Additionally, the PipeTee-1 has an open-ended continuation of DN 150 that is not represented on this drawing  . [E3.21]",
+          "refs": [
+            "E3.21"
+          ],
+          "facts": [
+            {
+              "id": "F15",
+              "predicate": "identified_as",
+              "subject": "PipeTee-1",
+              "value": "PipeTee-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipeTee-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipeTee-1"
+              ],
+              "refs": [
+                "E2.3",
+                "E3.4",
+                "E3.14",
+                "E3.16",
+                "E3.21"
+              ]
+            },
+            {
+              "id": "F16",
+              "predicate": "identified_as",
+              "subject": "PipeTee-1",
+              "value": "PipeTee *at N3*/*C1*",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipeTee-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipeTee-1"
+              ],
+              "refs": [
+                "E2.3",
+                "E3.4",
+                "E3.14",
+                "E3.16",
+                "E3.21"
+              ]
+            },
+            {
+              "id": "F134",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-4/connections/1",
+              "value": "DN 150",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "scope": "connection"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-4/connections/1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-4/connections/1",
+                "PipingNetworkSegment-4",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E3.21"
+              ]
+            },
+            {
+              "id": "F138",
+              "predicate": "open_end",
+              "subject": "PipeTee-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-4/connections/1",
+                "connection_type": "open_end",
+                "segment_id": "PipingNetworkSegment-4",
+                "lineNumber": "*at N3*",
+                "nominalDiameterNumericalValueRepresentation": "150",
+                "nominalDiameterRepresentation": "DN 150",
+                "nominalDiameterStandard": "DN 150 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "segmentNumber": "*S2*",
+                "missing_end": "destination",
+                "direction": "downstream"
+              },
+              "tool": "traverse",
+              "evidence_id": "PipingNetworkSegment-4/connections/1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-4/connections/1",
+                "PipingNetworkSegment-4",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E3.21"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 26,
+      "unsupported_claims": [],
+      "rejected_drafts": [
+        {
+          "draft": "From K 2750 (ProcessColumn-1) the piping splits into four downstream branches.  \n\n- Branch 1: K 2750 → BlindFlange-1 (DN 80) → OperatedValve-2 (DN 25) → BlindFlange-2 (DN 25), where the line ends at the drawing. [E3.11, E3.17, E3.19; E3.1, E3.7, E3.9]  \n- Branch 2: K 2750 → BlindFlange-3 (DN 80) → OperatedValve-3 (DN 25) → BlindFlange-4 (DN 25), ending at the drawing. [E3.12, E3.18, E3.20; E3.2, E3.8, E3.10]  \n- Branch 3: K 2750 → PipeReducer-1 (DN 200) → FlowOutPipeOffPageConnector-1 (DN 150), which is an off‑page connector where the pipe leaves the drawing. [E3.13, E3.15; E3.3, E3.5]  \n- Branch 4a: K 2750 → PipeTee-1 (DN 150) → OperatedValve-1 (DN 80), ending at the drawing. [E3.14, E3.16; E3.4, E3.6]  \n- Branch 4b: K 2750 → PipeTee-1 (DN 150) → open end (the pipe continues DN 150 beyond the drawing, not shown). [E3.14, E3.21; E3.4]  \n\nEach path lists the items passed and the nominal diameter of each pipe segment.",
+          "unsupported_claims": [
+            {
+              "claim": "4a",
+              "kind": "identifier",
+              "reason": "not found in any tool result",
+              "sentence": "- Branch 4a: K 2750 → PipeTee-1 (DN 150) → OperatedValve-1 (DN 80), ending at the drawing  ."
+            },
+            {
+              "claim": "4b",
+              "kind": "identifier",
+              "reason": "not found in any tool result",
+              "sentence": "- Branch 4b: K 2750 → PipeTee-1 (DN 150) → open end (the pipe continues DN 150 beyond the drawing, not shown)  ."
+            },
+            {
+              "claim": "From K 2750 (ProcessColumn-1) the piping splits into four downstream branches.",
+              "kind": "unreferenced",
+              "reason": "states plant facts without an evidence reference",
+              "sentence": "From K 2750 (ProcessColumn-1) the piping splits into four downstream branches."
+            }
+          ]
+        }
+      ],
+      "iterations": 4,
+      "usage": {
+        "llm_calls": 5,
+        "prompt_tokens": 20793,
+        "completion_tokens": 4662,
+        "total_tokens": 25455,
+        "reasoning_tokens": 3732
+      },
+      "duration_ms": 34617.6,
+      "answered_at": "2026-10-03 13:20:26"
+    },
+    {
+      "question_id": "c02-05",
+      "question": "Where is the measurement for PI(Z)275003A taken, and which instrument function does it send its signal to?",
+      "answer": "The measurement for PI(Z)275003A is taken at BlindFlange-2 [E4.2, E2.3].  \nPI(Z)275003A sends its signal to the instrument function PIS⁺Z⁺A275003 [E2.2].",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "PI(Z)275003A"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "ProcessInstrumentationFunction-2",
+                "name": "ProcessInstrumentationFunction PI(Z)275003A",
+                "type": "ProcessInstrumentationFunction",
+                "category": "instrumentation",
+                "identifiers": {
+                  "processInstrumentationFunctionNumber": "275003A",
+                  "instrumentTag": "PI(Z)275003A"
+                },
+                "match_tier": "identifier",
+                "match_reason": "derived identifier instrumentTag = 'PI(Z)275003A' (composed from processInstrumentationFunctionCategory + processInstrumentationFunctions + processInstrumentationFunctionNumber); not a literal field in the DEXPI file",
+                "identifier_kind": "derived_identifier",
+                "links": {
+                  "instrumentation": 2
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 9.15,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "connections": [
+              {
+                "id": "SignalConveyingFunction-1",
+                "from": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PI(Z)275003A)",
+                "to": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction PIS⁺Z⁺A275003)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E2.2",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction PIS⁺Z⁺A275003) [ProcessInstrumentationFunction]"
+              },
+              {
+                "id": "MeasuringLineFunction-1",
+                "from": "ProcessSignalGeneratingFunction-1",
+                "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PI(Z)275003A)",
+                "type": "measuring_line",
+                "relationship": "instrumentation",
+                "ref": "E2.3",
+                "neighbor_category": "instrumentation",
+                "meaning": "the measurement taken by 'from' is the input of 'to'",
+                "other_entity": "ProcessSignalGeneratingFunction-1 [ProcessSignalGeneratingFunction]"
+              }
+            ]
+          },
+          "duration_ms": 0.83,
+          "executed": true
+        },
+        {
+          "step": 3,
+          "tool": "get_entity",
+          "input": {
+            "entity_id": "ProcessSignalGeneratingFunction-1"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R3",
+            "status_ref": "E3.0",
+            "entities": [
+              {
+                "id": "ProcessSignalGeneratingFunction-1",
+                "type": "ProcessSignalGeneratingFunction",
+                "type_hierarchy": [
+                  "ProcessSignalGeneratingFunction",
+                  "SignalConveyingFunctionSource"
+                ],
+                "category": "instrumentation",
+                "name": "ProcessSignalGeneratingFunction-1",
+                "identifiers": {},
+                "properties": {},
+                "children_available": [],
+                "links": {
+                  "instrumentation": 2
+                },
+                "ref": "E3.1"
+              }
+            ]
+          },
+          "duration_ms": 0.29,
+          "executed": true
+        },
+        {
+          "step": 4,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "ProcessSignalGeneratingFunction-1",
+            "relationship": "instrumentation"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R4",
+            "status_ref": "E4.0",
+            "connections": [
+              {
+                "id": "ProcessSignalGeneratingFunction-1/sensingLocation",
+                "from": "ProcessSignalGeneratingFunction-1",
+                "to": "BlindFlange-2",
+                "type": "sensing_location",
+                "relationship": "instrumentation",
+                "ref": "E4.2",
+                "neighbor_category": "piping_component",
+                "meaning": "'from' measures at 'to'",
+                "other_entity": "BlindFlange-2 [BlindFlange]"
+              },
+              {
+                "id": "MeasuringLineFunction-1",
+                "from": "ProcessSignalGeneratingFunction-1",
+                "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PI(Z)275003A)",
+                "type": "measuring_line",
+                "relationship": "instrumentation",
+                "ref": "E4.3",
+                "neighbor_category": "instrumentation",
+                "meaning": "the measurement taken by 'from' is the input of 'to'",
+                "other_entity": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PI(Z)275003A) [ProcessInstrumentationFunction]"
+              }
+            ]
+          },
+          "duration_ms": 0.46,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessInstrumentationFunction-2",
+          "fact": {
+            "type": "ProcessInstrumentationFunction",
+            "name": "ProcessInstrumentationFunction PI(Z)275003A",
+            "processInstrumentationFunctionNumber": "275003A",
+            "instrumentTag": "PI(Z)275003A"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalConveyingFunction-1",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-2",
+            "target": "ProcessInstrumentationFunction-1",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalConveyingFunction-1",
+            "ProcessInstrumentationFunction-2",
+            "ProcessInstrumentationFunction-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "MeasuringLineFunction-1",
+          "fact": {
+            "source": "ProcessSignalGeneratingFunction-1",
+            "target": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation",
+            "connection_type": "measuring_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "MeasuringLineFunction-1",
+            "ProcessSignalGeneratingFunction-1",
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "ProcessSignalGeneratingFunction-1",
+          "fact": {
+            "type": "ProcessSignalGeneratingFunction",
+            "name": "ProcessSignalGeneratingFunction-1",
+            "properties": {}
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessSignalGeneratingFunction-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "ProcessSignalGeneratingFunction-1/sensingLocation",
+          "fact": {
+            "source": "ProcessSignalGeneratingFunction-1",
+            "target": "BlindFlange-2",
+            "relationship": "instrumentation",
+            "connection_type": "sensing_location"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "ProcessSignalGeneratingFunction-1",
+            "BlindFlange-2"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessInstrumentationFunction-2": {
+          "name": "ProcessInstrumentationFunction PI(Z)275003A",
+          "type": "ProcessInstrumentationFunction",
+          "step": 1
+        },
+        "ProcessSignalGeneratingFunction-1": {
+          "name": "ProcessSignalGeneratingFunction-1",
+          "type": "ProcessSignalGeneratingFunction",
+          "step": 3
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E4.2",
+              "E2.3"
+            ]
+          },
+          "text": "The measurement for PI(Z)275003A is taken at BlindFlange-2  . [E4.2, E2.3]",
+          "refs": [
+            "E4.2",
+            "E2.3"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-2",
+              "value": "ProcessInstrumentationFunction-2",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessInstrumentationFunction-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E4.3"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-2",
+              "value": "ProcessInstrumentationFunction PI(Z)275003A",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessInstrumentationFunction-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E4.3"
+              ]
+            },
+            {
+              "id": "F16",
+              "predicate": "identified_as",
+              "subject": "BlindFlange-2",
+              "value": "BlindFlange-2",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "BlindFlange-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-2"
+              ],
+              "refs": [
+                "E4.2"
+              ]
+            },
+            {
+              "id": "F17",
+              "predicate": "is_a",
+              "subject": "BlindFlange-2",
+              "value": "BlindFlange",
+              "tool": "get_connections",
+              "evidence_id": "BlindFlange-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "BlindFlange-2"
+              ],
+              "refs": [
+                "E4.2"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.2"
+            ]
+          },
+          "text": "PI(Z)275003A sends its signal to the instrument function PIS⁺Z⁺A275003  . [E2.2]",
+          "refs": [
+            "E2.2"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-2",
+              "value": "ProcessInstrumentationFunction-2",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessInstrumentationFunction-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E4.3"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-2",
+              "value": "ProcessInstrumentationFunction PI(Z)275003A",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessInstrumentationFunction-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E4.3"
+              ]
+            },
+            {
+              "id": "F7",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-1",
+              "value": "ProcessInstrumentationFunction-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "ProcessInstrumentationFunction-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F8",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-1",
+              "value": "ProcessInstrumentationFunction PIS⁺Z⁺A275003",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "get_connections",
+              "evidence_id": "ProcessInstrumentationFunction-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 4,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 5,
+      "usage": {
+        "llm_calls": 5,
+        "prompt_tokens": 19083,
+        "completion_tokens": 1337,
+        "total_tokens": 20420,
+        "reasoning_tokens": 1109
+      },
+      "duration_ms": 22728.2,
+      "answered_at": "2026-10-03 13:20:50"
+    },
+    {
+      "question_id": "c02-06",
+      "question": "Which line is valve H658B1UV on?",
+      "answer": "Valve H658B1UV (OperatedValve-2) is on line *at P3* (PipingNetworkSystem-3). [E2.1]  \nValve H658B1UV (OperatedValve-3) is on line *at P4* (PipingNetworkSystem-4). [E3.1]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "H658B1UV",
+            "entity_type": "valve"
+          },
+          "status": "ambiguous",
+          "result": {
+            "status": "ambiguous",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "message": "'H658B1UV' matches 2 entities and does not identify a single one. Use an entity id, or add line/type context.",
+            "resolution": {
+              "status": "multiple",
+              "ambiguous": true,
+              "match_count": 2,
+              "suggestions": []
+            },
+            "entities": [
+              {
+                "id": "OperatedValve-2",
+                "name": "OperatedValve-2",
+                "type": "OperatedValve",
+                "category": "piping_component",
+                "identifiers": {
+                  "pipingComponentName": "H658B1UV"
+                },
+                "match_tier": "identifier",
+                "match_reason": "pipingComponentName = 'H658B1UV'",
+                "links": {
+                  "piping_upstream": 1,
+                  "piping_downstream": 1
+                },
+                "ref": "E1.1"
+              },
+              {
+                "id": "OperatedValve-3",
+                "name": "OperatedValve-3",
+                "type": "OperatedValve",
+                "category": "piping_component",
+                "identifiers": {
+                  "pipingComponentName": "H658B1UV"
+                },
+                "match_tier": "identifier",
+                "match_reason": "pipingComponentName = 'H658B1UV'",
+                "links": {
+                  "piping_upstream": 1,
+                  "piping_downstream": 1
+                },
+                "ref": "E1.2"
+              }
+            ]
+          },
+          "duration_ms": 9.03,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_entity",
+          "input": {
+            "entity_id": "OperatedValve-2"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "entities": [
+              {
+                "id": "OperatedValve-2",
+                "type": "OperatedValve",
+                "type_hierarchy": [
+                  "OperatedValve",
+                  "PipingComponent",
+                  "SensingLocation"
+                ],
+                "category": "piping_component",
+                "name": "OperatedValve-2",
+                "identifiers": {
+                  "pipingComponentName": "H658B1UV"
+                },
+                "properties": {
+                  "fluidCode": "8503",
+                  "pipingComponentName": "H658B1UV"
+                },
+                "piping_context": {
+                  "segment_id": "PipingNetworkSegment-7",
+                  "line_id": "PipingNetworkSystem-3",
+                  "lineNumber": "*at P3*",
+                  "nominalDiameterNumericalValueRepresentation": "25",
+                  "nominalDiameterRepresentation": "DN 25",
+                  "nominalDiameterStandard": "DN 25 (DIN 2448)",
+                  "nominalDiameterTypeRepresentation": "DN",
+                  "segmentNumber": "*S2*"
+                },
+                "children_available": [],
+                "links": {
+                  "piping_upstream": 1,
+                  "piping_downstream": 1
+                },
+                "ref": "E2.1"
+              }
+            ]
+          },
+          "duration_ms": 0.35,
+          "executed": true
+        },
+        {
+          "step": 3,
+          "tool": "get_entity",
+          "input": {
+            "entity_id": "OperatedValve-3"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R3",
+            "status_ref": "E3.0",
+            "entities": [
+              {
+                "id": "OperatedValve-3",
+                "type": "OperatedValve",
+                "type_hierarchy": [
+                  "OperatedValve",
+                  "PipingComponent",
+                  "SensingLocation"
+                ],
+                "category": "piping_component",
+                "name": "OperatedValve-3",
+                "identifiers": {
+                  "pipingComponentName": "H658B1UV"
+                },
+                "properties": {
+                  "fluidCode": "8503",
+                  "pipingComponentName": "H658B1UV"
+                },
+                "piping_context": {
+                  "segment_id": "PipingNetworkSegment-9",
+                  "line_id": "PipingNetworkSystem-4",
+                  "lineNumber": "*at P4*",
+                  "nominalDiameterNumericalValueRepresentation": "25",
+                  "nominalDiameterRepresentation": "DN 25",
+                  "nominalDiameterStandard": "DN 25 (DIN 2448)",
+                  "nominalDiameterTypeRepresentation": "DN",
+                  "segmentNumber": "*S2*"
+                },
+                "children_available": [],
+                "links": {
+                  "piping_upstream": 1,
+                  "piping_downstream": 1
+                },
+                "ref": "E3.1"
+              }
+            ]
+          },
+          "duration_ms": 0.17,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "OperatedValve-2",
+          "fact": {
+            "type": "OperatedValve",
+            "name": "OperatedValve-2",
+            "pipingComponentName": "H658B1UV"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "OperatedValve-2"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "OperatedValve-3",
+          "fact": {
+            "type": "OperatedValve",
+            "name": "OperatedValve-3",
+            "pipingComponentName": "H658B1UV"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "OperatedValve-3"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "OperatedValve-2": {
+          "name": "OperatedValve-2",
+          "type": "OperatedValve",
+          "step": 1
+        },
+        "OperatedValve-3": {
+          "name": "OperatedValve-3",
+          "type": "OperatedValve",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.1"
+            ]
+          },
+          "text": "Valve H658B1UV (OperatedValve-2) is on line *at P3* (PipingNetworkSystem-3)  . [E2.1]",
+          "refs": [
+            "E2.1"
+          ],
+          "facts": [
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "OperatedValve-2",
+              "value": "H658B1UV",
+              "qualifiers": {
+                "field": "pipingComponentName"
+              },
+              "tool": "find_entities",
+              "evidence_id": "OperatedValve-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-2"
+              ],
+              "refs": [
+                "E1.1",
+                "E2.1"
+              ]
+            },
+            {
+              "id": "F13",
+              "predicate": "has_property",
+              "subject": "OperatedValve-2",
+              "value": "H658B1UV",
+              "qualifiers": {
+                "property": "pipingComponentName",
+                "scope": "properties"
+              },
+              "tool": "get_entity",
+              "evidence_id": "OperatedValve-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-2"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            },
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "OperatedValve-2",
+              "value": "OperatedValve-2",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "OperatedValve-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-2"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.0"
+              ]
+            },
+            {
+              "id": "F16",
+              "predicate": "has_property",
+              "subject": "OperatedValve-2",
+              "value": "*at P3*",
+              "qualifiers": {
+                "property": "lineNumber",
+                "scope": "piping_context"
+              },
+              "tool": "get_entity",
+              "evidence_id": "OperatedValve-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-2"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            },
+            {
+              "id": "F15",
+              "predicate": "has_property",
+              "subject": "OperatedValve-2",
+              "value": "PipingNetworkSystem-3",
+              "qualifiers": {
+                "property": "line_id",
+                "scope": "piping_context"
+              },
+              "tool": "get_entity",
+              "evidence_id": "OperatedValve-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-2"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E3.1"
+            ]
+          },
+          "text": "Valve H658B1UV (OperatedValve-3) is on line *at P4* (PipingNetworkSystem-4)  . [E3.1]",
+          "refs": [
+            "E3.1"
+          ],
+          "facts": [
+            {
+              "id": "F6",
+              "predicate": "identified_as",
+              "subject": "OperatedValve-3",
+              "value": "H658B1UV",
+              "qualifiers": {
+                "field": "pipingComponentName"
+              },
+              "tool": "find_entities",
+              "evidence_id": "OperatedValve-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-3"
+              ],
+              "refs": [
+                "E1.2",
+                "E3.1"
+              ]
+            },
+            {
+              "id": "F25",
+              "predicate": "has_property",
+              "subject": "OperatedValve-3",
+              "value": "H658B1UV",
+              "qualifiers": {
+                "property": "pipingComponentName",
+                "scope": "properties"
+              },
+              "tool": "get_entity",
+              "evidence_id": "OperatedValve-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-3"
+              ],
+              "refs": [
+                "E3.1"
+              ]
+            },
+            {
+              "id": "F5",
+              "predicate": "identified_as",
+              "subject": "OperatedValve-3",
+              "value": "OperatedValve-3",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "OperatedValve-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-3"
+              ],
+              "refs": [
+                "E1.2",
+                "E1.0",
+                "E3.1",
+                "E3.0"
+              ]
+            },
+            {
+              "id": "F28",
+              "predicate": "has_property",
+              "subject": "OperatedValve-3",
+              "value": "*at P4*",
+              "qualifiers": {
+                "property": "lineNumber",
+                "scope": "piping_context"
+              },
+              "tool": "get_entity",
+              "evidence_id": "OperatedValve-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-3"
+              ],
+              "refs": [
+                "E3.1"
+              ]
+            },
+            {
+              "id": "F27",
+              "predicate": "has_property",
+              "subject": "OperatedValve-3",
+              "value": "PipingNetworkSystem-4",
+              "qualifiers": {
+                "property": "line_id",
+                "scope": "piping_context"
+              },
+              "tool": "get_entity",
+              "evidence_id": "OperatedValve-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "OperatedValve-3"
+              ],
+              "refs": [
+                "E3.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 8,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 4,
+      "usage": {
+        "llm_calls": 4,
+        "prompt_tokens": 15104,
+        "completion_tokens": 893,
+        "total_tokens": 15997,
+        "reasoning_tokens": 710
+      },
+      "duration_ms": 17109.0,
+      "answered_at": "2026-10-03 13:21:08"
+    },
+    {
+      "question_id": "c02-07",
+      "question": "How much does column K 2750 weigh?",
+      "answer": "The P&ID does not provide a weight value for column K 2750. [R2]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "K 2750"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "ProcessColumn-1",
+                "name": "K 2750",
+                "type": "ProcessColumn",
+                "category": "equipment",
+                "tag": "K 2750",
+                "identifiers": {
+                  "tagName": "K 2750"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'K 2750'",
+                "links": {
+                  "piping_downstream": 4
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 1.51,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_properties",
+          "input": {
+            "ids": "ProcessColumn-1"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "properties": {
+              "ProcessColumn-1": {
+                "found": [
+                  {
+                    "ref": "E2.1",
+                    "property": "tagName",
+                    "value": "K 2750"
+                  },
+                  {
+                    "ref": "E2.2",
+                    "property": "tagNamePrefix",
+                    "value": "K"
+                  },
+                  {
+                    "ref": "E2.3",
+                    "property": "tagNameSequenceNumber",
+                    "value": "2750"
+                  },
+                  {
+                    "ref": "E2.4",
+                    "property": "tagNameSuffix",
+                    "value": ""
+                  },
+                  {
+                    "ref": "E2.5",
+                    "property": "subTagName",
+                    "value": "H1",
+                    "on": "Nozzle-1",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.6",
+                    "property": "subTagName",
+                    "value": "N1",
+                    "on": "Nozzle-2",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.7",
+                    "property": "subTagName",
+                    "value": "N2",
+                    "on": "Nozzle-3",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.8",
+                    "property": "subTagName",
+                    "value": "N3",
+                    "on": "Nozzle-4",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.9",
+                    "property": "subTagName",
+                    "value": "N4",
+                    "on": "Nozzle-5",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.10",
+                    "property": "subTagName",
+                    "value": "N5",
+                    "on": "Nozzle-6",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.11",
+                    "property": "subTagName",
+                    "value": "N7",
+                    "on": "Nozzle-7",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.12",
+                    "property": "subTagName",
+                    "value": "P3",
+                    "on": "Nozzle-8",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.13",
+                    "property": "subTagName",
+                    "value": "P4",
+                    "on": "Nozzle-9",
+                    "scope": "child:Nozzle"
+                  },
+                  {
+                    "ref": "E2.14",
+                    "property": "height",
+                    "value": "14000.0 mm",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.15",
+                    "property": "insideDiameter",
+                    "value": "500.0 mm",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.16",
+                    "property": "lowerLimitDesignPressure",
+                    "value": "-1.0 bar",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.17",
+                    "property": "materialOfConstructionCode",
+                    "value": "1.4571",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.18",
+                    "property": "subTagName",
+                    "value": "Chamber 1",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.19",
+                    "property": "upperLimitDesignPressure",
+                    "value": "6.0 bar",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  },
+                  {
+                    "ref": "E2.20",
+                    "property": "upperLimitDesignTemperature",
+                    "value": "150.0 °C",
+                    "on": "Chamber-1",
+                    "scope": "child:Chamber"
+                  }
+                ],
+                "missing": []
+              }
+            }
+          },
+          "duration_ms": 1.81,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessColumn-1",
+          "fact": {
+            "type": "ProcessColumn",
+            "name": "K 2750",
+            "tagName": "K 2750"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagName",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagName",
+            "value": "K 2750",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNamePrefix",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNamePrefix",
+            "value": "K",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNameSequenceNumber",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNameSequenceNumber",
+            "value": "2750",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessColumn-1.tagNameSuffix",
+          "fact": {
+            "object_id": "ProcessColumn-1",
+            "property": "tagNameSuffix",
+            "value": "",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessColumn-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-1.subTagName",
+          "fact": {
+            "object_id": "Nozzle-1",
+            "property": "subTagName",
+            "value": "H1",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-2.subTagName",
+          "fact": {
+            "object_id": "Nozzle-2",
+            "property": "subTagName",
+            "value": "N1",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-3.subTagName",
+          "fact": {
+            "object_id": "Nozzle-3",
+            "property": "subTagName",
+            "value": "N2",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-3"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-4.subTagName",
+          "fact": {
+            "object_id": "Nozzle-4",
+            "property": "subTagName",
+            "value": "N3",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-4"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-5.subTagName",
+          "fact": {
+            "object_id": "Nozzle-5",
+            "property": "subTagName",
+            "value": "N4",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-5"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-6.subTagName",
+          "fact": {
+            "object_id": "Nozzle-6",
+            "property": "subTagName",
+            "value": "N5",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-6"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-7.subTagName",
+          "fact": {
+            "object_id": "Nozzle-7",
+            "property": "subTagName",
+            "value": "N7",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-7"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-8.subTagName",
+          "fact": {
+            "object_id": "Nozzle-8",
+            "property": "subTagName",
+            "value": "P3",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-8"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Nozzle-9.subTagName",
+          "fact": {
+            "object_id": "Nozzle-9",
+            "property": "subTagName",
+            "value": "P4",
+            "scope": "child:Nozzle"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-9"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.height",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "height",
+            "value": "14000.0 mm",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.insideDiameter",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "insideDiameter",
+            "value": "500.0 mm",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.lowerLimitDesignPressure",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "lowerLimitDesignPressure",
+            "value": "-1.0 bar",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.materialOfConstructionCode",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "materialOfConstructionCode",
+            "value": "1.4571",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.subTagName",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "subTagName",
+            "value": "Chamber 1",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.upperLimitDesignPressure",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "upperLimitDesignPressure",
+            "value": "6.0 bar",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "Chamber-1.upperLimitDesignTemperature",
+          "fact": {
+            "object_id": "Chamber-1",
+            "property": "upperLimitDesignTemperature",
+            "value": "150.0 °C",
+            "scope": "child:Chamber"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessColumn-1": {
+          "name": "K 2750",
+          "type": "ProcessColumn",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "R2"
+            ]
+          },
+          "text": "The P&ID does not provide a weight value for column K 2750  . [R2]",
+          "refs": [
+            "R2"
+          ],
+          "facts": [
+            {
+              "id": "F5",
+              "predicate": "has_property",
+              "subject": "ProcessColumn-1",
+              "value": "K 2750",
+              "qualifiers": {
+                "property": "tagName",
+                "owner": "ProcessColumn-1",
+                "scope": "own"
+              },
+              "tool": "get_properties",
+              "evidence_id": "ProcessColumn-1.tagName",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            },
+            {
+              "id": "F7",
+              "predicate": "has_property",
+              "subject": "ProcessColumn-1",
+              "value": "2750",
+              "qualifiers": {
+                "property": "tagNameSequenceNumber",
+                "owner": "ProcessColumn-1",
+                "scope": "own"
+              },
+              "tool": "get_properties",
+              "evidence_id": "ProcessColumn-1.tagNameSequenceNumber",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessColumn-1"
+              ],
+              "refs": [
+                "E2.3"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 1,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 11009,
+        "completion_tokens": 709,
+        "total_tokens": 11718,
+        "reasoning_tokens": 624
+      },
+      "duration_ms": 7070.1,
+      "answered_at": "2026-10-03 13:21:16"
+    }
+  ]
+}
