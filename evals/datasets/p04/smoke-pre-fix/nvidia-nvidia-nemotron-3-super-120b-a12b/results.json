@@ -1,0 +1,134 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 4,
+  "scored_questions": 2,
+  "mean_score": 0.75,
+  "outcomes": {
+    "correct": 1,
+    "infrastructure_failure": 2,
+    "partially_correct": 1
+  },
+  "totals": {
+    "model_calls": 6,
+    "tool_calls": 4,
+    "tokens": 22819
+  },
+  "rows": [
+    {
+      "id": "p04-01",
+      "category": "open ends",
+      "question": "Which lines are connected to H-1008, and where do they come from?",
+      "expected": [
+        "line 47112",
+        "line 10082",
+        "sources not shown"
+      ],
+      "answer": "H-1008 is connected to two lines whose sources are not shown on this drawing:\n- Line 47112 (fluid MnB, piping class 75HB13) [E2.2]\n- Line 10082 (fluid WKa, piping class 75HB13) [E2.3] [E1.1]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "line 47112",
+          "found": true
+        },
+        {
+          "fact": "line 10082",
+          "found": true
+        },
+        {
+          "fact": "sources not shown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11530,
+      "latency_ms": 12128.9,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "p04-02",
+      "category": "nozzles",
+      "question": "Which nozzle of H-1008 does line 10082 enter, and what fluid does it carry?",
+      "expected": [
+        "nozzle N-3",
+        "fluid WKa"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "p04-03",
+      "category": "cross-drawing leakage",
+      "question": "What equipment is H1008, and is it a tubular heat exchanger?",
+      "expected": [
+        "a plate heat exchanger"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "p04-04",
+      "category": "false premise",
+      "question": "Since line 47112 is DN 150, what is its piping class?",
+      "expected": [
+        "piping class 75HB13",
+        "the size in the P&ID is 80, not DN 150"
+      ],
+      "answer": "The piping class for line 47112 is 75HB13 [E2.4].",
+      "score": 0.5,
+      "required": [
+        {
+          "fact": "piping class 75HB13",
+          "found": true
+        },
+        {
+          "fact": "the size in the P&ID is 80, not DN 150",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "outcome": "partially_correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11289,
+      "latency_ms": 10850.8,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

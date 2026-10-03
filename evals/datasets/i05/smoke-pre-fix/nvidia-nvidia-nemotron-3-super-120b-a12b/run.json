@@ -1,0 +1,888 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "dirty": true,
+  "diff_sha256": "7d8a1cb1ae86bb004c81530f6b0f01f68ae13031260ebb56b23487b9f4b580e0",
+  "untracked_source_files": [],
+  "data_file": "data/dexpi-1.3-examples/I05V01-VER.EX01.xml",
+  "started": "2026-10-03 13:04:01",
+  "results": [
+    {
+      "question_id": "i05-01",
+      "question": "Which valve does the flow ratio control loop 031 ultimately act on, and through which functions does the signal pass?",
+      "answer": "I could not determine that from the supplied P&ID graph. A drafted answer was withheld because 1 of its claims were not supported by the graph evidence.\n\nWhat the graph tools returned:\n- find_entities: '031' matches 4 entities and does not identify a single one. Use an entity id, or add line/type context.\n- ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4, ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031., ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2, ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1, ProcessInstrumentationFunction)\n- ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.) -> ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4) [signal_line]\n- ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2) -> ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.) [signal_line]\n- ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1) -> ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.) [signal_line]\n- ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4) -> ActuatingFunction-1 [signal_line]\n- ActuatingFunction-1 -> GlobeValve-1 [operated_valve_reference]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "031"
+          },
+          "status": "ambiguous",
+          "result": {
+            "status": "ambiguous",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "message": "'031' matches 4 entities and does not identify a single one. Use an entity id, or add line/type context.",
+            "resolution": {
+              "status": "multiple",
+              "ambiguous": true,
+              "match_count": 4,
+              "suggestions": []
+            },
+            "entities": [
+              {
+                "id": "ProcessInstrumentationFunction-1",
+                "name": "ProcessInstrumentationFunction YC031.4",
+                "type": "ProcessInstrumentationFunction",
+                "category": "instrumentation",
+                "identifiers": {
+                  "processInstrumentationFunctionNumber": "031.4",
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+                  "instrumentTag": "YC031.4"
+                },
+                "identifier_notes": {
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1"
+                },
+                "match_tier": "identifier",
+                "match_reason": "alias InstrumentationLoopFunction.instrumentationLoopFunctionNumber = '031' (attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1)",
+                "identifier_kind": "alias",
+                "links": {
+                  "instrumentation": 2
+                },
+                "ref": "E1.1"
+              },
+              {
+                "id": "ProcessInstrumentationFunction-2",
+                "name": "ProcessInstrumentationFunction FFIC031.",
+                "type": "ProcessInstrumentationFunction",
+                "category": "instrumentation",
+                "identifiers": {
+                  "processInstrumentationFunctionNumber": "031.",
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+                  "instrumentTag": "FFIC031."
+                },
+                "identifier_notes": {
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1"
+                },
+                "match_tier": "identifier",
+                "match_reason": "processInstrumentationFunctionNumber = '031.'",
+                "links": {
+                  "instrumentation": 3
+                },
+                "ref": "E1.2"
+              },
+              {
+                "id": "ProcessInstrumentationFunction-3",
+                "name": "ProcessInstrumentationFunction FI031.2",
+                "type": "ProcessInstrumentationFunction",
+                "category": "instrumentation",
+                "identifiers": {
+                  "processInstrumentationFunctionNumber": "031.2",
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+                  "instrumentTag": "FI031.2"
+                },
+                "identifier_notes": {
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1"
+                },
+                "match_tier": "identifier",
+                "match_reason": "alias InstrumentationLoopFunction.instrumentationLoopFunctionNumber = '031' (attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1)",
+                "identifier_kind": "alias",
+                "links": {
+                  "instrumentation": 2
+                },
+                "ref": "E1.3"
+              },
+              {
+                "id": "ProcessInstrumentationFunction-4",
+                "name": "ProcessInstrumentationFunction FI031.1",
+                "type": "ProcessInstrumentationFunction",
+                "category": "instrumentation",
+                "identifiers": {
+                  "processInstrumentationFunctionNumber": "031.1",
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+                  "instrumentTag": "FI031.1"
+                },
+                "identifier_notes": {
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1"
+                },
+                "match_tier": "identifier",
+                "match_reason": "alias InstrumentationLoopFunction.instrumentationLoopFunctionNumber = '031' (attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1)",
+                "identifier_kind": "alias",
+                "links": {
+                  "instrumentation": 2
+                },
+                "ref": "E1.4"
+              }
+            ]
+          },
+          "duration_ms": 3.02,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "connections": [
+              {
+                "id": "SignalLineFunction-2",
+                "from": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+                "to": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E2.2",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4) [ProcessInstrumentationFunction]"
+              },
+              {
+                "id": "SignalLineFunction-3",
+                "from": "ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2)",
+                "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E2.3",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2) [ProcessInstrumentationFunction]"
+              },
+              {
+                "id": "SignalLineFunction-4",
+                "from": "ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1)",
+                "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E2.4",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1) [ProcessInstrumentationFunction]"
+              }
+            ]
+          },
+          "duration_ms": 0.64,
+          "executed": true
+        },
+        {
+          "step": 3,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "ProcessInstrumentationFunction-1",
+            "relationship": "instrumentation"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R3",
+            "status_ref": "E3.0",
+            "connections": [
+              {
+                "id": "SignalLineFunction-1",
+                "from": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4)",
+                "to": "ActuatingFunction-1",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E3.2",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ActuatingFunction-1 [ActuatingFunction]"
+              },
+              {
+                "id": "SignalLineFunction-2",
+                "from": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+                "to": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E3.3",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.) [ProcessInstrumentationFunction]"
+              }
+            ]
+          },
+          "duration_ms": 0.34,
+          "executed": true
+        },
+        {
+          "step": 4,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "ActuatingFunction-1",
+            "relationship": "instrumentation"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R4",
+            "status_ref": "E4.0",
+            "connections": [
+              {
+                "id": "SignalLineFunction-1",
+                "from": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4)",
+                "to": "ActuatingFunction-1",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E4.2",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4) [ProcessInstrumentationFunction]"
+              },
+              {
+                "id": "OperatedValveReference-1",
+                "from": "ActuatingFunction-1",
+                "to": "GlobeValve-1",
+                "type": "operated_valve_reference",
+                "relationship": "instrumentation",
+                "ref": "E4.3",
+                "neighbor_category": "piping_component",
+                "meaning": "'from' is the actuating function that operates the valve 'to'",
+                "other_entity": "GlobeValve-1 [GlobeValve]"
+              }
+            ]
+          },
+          "duration_ms": 0.52,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessInstrumentationFunction-1",
+          "fact": {
+            "type": "ProcessInstrumentationFunction",
+            "name": "ProcessInstrumentationFunction YC031.4",
+            "processInstrumentationFunctionNumber": "031.4",
+            "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+            "instrumentTag": "YC031.4"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "ProcessInstrumentationFunction-2",
+          "fact": {
+            "type": "ProcessInstrumentationFunction",
+            "name": "ProcessInstrumentationFunction FFIC031.",
+            "processInstrumentationFunctionNumber": "031.",
+            "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+            "instrumentTag": "FFIC031."
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "ProcessInstrumentationFunction-3",
+          "fact": {
+            "type": "ProcessInstrumentationFunction",
+            "name": "ProcessInstrumentationFunction FI031.2",
+            "processInstrumentationFunctionNumber": "031.2",
+            "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+            "instrumentTag": "FI031.2"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-3"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "ProcessInstrumentationFunction-4",
+          "fact": {
+            "type": "ProcessInstrumentationFunction",
+            "name": "ProcessInstrumentationFunction FI031.1",
+            "processInstrumentationFunctionNumber": "031.1",
+            "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+            "instrumentTag": "FI031.1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-4"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalLineFunction-2",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-2",
+            "target": "ProcessInstrumentationFunction-1",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalLineFunction-2",
+            "ProcessInstrumentationFunction-2",
+            "ProcessInstrumentationFunction-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalLineFunction-3",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-3",
+            "target": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalLineFunction-3",
+            "ProcessInstrumentationFunction-3",
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalLineFunction-4",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-4",
+            "target": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalLineFunction-4",
+            "ProcessInstrumentationFunction-4",
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalLineFunction-1",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-1",
+            "target": "ActuatingFunction-1",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalLineFunction-1",
+            "ProcessInstrumentationFunction-1",
+            "ActuatingFunction-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "OperatedValveReference-1",
+          "fact": {
+            "source": "ActuatingFunction-1",
+            "target": "GlobeValve-1",
+            "relationship": "instrumentation",
+            "connection_type": "operated_valve_reference"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "OperatedValveReference-1",
+            "ActuatingFunction-1",
+            "GlobeValve-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessInstrumentationFunction-1": {
+          "name": "ProcessInstrumentationFunction YC031.4",
+          "type": "ProcessInstrumentationFunction",
+          "step": 1
+        },
+        "ProcessInstrumentationFunction-2": {
+          "name": "ProcessInstrumentationFunction FFIC031.",
+          "type": "ProcessInstrumentationFunction",
+          "step": 1
+        },
+        "ProcessInstrumentationFunction-3": {
+          "name": "ProcessInstrumentationFunction FI031.2",
+          "type": "ProcessInstrumentationFunction",
+          "step": 1
+        },
+        "ProcessInstrumentationFunction-4": {
+          "name": "ProcessInstrumentationFunction FI031.1",
+          "type": "ProcessInstrumentationFunction",
+          "step": 1
+        },
+        "ActuatingFunction-1": {
+          "name": "ActuatingFunction-1",
+          "type": "ActuatingFunction",
+          "step": 4
+        }
+      },
+      "grounding_status": "fallback",
+      "grounding_level": "insufficient_evidence",
+      "claims": [],
+      "rejected_claims": [],
+      "grounding_gaps": [
+        {
+          "claim": "The signal passes from FFIC031.",
+          "kind": "unreferenced",
+          "reason": "states plant facts without an evidence reference",
+          "sentence": "The signal passes from FFIC031."
+        }
+      ],
+      "truncated_outputs": 0,
+      "claims_checked": 12,
+      "unsupported_claims": [
+        {
+          "claim": "031",
+          "kind": "ambiguous_identifier",
+          "reason": "matches several entities (ProcessInstrumentationFunction-1, ProcessInstrumentationFunction-2, ProcessInstrumentationFunction-3, ProcessInstrumentationFunction-4); the graph selected none",
+          "sentence": "The flow ratio control loop 031 ultimately actuates GlobeValve-1  ."
+        }
+      ],
+      "rejected_drafts": [
+        {
+          "draft": "The flow ratio control loop 031 ultimately actuates GlobeValve-1.  \nThe signal passes from the flow measuring functions FI031.1 and FI031.2 to the flow ratio controller FFIC031., then to the cascade controller YC031.4, then to the actuating function ActuatingFunction-1, which operates the valve.  \n\nEvidence:  \n- FI031.1 → FFIC031. (SignalLineFunction-4) [E2.4]  \n- FI031.2 → FFIC031. (SignalLineFunction-3) [E2.3]  \n- FFIC031. → YC031.4 (SignalLineFunction-2) [E3.3]  \n- YC031.4 → ActuatingFunction-1 (SignalLineFunction-1) [E4.2]  \n- ActuatingFunction-1 → GlobeValve-1 (OperatedValveReference-1) [E4.3]  \n\nThus the valve is GlobeValve-1 and the signal traverses the functions FI031.1/FI031.2 → FFIC031. → YC031.4 → ActuatingFunction-1. [E2.4, E2.3, E3.3, E4.2, E4.3]",
+          "unsupported_claims": [
+            {
+              "claim": "ProcessInstrumentationFunction-1 (031) operates ActuatingFunction-1",
+              "kind": "relationship",
+              "reason": "no tool result shows an operated-valve link between these items",
+              "sentence": "The signal passes from the flow measuring functions FI031.1 and FI031.2 to the flow ratio controller FFIC031., then to the cascade controller YC031.4, then to the actuating function ActuatingFunction-1, which operates the valve."
+            },
+            {
+              "claim": "ProcessInstrumentationFunction-1 (031) / SignalLineFunction-2",
+              "kind": "relationship",
+              "reason": "no tool result relates these items to each other",
+              "sentence": "→ YC031.4 (SignalLineFunction-2)"
+            },
+            {
+              "claim": "ProcessInstrumentationFunction-1 (031) operates SignalLineFunction-1",
+              "kind": "relationship",
+              "reason": "no tool result shows an operated-valve link between these items",
+              "sentence": "- YC031.4 → ActuatingFunction-1 (SignalLineFunction-1)"
+            },
+            {
+              "claim": "ActuatingFunction-1 / GlobeValve-1 / OperatedValveReference-1",
+              "kind": "relationship",
+              "reason": "no tool result relates these items to each other",
+              "sentence": "- ActuatingFunction-1 → GlobeValve-1 (OperatedValveReference-1)"
+            },
+            {
+              "claim": "FI031.1/FI031.2",
+              "kind": "untyped",
+              "reason": "the tool results mention this only as a suggestion or note; it is not an established graph fact",
+              "sentence": "Thus the valve is GlobeValve-1 and the signal traverses the functions FI031.1/FI031.2 → FFIC031."
+            },
+            {
+              "claim": "GlobeValve-1 / ProcessInstrumentationFunction-2 (031.)",
+              "kind": "relationship",
+              "reason": "no tool result relates these items to each other",
+              "sentence": "Thus the valve is GlobeValve-1 and the signal traverses the functions FI031.1/FI031.2 → FFIC031."
+            },
+            {
+              "claim": "The flow ratio control loop 031 ultimately actuates GlobeValve-1.",
+              "kind": "unreferenced",
+              "reason": "states plant facts without an evidence reference",
+              "sentence": "The flow ratio control loop 031 ultimately actuates GlobeValve-1."
+            },
+            {
+              "claim": "- FI031.1 → FFIC031.",
+              "kind": "unreferenced",
+              "reason": "states plant facts without an evidence reference",
+              "sentence": "- FI031.1 → FFIC031."
+            },
+            {
+              "claim": "SignalLineFunction-4",
+              "kind": "uncited",
+              "reason": "this item is in the tool results, but not in the evidence this sentence cites",
+              "sentence": "(SignalLineFunction-4)"
+            },
+            {
+              "claim": "- FI031.2 → FFIC031.",
+              "kind": "unreferenced",
+              "reason": "states plant facts without an evidence reference",
+              "sentence": "- FI031.2 → FFIC031."
+            },
+            {
+              "claim": "SignalLineFunction-3",
+              "kind": "uncited",
+              "reason": "this item is in the tool results, but not in the evidence this sentence cites",
+              "sentence": "(SignalLineFunction-3)"
+            },
+            {
+              "claim": "- FFIC031.",
+              "kind": "unreferenced",
+              "reason": "states plant facts without an evidence reference",
+              "sentence": "- FFIC031."
+            },
+            {
+              "claim": "SignalLineFunction-2",
+              "kind": "uncited",
+              "reason": "this item is in the tool results, but not in the evidence this sentence cites",
+              "sentence": "→ YC031.4 (SignalLineFunction-2)"
+            },
+            {
+              "claim": "SignalLineFunction-1",
+              "kind": "uncited",
+              "reason": "this item is in the tool results, but not in the evidence this sentence cites",
+              "sentence": "- YC031.4 → ActuatingFunction-1 (SignalLineFunction-1)"
+            },
+            {
+              "claim": "OperatedValveReference-1",
+              "kind": "uncited",
+              "reason": "this item is in the tool results, but not in the evidence this sentence cites",
+              "sentence": "- ActuatingFunction-1 → GlobeValve-1 (OperatedValveReference-1)"
+            }
+          ]
+        },
+        {
+          "draft": "The flow ratio control loop 031 ultimately actuates GlobeValve-1. [E4.3]  \nThe signal passes from FI031.1 to FFIC031. [E2.4]  \nThe signal passes from FI031.2 to FFIC031. [E2.3]  \nThe signal passes from FFIC031. to YC031.4 [E3.3]  \nThe signal passes from YC031.4 to ActuatingFunction-1 [E4.2]  \nActuatingFunction-1 operates GlobeValve-1 [E4.3]",
+          "unsupported_claims": [
+            {
+              "claim": "031",
+              "kind": "ambiguous_identifier",
+              "reason": "matches several entities (ProcessInstrumentationFunction-1, ProcessInstrumentationFunction-2, ProcessInstrumentationFunction-3, ProcessInstrumentationFunction-4); the graph selected none",
+              "sentence": "The flow ratio control loop 031 ultimately actuates GlobeValve-1  ."
+            }
+          ]
+        }
+      ],
+      "iterations": 5,
+      "usage": {
+        "llm_calls": 6,
+        "prompt_tokens": 25705,
+        "completion_tokens": 2422,
+        "total_tokens": 28127,
+        "reasoning_tokens": 1803
+      },
+      "duration_ms": 22003.3,
+      "answered_at": "2026-10-03 13:04:23"
+    },
+    {
+      "question_id": "i05-02",
+      "question": "Which instrument functions send signals into FFIC031.?",
+      "answer": "The instrument functions that send signals into FFIC031 are FI031.2 and FI031.1. [E2.3, E2.4]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "FFIC031"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "ProcessInstrumentationFunction-2",
+                "name": "ProcessInstrumentationFunction FFIC031.",
+                "type": "ProcessInstrumentationFunction",
+                "category": "instrumentation",
+                "identifiers": {
+                  "processInstrumentationFunctionNumber": "031.",
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+                  "instrumentTag": "FFIC031."
+                },
+                "identifier_notes": {
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1"
+                },
+                "match_tier": "identifier",
+                "match_reason": "derived identifier instrumentTag = 'FFIC031.' (composed from processInstrumentationFunctionCategory + processInstrumentationFunctions + processInstrumentationFunctionNumber); not a literal field in the DEXPI file",
+                "identifier_kind": "derived_identifier",
+                "links": {
+                  "instrumentation": 3
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 1.76,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "connections": [
+              {
+                "id": "SignalLineFunction-2",
+                "from": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+                "to": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E2.2",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4) [ProcessInstrumentationFunction]"
+              },
+              {
+                "id": "SignalLineFunction-3",
+                "from": "ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2)",
+                "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E2.3",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2) [ProcessInstrumentationFunction]"
+              },
+              {
+                "id": "SignalLineFunction-4",
+                "from": "ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1)",
+                "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E2.4",
+                "neighbor_category": "instrumentation",
+                "meaning": "'from' sends its control signal to 'to'",
+                "other_entity": "ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1) [ProcessInstrumentationFunction]"
+              }
+            ]
+          },
+          "duration_ms": 0.72,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessInstrumentationFunction-2",
+          "fact": {
+            "type": "ProcessInstrumentationFunction",
+            "name": "ProcessInstrumentationFunction FFIC031.",
+            "processInstrumentationFunctionNumber": "031.",
+            "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+            "instrumentTag": "FFIC031."
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalLineFunction-2",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-2",
+            "target": "ProcessInstrumentationFunction-1",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalLineFunction-2",
+            "ProcessInstrumentationFunction-2",
+            "ProcessInstrumentationFunction-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalLineFunction-3",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-3",
+            "target": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalLineFunction-3",
+            "ProcessInstrumentationFunction-3",
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalLineFunction-4",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-4",
+            "target": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalLineFunction-4",
+            "ProcessInstrumentationFunction-4",
+            "ProcessInstrumentationFunction-2"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessInstrumentationFunction-2": {
+          "name": "ProcessInstrumentationFunction FFIC031.",
+          "type": "ProcessInstrumentationFunction",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.3",
+              "E2.4"
+            ]
+          },
+          "text": "The instrument functions that send signals into FFIC031 are FI031.2 and FI031.1  . [E2.3, E2.4]",
+          "refs": [
+            "E2.3",
+            "E2.4"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-2",
+              "value": "ProcessInstrumentationFunction-2",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessInstrumentationFunction-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-2",
+              "value": "ProcessInstrumentationFunction FFIC031.",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "ProcessInstrumentationFunction-2",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3",
+                "E2.4"
+              ]
+            },
+            {
+              "id": "F11",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-3",
+              "value": "ProcessInstrumentationFunction-3",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "ProcessInstrumentationFunction-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-3"
+              ],
+              "refs": [
+                "E2.3"
+              ]
+            },
+            {
+              "id": "F12",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-3",
+              "value": "ProcessInstrumentationFunction FI031.2",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "get_connections",
+              "evidence_id": "ProcessInstrumentationFunction-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-3"
+              ],
+              "refs": [
+                "E2.3"
+              ]
+            },
+            {
+              "id": "F15",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-4",
+              "value": "ProcessInstrumentationFunction-4",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "ProcessInstrumentationFunction-4",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-4"
+              ],
+              "refs": [
+                "E2.4"
+              ]
+            },
+            {
+              "id": "F16",
+              "predicate": "identified_as",
+              "subject": "ProcessInstrumentationFunction-4",
+              "value": "ProcessInstrumentationFunction FI031.1",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "get_connections",
+              "evidence_id": "ProcessInstrumentationFunction-4",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-4"
+              ],
+              "refs": [
+                "E2.4"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 3,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 10800,
+        "completion_tokens": 838,
+        "total_tokens": 11638,
+        "reasoning_tokens": 724
+      },
+      "duration_ms": 7809.7,
+      "answered_at": "2026-10-03 13:04:32"
+    }
+  ]
+}

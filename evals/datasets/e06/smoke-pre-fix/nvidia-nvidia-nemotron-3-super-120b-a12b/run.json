@@ -1,0 +1,583 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "dirty": true,
+  "diff_sha256": "7d8a1cb1ae86bb004c81530f6b0f01f68ae13031260ebb56b23487b9f4b580e0",
+  "untracked_source_files": [],
+  "data_file": "data/dexpi-1.3-examples/E06V01-VER.EX01.xml",
+  "started": "2026-10-03 13:05:03",
+  "results": [
+    {
+      "question_id": "e06-01",
+      "question": "What does pump P-4713 feed, and through which line?",
+      "answer": "Pump P-4713 feeds plate heat exchanger H-1009 through line 47132. [E1.1, E2.2]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "P-4713",
+            "entity_type": "pump"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "CentrifugalPump-1",
+                "name": "P-4713",
+                "type": "CentrifugalPump",
+                "category": "equipment",
+                "tag": "P-4713",
+                "identifiers": {
+                  "tagName": "P-4713"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'P-4713'",
+                "links": {
+                  "piping_downstream": 1
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 1.15,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "CentrifugalPump-1",
+            "direction": "downstream",
+            "relationship": "piping"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "connections": [
+              {
+                "id": "PipingNetworkSegment-1/connections/1",
+                "from": "CentrifugalPump-1 (P-4713)",
+                "to": "PlateHeatExchanger-1 (H-1009)",
+                "type": "pipe",
+                "relationship": "piping",
+                "ref": "E2.2",
+                "neighbor_is": "downstream",
+                "neighbor_category": "equipment",
+                "lineNumber": "47132",
+                "fluidCode": "MNb",
+                "pipingClassCode": "75HB13",
+                "from_nozzle": "N-2",
+                "to_nozzle": "N-1"
+              }
+            ]
+          },
+          "duration_ms": 0.27,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "CentrifugalPump-1",
+          "fact": {
+            "type": "CentrifugalPump",
+            "name": "P-4713",
+            "tagName": "P-4713"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "CentrifugalPump-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-1/connections/1",
+          "fact": {
+            "source": "CentrifugalPump-1",
+            "target": "PlateHeatExchanger-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-1",
+            "fluidCode": "MNb",
+            "lineNumber": "47132",
+            "nominalDiameterNumericalValueRepresentation": "80",
+            "pipingClassCode": "75HB13"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1/connections/1",
+            "PipingNetworkSegment-1",
+            "PipingNetworkSystem-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "CentrifugalPump-1": {
+          "name": "P-4713",
+          "type": "CentrifugalPump",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E1.1",
+              "E2.2"
+            ]
+          },
+          "text": "Pump P-4713 feeds plate heat exchanger H-1009 through line 47132  . [E1.1, E2.2]",
+          "refs": [
+            "E1.1",
+            "E2.2"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "CentrifugalPump-1",
+              "value": "CentrifugalPump-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "CentrifugalPump-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "CentrifugalPump-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "CentrifugalPump-1",
+              "value": "P-4713",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "CentrifugalPump-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "CentrifugalPump-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F5",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F6",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "H-1009",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F10",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-1/connections/1",
+              "value": "47132",
+              "qualifiers": {
+                "property": "lineNumber",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F13",
+              "predicate": "flows_to",
+              "subject": "CentrifugalPump-1",
+              "object": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-1/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-1",
+                "fluidCode": "MNb",
+                "lineNumber": "47132",
+                "nominalDiameterNumericalValueRepresentation": "80",
+                "pipingClassCode": "75HB13",
+                "from_nozzle": [
+                  "N-2",
+                  "Nozzle-1"
+                ],
+                "to_nozzle": [
+                  "N-1",
+                  "Nozzle-2"
+                ]
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 3,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 10407,
+        "completion_tokens": 557,
+        "total_tokens": 10964,
+        "reasoning_tokens": 418
+      },
+      "duration_ms": 3764.3,
+      "answered_at": "2026-10-03 13:05:07"
+    },
+    {
+      "question_id": "e06-04",
+      "question": "What is upstream of H-1009?",
+      "answer": "Upstream of H-1009 is the centrifugal pump P-4713 (tag P-4713) on line 47132 [E2.2].",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "H-1009"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "PlateHeatExchanger-1",
+                "name": "H-1009",
+                "type": "PlateHeatExchanger",
+                "category": "equipment",
+                "tag": "H-1009",
+                "identifiers": {
+                  "tagName": "H-1009"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'H-1009'",
+                "links": {
+                  "piping_upstream": 1
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 2.04,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "PlateHeatExchanger-1",
+            "direction": "upstream",
+            "relationship": "piping"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "connections": [
+              {
+                "id": "PipingNetworkSegment-1/connections/1",
+                "from": "CentrifugalPump-1 (P-4713)",
+                "to": "PlateHeatExchanger-1 (H-1009)",
+                "type": "pipe",
+                "relationship": "piping",
+                "ref": "E2.2",
+                "neighbor_is": "upstream",
+                "neighbor_category": "equipment",
+                "lineNumber": "47132",
+                "fluidCode": "MNb",
+                "pipingClassCode": "75HB13",
+                "from_nozzle": "N-2",
+                "to_nozzle": "N-1"
+              }
+            ]
+          },
+          "duration_ms": 0.61,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "PlateHeatExchanger-1",
+          "fact": {
+            "type": "PlateHeatExchanger",
+            "name": "H-1009",
+            "tagName": "H-1009"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PlateHeatExchanger-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-1/connections/1",
+          "fact": {
+            "source": "CentrifugalPump-1",
+            "target": "PlateHeatExchanger-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-1",
+            "fluidCode": "MNb",
+            "lineNumber": "47132",
+            "nominalDiameterNumericalValueRepresentation": "80",
+            "pipingClassCode": "75HB13"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1/connections/1",
+            "PipingNetworkSegment-1",
+            "PipingNetworkSystem-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "PlateHeatExchanger-1": {
+          "name": "H-1009",
+          "type": "PlateHeatExchanger",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.2"
+            ]
+          },
+          "text": "Upstream of H-1009 is the centrifugal pump P-4713 (tag P-4713) on line 47132  . [E2.2]",
+          "refs": [
+            "E2.2"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "H-1009",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F5",
+              "predicate": "identified_as",
+              "subject": "CentrifugalPump-1",
+              "value": "CentrifugalPump-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "get_connections",
+              "evidence_id": "CentrifugalPump-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "CentrifugalPump-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F6",
+              "predicate": "identified_as",
+              "subject": "CentrifugalPump-1",
+              "value": "P-4713",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "get_connections",
+              "evidence_id": "CentrifugalPump-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "CentrifugalPump-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F10",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-1/connections/1",
+              "value": "47132",
+              "qualifiers": {
+                "property": "lineNumber",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F13",
+              "predicate": "flows_to",
+              "subject": "CentrifugalPump-1",
+              "object": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-1/connections/1",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-1",
+                "fluidCode": "MNb",
+                "lineNumber": "47132",
+                "nominalDiameterNumericalValueRepresentation": "80",
+                "pipingClassCode": "75HB13",
+                "from_nozzle": [
+                  "N-2",
+                  "Nozzle-1"
+                ],
+                "to_nozzle": [
+                  "N-1",
+                  "Nozzle-2"
+                ]
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 3,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 10368,
+        "completion_tokens": 511,
+        "total_tokens": 10879,
+        "reasoning_tokens": 380
+      },
+      "duration_ms": 5191.4,
+      "answered_at": "2026-10-03 13:05:13"
+    }
+  ]
+}

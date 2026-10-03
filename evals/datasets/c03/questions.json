@@ -1,0 +1,246 @@
+{
+ "description": "Piping P&ID from Equinor (DEXPI example C03): no equipment tags, flanges, an orifice, an operated valve with an emergency shutdown function, an off-page connector.",
+ "pid": "data/dexpi-1.3-examples/C03V04-VER.EX02.xml",
+ "questions": [
+  {
+   "id": "c03-01",
+   "category": "instrumentation",
+   "question": "Which instrument function operates a valve in this drawing, and which valve is it?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "ESV3712"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-1",
+      "relationship": "instrumentation"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "OperatedValve-1",
+      "relationship": "instrumentation"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "ESV3712",
+     "any_of": [
+      "ESV3712",
+      "ESV 3712"
+     ],
+     "evidence": [
+      "ESV3712"
+     ]
+    },
+    {
+     "fact": "operates OperatedValve-1",
+     "any_of": [
+      "OperatedValve-1",
+      "operated valve"
+     ],
+     "evidence": [
+      "OperatedValve-1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c03-02",
+   "category": "properties",
+   "question": "What is the panel identification code of ESV3712?",
+   "gold": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "ProcessInstrumentationFunction-1"
+      ],
+      "requested_properties": [
+       "panelIdentificationCode"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "D-13",
+     "any_of": [
+      "D-13",
+      "D 13"
+     ],
+     "evidence": [
+      "D-13"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c03-03",
+   "category": "adjacency",
+   "question": "What lies directly downstream of the restriction orifice, and on which line?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "restriction orifice"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "RestrictionOrifice-1",
+      "direction": "downstream",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "the ball valve",
+     "any_of": [
+      "BallValve-1",
+      "ball valve"
+     ],
+     "evidence": [
+      "BallValve-1"
+     ]
+    },
+    {
+     "fact": "line 13L37007A",
+     "any_of": [
+      "13L37007A"
+     ],
+     "evidence": [
+      "13L37007A"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c03-04",
+   "category": "route",
+   "question": "Trace the piping from the pipe fitting to where it leaves the drawing. Which valves does it pass?",
+   "gold": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "PipeFitting-1",
+      "target_entity_id": "FlowOutPipeOffPageConnector-1",
+      "direction": "downstream"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "the operated valve",
+     "any_of": [
+      "OperatedValve-1",
+      "operated valve"
+     ],
+     "evidence": [
+      "OperatedValve-1"
+     ]
+    },
+    {
+     "fact": "the ball valve",
+     "any_of": [
+      "BallValve-1",
+      "ball valve"
+     ],
+     "evidence": [
+      "BallValve-1"
+     ]
+    },
+    {
+     "fact": "ends at the off-page connector",
+     "any_of": [
+      "FlowOutPipeOffPageConnector-1",
+      "off-page connector",
+      "off page connector",
+      "offpage connector"
+     ],
+     "evidence": [
+      "FlowOutPipeOffPageConnector-1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c03-05",
+   "category": "line properties",
+   "question": "What fluid code and piping class does line 13L37007A carry?",
+   "gold": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "RestrictionOrifice-1",
+      "direction": "both",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "fluid code PB",
+     "any_of": [
+      "PB"
+     ],
+     "evidence": [
+      "\"PB\""
+     ]
+    },
+    {
+     "fact": "piping class FS720",
+     "any_of": [
+      "FS720"
+     ],
+     "evidence": [
+      "FS720"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c03-06",
+   "category": "cross-drawing leakage",
+   "question": "What is pump P4711 connected to?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "P4711"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "P4711 is not in this drawing",
+     "any_of": [
+      "re:p4711[^.]{0,80}\\b(not|no)\\b",
+      "re:\\b(not|no)\\b[^.]{0,80}p4711",
+      "re:(no|not)[^.]{0,40}(match|found|exist)"
+     ],
+     "evidence": [
+      "not_found"
+     ]
+    }
+   ],
+   "forbidden": [
+    {
+     "fact": "C01's heat exchanger",
+     "any_of": [
+      "H1007",
+      "PlateHeatExchanger-1"
+     ]
+    }
+   ]
+  }
+ ]
+}

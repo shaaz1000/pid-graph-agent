@@ -1,0 +1,313 @@
+{
+ "description": "Process column P&ID from BASF (DEXPI example C02): one tagged column with nozzles and a chamber, operated valves, blind flanges, three instrument functions.",
+ "pid": "data/dexpi-1.3-examples/C02V03-VER.EX02.xml",
+ "questions": [
+  {
+   "id": "c02-01",
+   "category": "entity resolution",
+   "question": "What kind of equipment is K 2750, and what are its upper and lower design pressure limits?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "K 2750"
+     }
+    },
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "ProcessColumn-1"
+      ],
+      "requested_properties": [
+       "upperLimitDesignPressure",
+       "lowerLimitDesignPressure"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "it is a process column",
+     "any_of": [
+      "ProcessColumn",
+      "process column",
+      "column"
+     ],
+     "evidence": [
+      "ProcessColumn"
+     ]
+    },
+    {
+     "fact": "upper limit 6.0 bar",
+     "any_of": [
+      "re:\\b6(\\.0)?\\s*bar"
+     ],
+     "evidence": [
+      "6.0 bar"
+     ]
+    },
+    {
+     "fact": "lower limit -1.0 bar",
+     "any_of": [
+      "re:-\\s*1(\\.0)?\\s*bar"
+     ],
+     "evidence": [
+      "-1.0 bar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c02-02",
+   "category": "type lookup",
+   "question": "What is the maximum design temperature of the column?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "column"
+     }
+    },
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "ProcessColumn-1"
+      ],
+      "requested_properties": [
+       "upperLimitDesignTemperature"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "150.0 °C",
+     "any_of": [
+      "re:150(\\.0)?\\s*°?\\s*c\\b"
+     ],
+     "evidence": [
+      "150.0 °C"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c02-03",
+   "category": "adjacency",
+   "question": "What is connected directly to nozzle N1 of K 2750, and what is the nominal diameter of that pipe?",
+   "gold": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessColumn-1",
+      "direction": "both",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "the pipe reducer",
+     "any_of": [
+      "PipeReducer-1",
+      "pipe reducer",
+      "reducer"
+     ],
+     "evidence": [
+      "PipeReducer-1"
+     ]
+    },
+    {
+     "fact": "DN 200",
+     "any_of": [
+      "DN 200"
+     ],
+     "evidence": [
+      "DN 200"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c02-04",
+   "category": "route",
+   "question": "Follow the piping from K 2750 to where it leaves the drawing: which items does it pass, and what pipe sizes are used along the way?",
+   "gold": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ProcessColumn-1",
+      "target_entity_id": "FlowOutPipeOffPageConnector-1",
+      "direction": "downstream"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "passes the pipe reducer",
+     "any_of": [
+      "PipeReducer-1",
+      "pipe reducer",
+      "reducer"
+     ],
+     "evidence": [
+      "PipeReducer-1"
+     ]
+    },
+    {
+     "fact": "DN 200 then DN 150",
+     "any_of": [
+      "DN 200"
+     ],
+     "evidence": [
+      "DN 200"
+     ]
+    },
+    {
+     "fact": "DN 150 after the reducer",
+     "any_of": [
+      "DN 150"
+     ],
+     "evidence": [
+      "DN 150"
+     ]
+    },
+    {
+     "fact": "leaves via the off-page connector",
+     "any_of": [
+      "FlowOutPipeOffPageConnector-1",
+      "off-page connector",
+      "off page connector",
+      "offpage connector"
+     ],
+     "evidence": [
+      "FlowOutPipeOffPageConnector-1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c02-05",
+   "category": "instrumentation",
+   "question": "Where is the measurement for PI(Z)275003A taken, and which instrument function does it send its signal to?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "PI(Z)275003A"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-2",
+      "relationship": "instrumentation"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessSignalGeneratingFunction-1",
+      "relationship": "instrumentation"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "measured at BlindFlange-2",
+     "any_of": [
+      "BlindFlange-2",
+      "blind flange"
+     ],
+     "evidence": [
+      "BlindFlange-2"
+     ]
+    },
+    {
+     "fact": "signal to PIS⁺Z⁺A275003",
+     "any_of": [
+      "ProcessInstrumentationFunction-1",
+      "re:pis.?z.?a\\s?275003",
+      "275003"
+     ],
+     "evidence": [
+      "ProcessInstrumentationFunction-1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c02-06",
+   "category": "ambiguity",
+   "question": "Which line is valve H658B1UV on?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "H658B1UV"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "two valves share the name",
+     "any_of": [
+      "OperatedValve-2"
+     ],
+     "evidence": [
+      "OperatedValve-2"
+     ]
+    },
+    {
+     "fact": "both are reported",
+     "any_of": [
+      "OperatedValve-3"
+     ],
+     "evidence": [
+      "OperatedValve-3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c02-07",
+   "category": "missing data",
+   "question": "How much does column K 2750 weigh?",
+   "gold": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "ProcessColumn-1"
+      ],
+      "requested_properties": [
+       "weight"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "weight not in the P&ID",
+     "any_of": [
+      "re:(not|no)\\b[^.]{0,80}(weight|mass)",
+      "re:(weight|mass)[^.]{0,80}\\b(not|no|absent|missing|unavailable)\\b"
+     ],
+     "evidence": [
+      "weight"
+     ]
+    }
+   ],
+   "forbidden": [
+    {
+     "fact": "an invented weight",
+     "any_of": [
+      "re:\\b\\d+(\\.\\d+)?\\s*(kg|t|tonnes?|lb)\\b"
+     ]
+    }
+   ]
+  }
+ ]
+}

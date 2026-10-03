@@ -10,9 +10,11 @@
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import logging
 import sys
+from pathlib import Path
 
 from pid_agent.agent.tools import GraphTools, tool_specs
 from pid_agent.config import Settings, load_settings
@@ -27,6 +29,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("-v", "--verbose", action="store_true", help="log tool calls, model calls and timings")
     parser.add_argument("--json", action="store_true", help="print the full result as JSON")
     parser.add_argument("--no-trace", action="store_true", help="print only the answer")
+    parser.add_argument("--pid", metavar="FILE", help="DEXPI/Proteus XML file to load (default: PID_DATA_FILE or the C01 reference P&ID)")
     parser.add_argument("words", nargs="*", help="a question, or one of: tool, tools, inspect")
     return parser
 
@@ -90,10 +93,12 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(tool_specs(), indent=2))
             return 0
         settings = load_settings()
+        if args.pid:
+            settings = dataclasses.replace(settings, data_file=Path(args.pid).expanduser())
         if words[:1] == ["inspect"]:
             from pid_agent.ingestion import graph_inspector
 
-            graph_inspector.main()
+            graph_inspector.main(settings.data_file)
             return 0
         if words[:1] == ["tool"]:
             return _run_tool(settings, words[1:])

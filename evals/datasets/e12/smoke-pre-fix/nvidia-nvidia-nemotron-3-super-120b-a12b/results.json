@@ -1,0 +1,137 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 4,
+  "scored_questions": 2,
+  "mean_score": 1.0,
+  "outcomes": {
+    "correct": 2,
+    "infrastructure_failure": 2
+  },
+  "totals": {
+    "model_calls": 6,
+    "tool_calls": 4,
+    "tokens": 22322
+  },
+  "rows": [
+    {
+      "id": "e12-01",
+      "category": "entity resolution",
+      "question": "What kind of equipment is H1201, and what are its design heat flow rate and heat transfer area?",
+      "expected": [
+        "plate heat exchanger",
+        "313.0 kW",
+        "46.8 m2"
+      ],
+      "answer": "H1201 is a PlateHeatExchanger. [E1.1]  \nIts design heat flow rate is 313.0 kW. [E2.1]  \nIts heat transfer area is 46.8 m2. [E2.2]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "plate heat exchanger",
+          "found": true
+        },
+        {
+          "fact": "313.0 kW",
+          "found": true
+        },
+        {
+          "fact": "46.8 m2",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 10945,
+      "latency_ms": 12344.5,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "e12-02",
+      "category": "sub-objects",
+      "question": "Which nozzles of H1201 belong to Chamber 1?",
+      "expected": [
+        "N3",
+        "N4"
+      ],
+      "answer": "The nozzles of H1201 that belong to Chamber 1 are N3 (Nozzle‑3) and N4 (Nozzle‑4). [R2]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "N3",
+          "found": true
+        },
+        {
+          "fact": "N4",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "a nozzle of the other chamber",
+          "found": false
+        }
+      ],
+      "outcome": "correct",
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tokens": 11377,
+      "latency_ms": 9576.5,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "e12-03",
+      "category": "chamber properties",
+      "question": "What is the lower design temperature limit of Chamber 1 of H1201?",
+      "expected": [
+        "-45.0 °C"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "e12-04",
+      "category": "connectivity / missing",
+      "question": "What is H1201 connected to?",
+      "expected": [
+        "no connections are drawn"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

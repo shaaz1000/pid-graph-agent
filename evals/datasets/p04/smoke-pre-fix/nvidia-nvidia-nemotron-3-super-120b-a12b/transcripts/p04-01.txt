@@ -1,0 +1,103 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1ea8f1b
+
+QUESTION [p04-01]
+Which lines are connected to H-1008, and where do they come from?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "H-1008"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R1",
+  "status_ref": "E1.0",
+  "entities": [
+    {
+      "id": "PlateHeatExchanger-1",
+      "name": "H-1008",
+      "type": "PlateHeatExchanger",
+      "category": "equipment",
+      "tag": "H-1008",
+      "identifiers": {
+        "tagName": "H-1008"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'H-1008'",
+      "links": {
+        "open_ended_pipes": 2
+      },
+      "ref": "E1.1"
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_connections
+Input:  {"entity_id": "PlateHeatExchanger-1", "relationship": "piping", "direction": "both"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "connections": [
+    {
+      "id": "PipingNetworkSegment-1/connections/1",
+      "from": null,
+      "to": "PlateHeatExchanger-1 (H-1008)",
+      "type": "open_end",
+      "relationship": "piping",
+      "ref": "E2.2",
+      "neighbor_is": "upstream",
+      "open_end": "source",
+      "lineNumber": "47112",
+      "fluidCode": "MNb",
+      "pipingClassCode": "75HB13",
+      "to_nozzle": "N-1",
+      "note": "This pipe exists in the DEXPI model but has no source item on this drawing, so pyDEXPI's conceptual graph omits it. Where it comes from is not represented."
+    },
+    {
+      "id": "PipingNetworkSegment-2/connections/1",
+      "from": null,
+      "to": "PlateHeatExchanger-1 (H-1008)",
+      "type": "open_end",
+      "relationship": "piping",
+      "ref": "E2.3",
+      "neighbor_is": "upstream",
+      "open_end": "source",
+      "lineNumber": "10082",
+      "fluidCode": "WKa",
+      "pipingClassCode": "75HB13",
+      "to_nozzle": "N-3",
+      "note": "This pipe exists in the DEXPI model but has no source item on this drawing, so pyDEXPI's conceptual graph omits it. Where it comes from is not represented."
+    }
+  ],
+  "warnings": [
+    "2 connection(s) are open-ended: the pipe exists in the DEXPI model but its other end is not represented on this drawing, so no neighbour can be stated."
+  ]
+}
+
+FINAL ANSWER
+H-1008 is connected to two lines whose sources are not shown on this drawing:
+- Line 47112 (fluid MnB, piping class 75HB13) [E2.2]
+- Line 10082 (fluid WKa, piping class 75HB13) [E2.3] [E1.1]
+
+GROUNDING: grounded (5 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  grounded statement: H-1008 is connected to two lines whose sources are not shown on this drawing: [E2.2]
+      <- F1 identified_as [PlateHeatExchanger-1] plant_graph: PlateHeatExchanger-1
+      <- F2 identified_as [PlateHeatExchanger-1] plant_graph: PlateHeatExchanger-1
+  grounded statement: - Line 47112 (fluid MnB, piping class 75HB13) [E2.2]
+      <- F9 has_property [PipingNetworkSegment-1/connections/1] plant_graph: PipingNetworkSegment-1/connections/1, PipingNetworkSegment-1, PipingNetworkSystem-1
+      <- F10 open_end [PipingNetworkSegment-1/connections/1] plant_graph: PipingNetworkSegment-1/connections/1, PipingNetworkSegment-1, PipingNetworkSystem-1
+      <- F7 has_property [PipingNetworkSegment-1/connections/1] plant_graph: PipingNetworkSegment-1/connections/1, PipingNetworkSegment-1, PipingNetworkSystem-1
+  grounded statement: - Line 10082 (fluid WKa, piping class 75HB13) [E2.3, E1.1]
+      <- F15 has_property [PipingNetworkSegment-2/connections/1] plant_graph: PipingNetworkSegment-2/connections/1, PipingNetworkSegment-2, PipingNetworkSystem-2
+      <- F16 open_end [PipingNetworkSegment-2/connections/1] plant_graph: PipingNetworkSegment-2/connections/1, PipingNetworkSegment-2, PipingNetworkSystem-2
+      <- F13 has_property [PipingNetworkSegment-2/connections/1] plant_graph: PipingNetworkSegment-2/connections/1, PipingNetworkSegment-2, PipingNetworkSystem-2
+
+EVIDENCE (3 graph facts)
+  [entity] PlateHeatExchanger-1  <- plant_graph: PlateHeatExchanger-1
+  [open_end] PipingNetworkSegment-1/connections/1  <- plant_graph: PipingNetworkSegment-1/connections/1, PipingNetworkSegment-1, PipingNetworkSystem-1
+  [open_end] PipingNetworkSegment-2/connections/1  <- plant_graph: PipingNetworkSegment-2/connections/1, PipingNetworkSegment-2, PipingNetworkSystem-2
+
+USAGE: 3 model calls, 11530 tokens, 12129 ms

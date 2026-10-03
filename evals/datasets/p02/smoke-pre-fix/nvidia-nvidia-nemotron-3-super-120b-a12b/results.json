@@ -1,0 +1,127 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 4,
+  "scored_questions": 2,
+  "mean_score": 1.0,
+  "outcomes": {
+    "correct": 2,
+    "infrastructure_failure": 2
+  },
+  "totals": {
+    "model_calls": 6,
+    "tool_calls": 4,
+    "tokens": 22365
+  },
+  "rows": [
+    {
+      "id": "p02-01",
+      "category": "cross-drawing leakage",
+      "question": "What type of pump is P4712 in this drawing?",
+      "expected": [
+        "a centrifugal pump"
+      ],
+      "answer": "P4712 is a CentrifugalPump. [E1.1]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "a centrifugal pump",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "C01's reciprocating pump",
+          "found": false
+        }
+      ],
+      "outcome": "correct",
+      "model_calls": 2,
+      "tool_calls": 1,
+      "tokens": 6907,
+      "latency_ms": 2688.1,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "p02-02",
+      "category": "upstream",
+      "question": "Where does the pipe into P4712 come from, and on which line?",
+      "expected": [
+        "from the off-page connector",
+        "line 48121"
+      ],
+      "answer": "The pipe into P4712 comes from FlowInPipeOffPageConnector-1 (an off-page connector) on line 48121. [E2.2, E3.1]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "from the off-page connector",
+          "found": true
+        },
+        {
+          "fact": "line 48121",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tokens": 15458,
+      "latency_ms": 17740.9,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "p02-03",
+      "category": "properties",
+      "question": "Which connector number does the incoming off-page connector refer to?",
+      "expected": [
+        "123"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "p02-04",
+      "category": "missing data",
+      "question": "What is the shaft power of pump P4712 in this drawing?",
+      "expected": [
+        "not in this P&ID"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

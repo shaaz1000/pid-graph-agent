@@ -24,8 +24,8 @@ def summarize(graph: nx.MultiDiGraph) -> dict:
     }
 
 
-def main() -> None:
-    plant = load_plant(load_settings().data_file)
+def main(data_file=None) -> None:
+    plant = load_plant(data_file or load_settings().data_file)
     for name, graph in (("plant", plant.plant_graph), ("conceptual", plant.conceptual_graph)):
         info = summarize(graph)
         print(f"== {name}: {info['type']} nodes={info['nodes']} edges={info['edges']} "

@@ -1,0 +1,144 @@
+{
+ "description": "Equipment example E06 (DEXPI): a pump and a plate heat exchanger joined by one pipe between nozzles.",
+ "pid": "data/dexpi-1.3-examples/E06V01-VER.EX01.xml",
+ "questions": [
+  {
+   "id": "e06-01",
+   "category": "adjacency",
+   "question": "What does pump P-4713 feed, and through which line?",
+   "gold": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "CentrifugalPump-1",
+      "direction": "downstream",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "H-1009",
+     "any_of": [
+      "H-1009",
+      "H1009",
+      "PlateHeatExchanger-1"
+     ],
+     "evidence": [
+      "H-1009"
+     ]
+    },
+    {
+     "fact": "line 47132",
+     "any_of": [
+      "47132"
+     ],
+     "evidence": [
+      "47132"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "e06-02",
+   "category": "nozzles",
+   "question": "Between which nozzles does the pipe from P-4713 to H-1009 run?",
+   "gold": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "CentrifugalPump-1",
+      "direction": "downstream",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "pump nozzle N-2",
+     "any_of": [
+      "re:n-?2"
+     ],
+     "evidence": [
+      "N-2"
+     ]
+    },
+    {
+     "fact": "exchanger nozzle N-1",
+     "any_of": [
+      "re:n-?1"
+     ],
+     "evidence": [
+      "N-1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "e06-03",
+   "category": "line properties",
+   "question": "What fluid code and piping class does line 47132 carry?",
+   "gold": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "PipingNetworkSystem-1"
+      ],
+      "requested_properties": [
+       "fluidCode",
+       "pipingClassCode"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "MNb",
+     "any_of": [
+      "MNb"
+     ],
+     "evidence": [
+      "MNb"
+     ]
+    },
+    {
+     "fact": "75HB13",
+     "any_of": [
+      "75HB13"
+     ],
+     "evidence": [
+      "75HB13"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "e06-04",
+   "category": "upstream",
+   "question": "What is upstream of H-1009?",
+   "gold": [
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "PlateHeatExchanger-1",
+      "direction": "upstream"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "the pump P-4713",
+     "any_of": [
+      "P-4713",
+      "P4713",
+      "CentrifugalPump-1"
+     ],
+     "evidence": [
+      "P-4713"
+     ]
+    }
+   ]
+  }
+ ]
+}

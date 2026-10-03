@@ -1,0 +1,103 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1ea8f1b
+
+QUESTION [i05-02]
+Which instrument functions send signals into FFIC031.?
+
+STEP 1
+Tool:   find_entities
+Input:  {"query": "FFIC031"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R1",
+  "status_ref": "E1.0",
+  "entities": [
+    {
+      "id": "ProcessInstrumentationFunction-2",
+      "name": "ProcessInstrumentationFunction FFIC031.",
+      "type": "ProcessInstrumentationFunction",
+      "category": "instrumentation",
+      "identifiers": {
+        "processInstrumentationFunctionNumber": "031.",
+        "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "031",
+        "instrumentTag": "FFIC031."
+      },
+      "identifier_notes": {
+        "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-1"
+      },
+      "match_tier": "identifier",
+      "match_reason": "derived identifier instrumentTag = 'FFIC031.' (composed from processInstrumentationFunctionCategory + processInstrumentationFunctions + processInstrumentationFunctionNumber); not a literal field in the DEXPI file",
+      "identifier_kind": "derived_identifier",
+      "links": {
+        "instrumentation": 3
+      },
+      "ref": "E1.1"
+    }
+  ]
+}
+
+STEP 2
+Tool:   get_connections
+Input:  {"entity_id": "ProcessInstrumentationFunction-2", "relationship": "instrumentation"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "connections": [
+    {
+      "id": "SignalLineFunction-2",
+      "from": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+      "to": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4)",
+      "type": "signal_line",
+      "relationship": "instrumentation",
+      "ref": "E2.2",
+      "neighbor_category": "instrumentation",
+      "meaning": "'from' sends its control signal to 'to'",
+      "other_entity": "ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction YC031.4) [ProcessInstrumentationFunction]"
+    },
+    {
+      "id": "SignalLineFunction-3",
+      "from": "ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2)",
+      "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+      "type": "signal_line",
+      "relationship": "instrumentation",
+      "ref": "E2.3",
+      "neighbor_category": "instrumentation",
+      "meaning": "'from' sends its control signal to 'to'",
+      "other_entity": "ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction FI031.2) [ProcessInstrumentationFunction]"
+    },
+    {
+      "id": "SignalLineFunction-4",
+      "from": "ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1)",
+      "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction FFIC031.)",
+      "type": "signal_line",
+      "relationship": "instrumentation",
+      "ref": "E2.4",
+      "neighbor_category": "instrumentation",
+      "meaning": "'from' sends its control signal to 'to'",
+      "other_entity": "ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction FI031.1) [ProcessInstrumentationFunction]"
+    }
+  ]
+}
+
+FINAL ANSWER
+The instrument functions that send signals into FFIC031 are FI031.2 and FI031.1. [E2.3, E2.4]
+
+GROUNDING: grounded (3 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  grounded statement: The instrument functions that send signals into FFIC031 are FI031.2 and FI031.1  . [E2.3, E2.4]
+      <- F1 identified_as [ProcessInstrumentationFunction-2] plant_graph: ProcessInstrumentationFunction-2
+      <- F2 identified_as [ProcessInstrumentationFunction-2] plant_graph: ProcessInstrumentationFunction-2
+      <- F11 identified_as [ProcessInstrumentationFunction-3] plant_graph: ProcessInstrumentationFunction-3
+      <- F12 identified_as [ProcessInstrumentationFunction-3] plant_graph: ProcessInstrumentationFunction-3
+      <- F15 identified_as [ProcessInstrumentationFunction-4] plant_graph: ProcessInstrumentationFunction-4
+      <- F16 identified_as [ProcessInstrumentationFunction-4] plant_graph: ProcessInstrumentationFunction-4
+
+EVIDENCE (4 graph facts)
+  [entity] ProcessInstrumentationFunction-2  <- plant_graph: ProcessInstrumentationFunction-2
+  [connection] SignalLineFunction-2  <- conceptual_graph: SignalLineFunction-2, ProcessInstrumentationFunction-2, ProcessInstrumentationFunction-1
+  [connection] SignalLineFunction-3  <- conceptual_graph: SignalLineFunction-3, ProcessInstrumentationFunction-3, ProcessInstrumentationFunction-2
+  [connection] SignalLineFunction-4  <- conceptual_graph: SignalLineFunction-4, ProcessInstrumentationFunction-4, ProcessInstrumentationFunction-2
+
+USAGE: 3 model calls, 11638 tokens, 7810 ms

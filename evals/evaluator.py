@@ -4,6 +4,15 @@
     uv run python evals/evaluator.py --run      ask the questions once with the configured
                                                 provider and model, save the run, then score
 
+    uv run python evals/evaluator.py --dataset-name c02 [--run]
+                                                the same for another P&ID: questions from
+                                                evals/datasets/c02/questions.json, which names
+                                                the DEXPI file; runs under evals/datasets/c02/runs/
+    --pid FILE and --questions FILE override the file and the question set.
+
+Without --dataset-name the C01 suite is used exactly as before (evals/questions.json,
+evals/runs/). Every suite runs the same agent; only the input file and questions differ.
+
 Each provider/model has its own directory under evals/runs/, so runs never overwrite each
 other. ``--run`` never re-asks a question that already has an answer: it only asks questions
 that were not reached or that failed for infrastructure reasons, and it stops at the first
@@ -35,6 +44,8 @@ from typing import Any
 HERE = Path(__file__).parent
 QUESTIONS = HERE / "questions.json"
 RUNS = HERE / "runs"
+DATASETS = HERE / "datasets"
+PROJECT_ROOT = HERE.parent
 TYPOGRAPHY = str.maketrans({"−": "-", "‑": "-", "‐": "-", "–": "-", "—": "-", " ": " ", " ": " ", " ": " "})
 
 
@@ -71,11 +82,11 @@ def judge(question: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
     return {**scored, "outcome": outcome}
 
 
-def run_directory(provider: str, model: str) -> Path:
-    return RUNS / re.sub(r"[^a-z0-9.]+", "-", f"{provider}-{model}".lower()).strip("-")
+def run_directory(provider: str, model: str, root: Path = RUNS) -> Path:
+    return root / re.sub(r"[^a-z0-9.]+", "-", f"{provider}-{model}".lower()).strip("-")
 
 
-def run_questions(questions: list[dict[str, Any]], pause: float) -> Path:
+def run_questions(questions: list[dict[str, Any]], pause: float, data_file: Path | None = None, runs_root: Path = RUNS, only: set[str] | None = None) -> Path:
     from pid_agent.agent.tools import GraphTools
     from pid_agent.agent.workflow import PidAgent, format_transcript
     from pid_agent.config import load_settings
@@ -83,7 +94,8 @@ def run_questions(questions: list[dict[str, Any]], pause: float) -> Path:
     from pid_agent.llm import create_llm
 
     settings = load_settings()
-    agent = PidAgent(create_llm(settings), GraphTools(GraphService.from_file(settings.data_file)))
+    data_file = data_file or settings.data_file
+    agent = PidAgent(create_llm(settings), GraphTools(GraphService.from_file(data_file)))
     commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=HERE).stdout.strip()
     # A run is reproducible from its commit only if the working tree was clean; record that,
     # and a hash of any uncommitted changes to tracked files.
@@ -91,16 +103,16 @@ def run_questions(questions: list[dict[str, Any]], pause: float) -> Path:
     untracked = subprocess.run(["git", "ls-files", "--others", "--exclude-standard", "src", "evals/evaluator.py", "evals/questions.json"], capture_output=True, text=True, cwd=HERE).stdout.split()
     dirty = bool(diff) or bool(untracked)
     provenance = {"dirty": dirty, "diff_sha256": hashlib.sha256(diff).hexdigest() if diff else None, "untracked_source_files": untracked}
-    directory = run_directory(settings.llm_provider, settings.llm_model)
+    directory = run_directory(settings.llm_provider, settings.llm_model, runs_root)
     (directory / "transcripts").mkdir(parents=True, exist_ok=True)
     run_file = directory / "run.json"
-    run = {"provider": settings.llm_provider, "model": settings.llm_model, "commit": commit, **provenance, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "results": []}
+    run = {"provider": settings.llm_provider, "model": settings.llm_model, "commit": commit, **provenance, "data_file": str(Path(data_file).resolve().relative_to(PROJECT_ROOT)) if Path(data_file).resolve().is_relative_to(PROJECT_ROOT) else str(data_file), "started": time.strftime("%Y-%m-%d %H:%M:%S"), "results": []}
     if run_file.exists():  # resume: keep every answer already given
         run = json.loads(run_file.read_text())
         run["results"] = [r for r in run["results"] if not r.get("failure_category")]
     answered = {r["question_id"] for r in run["results"]}
     for question in questions:
-        if question["id"] in answered:
+        if question["id"] in answered or (only is not None and question["id"] not in only):
             continue
         result = agent.ask(question["question"], question_id=question["id"])
         run["results"].append({**result.to_dict(), "answered_at": time.strftime("%Y-%m-%d %H:%M:%S")})
@@ -179,13 +191,36 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--run", action="store_true", help="ask the agent every question once before scoring")
     parser.add_argument("--pause", type=float, default=1.0, help="seconds between questions when running")
+    parser.add_argument("--dataset-name", help="a suite under evals/datasets/<name>/ (default: the C01 suite)")
+    parser.add_argument("--questions", type=Path, help="question file (default: the suite's questions.json)")
+    parser.add_argument("--pid", type=Path, help="DEXPI file to load (default: the file the question set names)")
+    parser.add_argument("--only", help="comma-separated question ids to ask, e.g. for a smoke test")
     args = parser.parse_args()
-    questions = json.loads(QUESTIONS.read_text())["questions"]
-    directories = [run_questions(questions, args.pause)] if args.run else sorted(p.parent for p in RUNS.glob("*/run.json"))
-    for directory in directories:
-        report = score_run(questions, json.loads((directory / "run.json").read_text()))
-        (directory / "results.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
-        print_report(report)
+    if args.run or args.dataset_name or args.questions:
+        suites = [_suite(args.dataset_name, args.questions, args.pid)]
+    else:  # score every saved run of every suite
+        suites = [_suite(None, None, None)] + [_suite(p.parent.name, None, None) for p in sorted(DATASETS.glob("*/questions.json"))]
+    for questions, data_file, runs_root in suites:
+        if args.run:
+            only = set(args.only.split(",")) if args.only else None
+            directories = [run_questions(questions, args.pause, data_file, runs_root, only)]
+        else:
+            directories = sorted(p.parent for p in runs_root.glob("*/run.json"))
+        for directory in directories:
+            report = score_run(questions, json.loads((directory / "run.json").read_text()))
+            (directory / "results.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
+            print_report(report)
+
+
+def _suite(name: str | None, questions_file: Path | None, pid: Path | None) -> tuple[list[dict[str, Any]], Path | None, Path]:
+    """(questions, DEXPI file, runs directory) of one suite. No suite has code of its own."""
+    if name is None:
+        questions_file = questions_file or QUESTIONS
+        suite = json.loads(questions_file.read_text())
+        return suite["questions"], pid or (PROJECT_ROOT / suite["pid"] if "pid" in suite else None), RUNS
+    folder = DATASETS / name
+    suite = json.loads((questions_file or folder / "questions.json").read_text())
+    return suite["questions"], pid or PROJECT_ROOT / suite["pid"], folder / "runs"
 
 
 if __name__ == "__main__":

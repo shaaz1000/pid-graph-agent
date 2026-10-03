@@ -1,0 +1,143 @@
+{
+ "description": "Piping example P02 (DEXPI): a pipe from an off-page connector to a pump nozzle. The pump's tag, P4712, also exists in C01 for a different pump type.",
+ "pid": "data/dexpi-1.3-examples/P02V01-VER.EX01.xml",
+ "questions": [
+  {
+   "id": "p02-01",
+   "category": "cross-drawing leakage",
+   "question": "What type of pump is P4712 in this drawing?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "P4712"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "a centrifugal pump",
+     "any_of": [
+      "CentrifugalPump",
+      "centrifugal pump",
+      "centrifugal"
+     ],
+     "evidence": [
+      "CentrifugalPump"
+     ]
+    }
+   ],
+   "forbidden": [
+    {
+     "fact": "C01's reciprocating pump",
+     "any_of": [
+      "reciprocating"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p02-02",
+   "category": "upstream",
+   "question": "Where does the pipe into P4712 come from, and on which line?",
+   "gold": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "CentrifugalPump-1",
+      "direction": "upstream",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "from the off-page connector",
+     "any_of": [
+      "FlowInPipeOffPageConnector-1",
+      "off-page connector",
+      "off page connector",
+      "offpage connector"
+     ],
+     "evidence": [
+      "FlowInPipeOffPageConnector-1"
+     ]
+    },
+    {
+     "fact": "line 48121",
+     "any_of": [
+      "48121"
+     ],
+     "evidence": [
+      "48121"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p02-03",
+   "category": "properties",
+   "question": "Which connector number does the incoming off-page connector refer to?",
+   "gold": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "FlowInPipeOffPageConnector-1/connectorReference/1"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "123",
+     "any_of": [
+      "re:\\b123\\b"
+     ],
+     "evidence": [
+      "123"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p02-04",
+   "category": "missing data",
+   "question": "What is the shaft power of pump P4712 in this drawing?",
+   "gold": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "CentrifugalPump-1"
+      ],
+      "requested_properties": [
+       "designShaftPower"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "not in this P&ID",
+     "any_of": [
+      "re:(not|no)\\b[^.]{0,80}(shaft )?power",
+      "re:power[^.]{0,80}\\b(not|no|absent|missing|unavailable)\\b"
+     ],
+     "evidence": [
+      "designShaftPower"
+     ]
+    }
+   ],
+   "forbidden": [
+    {
+     "fact": "C01's value",
+     "any_of": [
+      "re:60(\\.0)?\\s*kw",
+      "re:84(\\.0)?\\s*kw"
+     ]
+    }
+   ]
+  }
+ ]
+}

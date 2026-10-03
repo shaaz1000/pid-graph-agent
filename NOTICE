@@ -20,5 +20,11 @@ Third-party material
   here unmodified as the input the assignment specifies. It is not covered by this
   repository's licence; its own terms apply.
 
+- data/dexpi-1.3-examples/*.xml, the official DEXPI 1.3 example P&IDs
+  Copyright DEXPI e.V. and the contributing companies. Published in the DEXPI TrainingTestCases
+  repository (https://gitlab.com/dexpi/TrainingTestCases, folder "dexpi 1.3/example pids")
+  under the Creative Commons Attribution 4.0 International licence (CC BY 4.0). Included
+  unmodified for the cross-P&ID ingestion matrix and evaluation.
+
 Other dependencies (NetworkX, LangGraph, pydantic, httpx, the Groq SDK, Streamlit and others)
 are installed from their own distributions under their own licences and are not copied here.

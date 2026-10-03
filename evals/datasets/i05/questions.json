@@ -1,0 +1,166 @@
+{
+ "description": "Measurement and control example I05 (DEXPI): two flow indications and a flow-ratio control in the control room acting on one valve. Four SignalLineFunction links.",
+ "pid": "data/dexpi-1.3-examples/I05V01-VER.EX01.xml",
+ "questions": [
+  {
+   "id": "i05-01",
+   "category": "instrumentation chain",
+   "question": "Which valve does the flow ratio control loop 031 ultimately act on, and through which functions does the signal pass?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "FFIC031."
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-2",
+      "relationship": "instrumentation"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-1",
+      "relationship": "instrumentation"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ActuatingFunction-1",
+      "relationship": "instrumentation"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "the globe valve",
+     "any_of": [
+      "GlobeValve-1",
+      "globe valve"
+     ],
+     "evidence": [
+      "GlobeValve-1"
+     ]
+    },
+    {
+     "fact": "via YC031.4",
+     "any_of": [
+      "YC031.4"
+     ],
+     "evidence": [
+      "YC031.4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "i05-02",
+   "category": "instrumentation",
+   "question": "Which instrument functions send signals into FFIC031.?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "FFIC031."
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-2",
+      "relationship": "instrumentation"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "FI031.2",
+     "any_of": [
+      "FI031.2"
+     ],
+     "evidence": [
+      "FI031.2"
+     ]
+    },
+    {
+     "fact": "FI031.1",
+     "any_of": [
+      "FI031.1"
+     ],
+     "evidence": [
+      "FI031.1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "i05-03",
+   "category": "instrumentation",
+   "question": "What does flow indication FI031.1 get its measurement from?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "FI031.1"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-4",
+      "relationship": "instrumentation"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "a process signal generating function",
+     "any_of": [
+      "ProcessSignalGeneratingFunction-2",
+      "signal generating function",
+      "signal-generating function",
+      "transmitter",
+      "sensor"
+     ],
+     "evidence": [
+      "ProcessSignalGeneratingFunction-2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "i05-04",
+   "category": "missing data",
+   "question": "What is the set point of the flow ratio controller FFIC031.?",
+   "gold": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "ProcessInstrumentationFunction-2"
+      ],
+      "requested_properties": [
+       "setPoint"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "no set point in the P&ID",
+     "any_of": [
+      "re:(not|no)\\b[^.]{0,80}set ?point",
+      "re:set ?point[^.]{0,80}\\b(not|no|absent|missing|unavailable)\\b"
+     ],
+     "evidence": [
+      "setPoint"
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,179 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "questions": 6,
+  "scored_questions": 2,
+  "mean_score": 1.0,
+  "outcomes": {
+    "infrastructure_failure": 4,
+    "correct": 2
+  },
+  "totals": {
+    "model_calls": 10,
+    "tool_calls": 7,
+    "tokens": 37832
+  },
+  "rows": [
+    {
+      "id": "c03-01",
+      "category": "instrumentation",
+      "question": "Which instrument function operates a valve in this drawing, and which valve is it?",
+      "expected": [
+        "ESV3712",
+        "operates OperatedValve-1"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c03-02",
+      "category": "properties",
+      "question": "What is the panel identification code of ESV3712?",
+      "expected": [
+        "D-13"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c03-03",
+      "category": "adjacency",
+      "question": "What lies directly downstream of the restriction orifice, and on which line?",
+      "expected": [
+        "the ball valve",
+        "line 13L37007A"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c03-04",
+      "category": "route",
+      "question": "Trace the piping from the pipe fitting to where it leaves the drawing. Which valves does it pass?",
+      "expected": [
+        "the operated valve",
+        "the ball valve",
+        "ends at the off-page connector"
+      ],
+      "answer": "The piping from PipeFitting-1 passes OperatedValve-1. [E4.4]  \nThe piping then passes BallValve-1. [E4.7]  \nThe piping leaves the drawing at FlowOutPipeOffPageConnector-1. [E4.9]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "the operated valve",
+          "found": true
+        },
+        {
+          "fact": "the ball valve",
+          "found": true
+        },
+        {
+          "fact": "ends at the off-page connector",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "outcome": "correct",
+      "model_calls": 6,
+      "tool_calls": 4,
+      "tokens": 23376,
+      "latency_ms": 38118.8,
+      "grounding": "regenerated",
+      "regenerated": true,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c03-05",
+      "category": "line properties",
+      "question": "What fluid code and piping class does line 13L37007A carry?",
+      "expected": [
+        "fluid code PB",
+        "piping class FS720"
+      ],
+      "answer": "",
+      "score": null,
+      "outcome": "infrastructure_failure",
+      "required": [],
+      "forbidden": [],
+      "model_calls": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0.0,
+      "grounding": "not_validated",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    },
+    {
+      "id": "c03-06",
+      "category": "cross-drawing leakage",
+      "question": "What is pump P4711 connected to?",
+      "expected": [
+        "P4711 is not in this drawing"
+      ],
+      "answer": "The supplied P&ID does not contain an entity matching ‘P4711’. [E3.0]",
+      "score": 1.0,
+      "required": [
+        {
+          "fact": "P4711 is not in this drawing",
+          "found": true
+        }
+      ],
+      "forbidden": [
+        {
+          "fact": "C01's heat exchanger",
+          "found": false
+        }
+      ],
+      "outcome": "correct",
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tokens": 14456,
+      "latency_ms": 11142.6,
+      "grounding": "grounded",
+      "regenerated": false,
+      "fallback": false,
+      "turn_limit": null,
+      "unsupported_claims": []
+    }
+  ]
+}

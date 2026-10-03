@@ -1,0 +1,160 @@
+{
+ "description": "Measurement and control example I03 (DEXPI): a tank, a level control loop and the valve it operates. Its controller-to-actuator link is a SignalLineFunction.",
+ "pid": "data/dexpi-1.3-examples/I03V01-VER.EX01.xml",
+ "questions": [
+  {
+   "id": "i03-01",
+   "category": "instrumentation",
+   "question": "Which instrument function takes its measurement at the tank, where exactly, and which function receives that measurement?",
+   "gold": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessSignalGeneratingFunction-1",
+      "relationship": "instrumentation"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "measures at the blind flange",
+     "any_of": [
+      "BlindFlange-1",
+      "blind flange"
+     ],
+     "evidence": [
+      "BlindFlange-1"
+     ]
+    },
+    {
+     "fact": "feeds LICSA03",
+     "any_of": [
+      "LICSA03",
+      "LICSA 03"
+     ],
+     "evidence": [
+      "LICSA03"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "i03-02",
+   "category": "instrumentation chain",
+   "question": "Which valve does the level control loop LICSA03 act on?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "LICSA03"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-1",
+      "relationship": "instrumentation"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ActuatingFunction-1",
+      "relationship": "instrumentation"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "the globe valve LV 03",
+     "any_of": [
+      "GlobeValve-1",
+      "LV 03",
+      "LV03",
+      "globe valve"
+     ],
+     "evidence": [
+      "GlobeValve-1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "i03-03",
+   "category": "open ends",
+   "question": "What is valve LV 03 connected to on the piping side?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "LV 03"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "GlobeValve-1",
+      "direction": "both",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "its pipes are open-ended / not shown",
+     "any_of": [
+      "re:open[- ]?end",
+      "re:not (shown|represented|on this drawing)",
+      "re:no (destination|source)"
+     ],
+     "evidence": [
+      "open_end"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "i03-04",
+   "category": "false premise",
+   "question": "Assume this tank is T4750. What feeds it?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "T4750"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "Tank-1",
+      "direction": "upstream",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "T4750 is not in this drawing",
+     "any_of": [
+      "re:t4750[^.]{0,80}\\b(not|no)\\b",
+      "re:\\b(not|no)\\b[^.]{0,80}t4750"
+     ],
+     "evidence": [
+      "not_found"
+     ]
+    }
+   ],
+   "forbidden": [
+    {
+     "fact": "C01 equipment",
+     "any_of": [
+      "GlobeValve-2",
+      "PlateHeatExchanger-1",
+      "H1007"
+     ]
+    }
+   ]
+  }
+ ]
+}

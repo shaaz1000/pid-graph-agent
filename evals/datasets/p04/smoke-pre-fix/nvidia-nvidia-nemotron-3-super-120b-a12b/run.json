@@ -1,0 +1,680 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "dirty": true,
+  "diff_sha256": "7d8a1cb1ae86bb004c81530f6b0f01f68ae13031260ebb56b23487b9f4b580e0",
+  "untracked_source_files": [],
+  "data_file": "data/dexpi-1.3-examples/P04V01-VER.EX01.xml",
+  "started": "2026-10-03 13:05:42",
+  "results": [
+    {
+      "question_id": "p04-01",
+      "question": "Which lines are connected to H-1008, and where do they come from?",
+      "answer": "H-1008 is connected to two lines whose sources are not shown on this drawing:\n- Line 47112 (fluid MnB, piping class 75HB13) [E2.2]\n- Line 10082 (fluid WKa, piping class 75HB13) [E2.3] [E1.1]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "H-1008"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "PlateHeatExchanger-1",
+                "name": "H-1008",
+                "type": "PlateHeatExchanger",
+                "category": "equipment",
+                "tag": "H-1008",
+                "identifiers": {
+                  "tagName": "H-1008"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'H-1008'",
+                "links": {
+                  "open_ended_pipes": 2
+                },
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 2.52,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_connections",
+          "input": {
+            "entity_id": "PlateHeatExchanger-1",
+            "relationship": "piping",
+            "direction": "both"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "connections": [
+              {
+                "id": "PipingNetworkSegment-1/connections/1",
+                "from": null,
+                "to": "PlateHeatExchanger-1 (H-1008)",
+                "type": "open_end",
+                "relationship": "piping",
+                "ref": "E2.2",
+                "neighbor_is": "upstream",
+                "open_end": "source",
+                "lineNumber": "47112",
+                "fluidCode": "MNb",
+                "pipingClassCode": "75HB13",
+                "to_nozzle": "N-1",
+                "note": "This pipe exists in the DEXPI model but has no source item on this drawing, so pyDEXPI's conceptual graph omits it. Where it comes from is not represented."
+              },
+              {
+                "id": "PipingNetworkSegment-2/connections/1",
+                "from": null,
+                "to": "PlateHeatExchanger-1 (H-1008)",
+                "type": "open_end",
+                "relationship": "piping",
+                "ref": "E2.3",
+                "neighbor_is": "upstream",
+                "open_end": "source",
+                "lineNumber": "10082",
+                "fluidCode": "WKa",
+                "pipingClassCode": "75HB13",
+                "to_nozzle": "N-3",
+                "note": "This pipe exists in the DEXPI model but has no source item on this drawing, so pyDEXPI's conceptual graph omits it. Where it comes from is not represented."
+              }
+            ],
+            "warnings": [
+              "2 connection(s) are open-ended: the pipe exists in the DEXPI model but its other end is not represented on this drawing, so no neighbour can be stated."
+            ]
+          },
+          "duration_ms": 2.44,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "PlateHeatExchanger-1",
+          "fact": {
+            "type": "PlateHeatExchanger",
+            "name": "H-1008",
+            "tagName": "H-1008"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PlateHeatExchanger-1"
+          ]
+        },
+        {
+          "kind": "open_end",
+          "id": "PipingNetworkSegment-1/connections/1",
+          "fact": {
+            "source": null,
+            "target": "PlateHeatExchanger-1",
+            "relationship": "piping",
+            "connection_type": "open_end",
+            "segment_id": "PipingNetworkSegment-1",
+            "fluidCode": "MNb",
+            "lineNumber": "47112",
+            "nominalDiameterNumericalValueRepresentation": "80",
+            "pipingClassCode": "75HB13"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1/connections/1",
+            "PipingNetworkSegment-1",
+            "PipingNetworkSystem-1"
+          ]
+        },
+        {
+          "kind": "open_end",
+          "id": "PipingNetworkSegment-2/connections/1",
+          "fact": {
+            "source": null,
+            "target": "PlateHeatExchanger-1",
+            "relationship": "piping",
+            "connection_type": "open_end",
+            "segment_id": "PipingNetworkSegment-2",
+            "fluidCode": "WKa",
+            "lineNumber": "10082",
+            "nominalDiameterNumericalValueRepresentation": "50",
+            "pipingClassCode": "75HB13"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-2/connections/1",
+            "PipingNetworkSegment-2",
+            "PipingNetworkSystem-2"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "PlateHeatExchanger-1": {
+          "name": "H-1008",
+          "type": "PlateHeatExchanger",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.2"
+            ]
+          },
+          "text": "H-1008 is connected to two lines whose sources are not shown on this drawing: [E2.2]",
+          "refs": [
+            "E2.2"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "H-1008",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.2",
+                "E2.3"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.2"
+            ]
+          },
+          "text": "- Line 47112 (fluid MnB, piping class 75HB13) [E2.2]",
+          "refs": [
+            "E2.2"
+          ],
+          "facts": [
+            {
+              "id": "F9",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-1/connections/1",
+              "value": "75HB13",
+              "qualifiers": {
+                "property": "pipingClassCode",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F10",
+              "predicate": "open_end",
+              "subject": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-1/connections/1",
+                "connection_type": "open_end",
+                "segment_id": "PipingNetworkSegment-1",
+                "fluidCode": "MNb",
+                "lineNumber": "47112",
+                "nominalDiameterNumericalValueRepresentation": "80",
+                "pipingClassCode": "75HB13",
+                "to_nozzle": [
+                  "N-1",
+                  "Nozzle-1"
+                ],
+                "missing_end": "source",
+                "direction": "upstream"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            },
+            {
+              "id": "F7",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-1/connections/1",
+              "value": "47112",
+              "qualifiers": {
+                "property": "lineNumber",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-1/connections/1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-1/connections/1",
+                "PipingNetworkSegment-1",
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.3",
+              "E1.1"
+            ]
+          },
+          "text": "- Line 10082 (fluid WKa, piping class 75HB13) [E2.3, E1.1]",
+          "refs": [
+            "E2.3",
+            "E1.1"
+          ],
+          "facts": [
+            {
+              "id": "F15",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-2/connections/1",
+              "value": "75HB13",
+              "qualifiers": {
+                "property": "pipingClassCode",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-2/connections/1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-2/connections/1",
+                "PipingNetworkSegment-2",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E2.3"
+              ]
+            },
+            {
+              "id": "F16",
+              "predicate": "open_end",
+              "subject": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "connection": "PipingNetworkSegment-2/connections/1",
+                "connection_type": "open_end",
+                "segment_id": "PipingNetworkSegment-2",
+                "fluidCode": "WKa",
+                "lineNumber": "10082",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "pipingClassCode": "75HB13",
+                "to_nozzle": [
+                  "N-3",
+                  "Nozzle-2"
+                ],
+                "missing_end": "source",
+                "direction": "upstream"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-2/connections/1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-2/connections/1",
+                "PipingNetworkSegment-2",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E2.3"
+              ]
+            },
+            {
+              "id": "F13",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-2/connections/1",
+              "value": "10082",
+              "qualifiers": {
+                "property": "lineNumber",
+                "scope": "connection"
+              },
+              "tool": "get_connections",
+              "evidence_id": "PipingNetworkSegment-2/connections/1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-2/connections/1",
+                "PipingNetworkSegment-2",
+                "PipingNetworkSystem-2"
+              ],
+              "refs": [
+                "E2.3"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 5,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 10612,
+        "completion_tokens": 918,
+        "total_tokens": 11530,
+        "reasoning_tokens": 748
+      },
+      "duration_ms": 12128.9,
+      "answered_at": "2026-10-03 13:05:54"
+    },
+    {
+      "question_id": "p04-04",
+      "question": "Since line 47112 is DN 150, what is its piping class?",
+      "answer": "The piping class for line 47112 is 75HB13 [E2.4].",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "47112",
+            "entity_type": "line"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "PipingNetworkSystem-1",
+                "name": "Line 47112",
+                "type": "PipingNetworkSystem",
+                "category": "piping_line",
+                "identifiers": {
+                  "lineNumber": "47112"
+                },
+                "match_tier": "identifier",
+                "match_reason": "lineNumber = '47112'",
+                "links": {},
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 2.13,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_properties",
+          "input": {
+            "ids": "PipingNetworkSystem-1"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "properties": {
+              "PipingNetworkSystem-1": {
+                "found": [
+                  {
+                    "ref": "E2.1",
+                    "property": "fluidCode",
+                    "value": "MNb"
+                  },
+                  {
+                    "ref": "E2.2",
+                    "property": "lineNumber",
+                    "value": "47112"
+                  },
+                  {
+                    "ref": "E2.3",
+                    "property": "nominalDiameterNumericalValueRepresentation",
+                    "value": "80"
+                  },
+                  {
+                    "ref": "E2.4",
+                    "property": "pipingClassCode",
+                    "value": "75HB13"
+                  },
+                  {
+                    "ref": "E2.5",
+                    "property": "items",
+                    "value": [],
+                    "on": "PipingNetworkSegment-1",
+                    "scope": "child:PipingNetworkSegment"
+                  },
+                  {
+                    "ref": "E2.6",
+                    "property": "connections",
+                    "value": [
+                      "PipingNetworkSegment-1/connections/1"
+                    ],
+                    "on": "PipingNetworkSegment-1",
+                    "scope": "child:PipingNetworkSegment"
+                  }
+                ],
+                "missing": []
+              }
+            }
+          },
+          "duration_ms": 3.55,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "PipingNetworkSystem-1",
+          "fact": {
+            "type": "PipingNetworkSystem",
+            "name": "Line 47112",
+            "lineNumber": "47112"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSystem-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSystem-1.fluidCode",
+          "fact": {
+            "object_id": "PipingNetworkSystem-1",
+            "property": "fluidCode",
+            "value": "MNb",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSystem-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSystem-1.lineNumber",
+          "fact": {
+            "object_id": "PipingNetworkSystem-1",
+            "property": "lineNumber",
+            "value": "47112",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSystem-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSystem-1.nominalDiameterNumericalValueRepresentation",
+          "fact": {
+            "object_id": "PipingNetworkSystem-1",
+            "property": "nominalDiameterNumericalValueRepresentation",
+            "value": "80",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSystem-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSystem-1.pipingClassCode",
+          "fact": {
+            "object_id": "PipingNetworkSystem-1",
+            "property": "pipingClassCode",
+            "value": "75HB13",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSystem-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSegment-1.items",
+          "fact": {
+            "object_id": "PipingNetworkSegment-1",
+            "property": "items",
+            "value": [],
+            "scope": "child:PipingNetworkSegment"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSegment-1.connections",
+          "fact": {
+            "object_id": "PipingNetworkSegment-1",
+            "property": "connections",
+            "value": [
+              "PipingNetworkSegment-1/connections/1"
+            ],
+            "scope": "child:PipingNetworkSegment"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "PipingNetworkSystem-1": {
+          "name": "Line 47112",
+          "type": "PipingNetworkSystem",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.4"
+            ]
+          },
+          "text": "The piping class for line 47112 is 75HB13  . [E2.4]",
+          "refs": [
+            "E2.4"
+          ],
+          "facts": [
+            {
+              "id": "F9",
+              "predicate": "has_property",
+              "subject": "PipingNetworkSystem-1",
+              "value": "75HB13",
+              "qualifiers": {
+                "property": "pipingClassCode",
+                "owner": "PipingNetworkSystem-1",
+                "scope": "own"
+              },
+              "tool": "get_properties",
+              "evidence_id": "PipingNetworkSystem-1.pipingClassCode",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSystem-1"
+              ],
+              "refs": [
+                "E2.4"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 2,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 10418,
+        "completion_tokens": 871,
+        "total_tokens": 11289,
+        "reasoning_tokens": 773
+      },
+      "duration_ms": 10850.8,
+      "answered_at": "2026-10-03 13:06:06"
+    }
+  ]
+}

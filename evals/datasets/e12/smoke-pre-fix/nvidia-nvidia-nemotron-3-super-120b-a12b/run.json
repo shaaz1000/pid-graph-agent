@@ -1,0 +1,700 @@
+{
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1ea8f1b245c2a2da79f17f21d00450b550ea6a7d",
+  "dirty": true,
+  "diff_sha256": "7d8a1cb1ae86bb004c81530f6b0f01f68ae13031260ebb56b23487b9f4b580e0",
+  "untracked_source_files": [],
+  "data_file": "data/dexpi-1.3-examples/E12V01-VER.EX01.xml",
+  "started": "2026-10-03 13:04:36",
+  "results": [
+    {
+      "question_id": "e12-01",
+      "question": "What kind of equipment is H1201, and what are its design heat flow rate and heat transfer area?",
+      "answer": "H1201 is a PlateHeatExchanger. [E1.1]  \nIts design heat flow rate is 313.0 kW. [E2.1]  \nIts heat transfer area is 46.8 m2. [E2.2]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "H1201"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "PlateHeatExchanger-1",
+                "name": "H1201",
+                "type": "PlateHeatExchanger",
+                "category": "equipment",
+                "tag": "H1201",
+                "identifiers": {
+                  "tagName": "H1201"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'H1201'",
+                "links": {},
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 1.31,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_properties",
+          "input": {
+            "ids": "PlateHeatExchanger-1",
+            "requested_properties": [
+              "designHeatFlowRate",
+              "heatTransferArea"
+            ]
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "properties": {
+              "PlateHeatExchanger-1": {
+                "found": [
+                  {
+                    "ref": "E2.1",
+                    "property": "designHeatFlowRate",
+                    "value": "313.0 kW"
+                  },
+                  {
+                    "ref": "E2.2",
+                    "property": "designHeatTransferArea",
+                    "value": "46.8 m2",
+                    "match": "partial match for 'heatTransferArea'"
+                  }
+                ],
+                "missing": []
+              }
+            }
+          },
+          "duration_ms": 2.97,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "PlateHeatExchanger-1",
+          "fact": {
+            "type": "PlateHeatExchanger",
+            "name": "H1201",
+            "tagName": "H1201"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PlateHeatExchanger-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PlateHeatExchanger-1.designHeatFlowRate",
+          "fact": {
+            "object_id": "PlateHeatExchanger-1",
+            "property": "designHeatFlowRate",
+            "value": "313.0 kW",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PlateHeatExchanger-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PlateHeatExchanger-1.designHeatTransferArea",
+          "fact": {
+            "object_id": "PlateHeatExchanger-1",
+            "property": "designHeatTransferArea",
+            "value": "46.8 m2",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PlateHeatExchanger-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "PlateHeatExchanger-1": {
+          "name": "H1201",
+          "type": "PlateHeatExchanger",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E1.1"
+            ]
+          },
+          "text": "H1201 is a PlateHeatExchanger  . [E1.1]",
+          "refs": [
+            "E1.1"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "H1201",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0"
+              ]
+            },
+            {
+              "id": "F3",
+              "predicate": "is_a",
+              "subject": "PlateHeatExchanger-1",
+              "value": "PlateHeatExchanger",
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.1"
+            ]
+          },
+          "text": "Its design heat flow rate is 313.0 kW  . [E2.1]",
+          "refs": [
+            "E2.1"
+          ],
+          "facts": [
+            {
+              "id": "F5",
+              "predicate": "has_property",
+              "subject": "PlateHeatExchanger-1",
+              "value": "313.0 kW",
+              "qualifiers": {
+                "property": "designHeatFlowRate",
+                "owner": "PlateHeatExchanger-1",
+                "scope": "own"
+              },
+              "tool": "get_properties",
+              "evidence_id": "PlateHeatExchanger-1.designHeatFlowRate",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            }
+          ]
+        },
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "E2.2"
+            ]
+          },
+          "text": "Its heat transfer area is 46.8 m2  . [E2.2]",
+          "refs": [
+            "E2.2"
+          ],
+          "facts": [
+            {
+              "id": "F6",
+              "predicate": "has_property",
+              "subject": "PlateHeatExchanger-1",
+              "value": "46.8 m2",
+              "qualifiers": {
+                "property": "designHeatTransferArea",
+                "owner": "PlateHeatExchanger-1",
+                "scope": "own"
+              },
+              "tool": "get_properties",
+              "evidence_id": "PlateHeatExchanger-1.designHeatTransferArea",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E2.2"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 4,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 10320,
+        "completion_tokens": 625,
+        "total_tokens": 10945,
+        "reasoning_tokens": 478
+      },
+      "duration_ms": 12344.5,
+      "answered_at": "2026-10-03 13:04:48"
+    },
+    {
+      "question_id": "e12-02",
+      "question": "Which nozzles of H1201 belong to Chamber 1?",
+      "answer": "The nozzles of H1201 that belong to Chamber 1 are N3 (Nozzle‑3) and N4 (Nozzle‑4). [R2]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "find_entities",
+          "input": {
+            "query": "H1201"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R1",
+            "status_ref": "E1.0",
+            "entities": [
+              {
+                "id": "PlateHeatExchanger-1",
+                "name": "H1201",
+                "type": "PlateHeatExchanger",
+                "category": "equipment",
+                "tag": "H1201",
+                "identifiers": {
+                  "tagName": "H1201"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'H1201'",
+                "links": {},
+                "ref": "E1.1"
+              }
+            ]
+          },
+          "duration_ms": 1.86,
+          "executed": true
+        },
+        {
+          "step": 2,
+          "tool": "get_entity",
+          "input": {
+            "entity_id": "PlateHeatExchanger-1",
+            "include_children": true
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "entities": [
+              {
+                "id": "PlateHeatExchanger-1",
+                "type": "PlateHeatExchanger",
+                "type_hierarchy": [
+                  "PlateHeatExchanger",
+                  "HeatExchanger",
+                  "Equipment"
+                ],
+                "category": "equipment",
+                "tag": "H1201",
+                "name": "H1201",
+                "identifiers": {
+                  "tagName": "H1201"
+                },
+                "properties": {
+                  "tagName": "H1201",
+                  "tagNamePrefix": "H",
+                  "tagNameSequenceNumber": "1201",
+                  "tagNameSuffix": "",
+                  "designHeatFlowRate": "313.0 kW",
+                  "designHeatTransferArea": "46.8 m2",
+                  "plateHeight": "850.0 mm",
+                  "plateWidth": "1100.0 mm"
+                },
+                "children": [
+                  {
+                    "id": "Nozzle-1",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N1",
+                      "chamber": "Chamber-2"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-2",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N2",
+                      "chamber": "Chamber-2"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-3",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N3",
+                      "chamber": "Chamber-1"
+                    }
+                  },
+                  {
+                    "id": "Nozzle-4",
+                    "type": "Nozzle",
+                    "relation": "nozzles",
+                    "properties": {
+                      "subTagName": "N4",
+                      "chamber": "Chamber-1"
+                    }
+                  },
+                  {
+                    "id": "Chamber-1",
+                    "type": "Chamber",
+                    "relation": "chambers",
+                    "properties": {
+                      "lowerLimitDesignPressure": "-1.0 bar",
+                      "lowerLimitDesignTemperature": "-45.0 °C",
+                      "subTagName": "Chamber 1",
+                      "upperLimitDesignPressure": "60.0 bar",
+                      "upperLimitDesignTemperature": "100.0 °C"
+                    }
+                  },
+                  {
+                    "id": "Chamber-2",
+                    "type": "Chamber",
+                    "relation": "chambers",
+                    "properties": {
+                      "lowerLimitDesignPressure": "-1.0 bar",
+                      "lowerLimitDesignTemperature": "-45.0 °C",
+                      "subTagName": "Chamber 2",
+                      "upperLimitDesignPressure": "30.0 bar",
+                      "upperLimitDesignTemperature": "100.0 °C"
+                    }
+                  }
+                ],
+                "links": {},
+                "ref": "E2.1"
+              }
+            ]
+          },
+          "duration_ms": 1.88,
+          "executed": true
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "PlateHeatExchanger-1",
+          "fact": {
+            "type": "PlateHeatExchanger",
+            "name": "H1201",
+            "tagName": "H1201"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PlateHeatExchanger-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-1",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "PlateHeatExchanger-1",
+            "subTagName": "N1",
+            "chamber": "Chamber-2"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-2",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "PlateHeatExchanger-1",
+            "subTagName": "N2",
+            "chamber": "Chamber-2"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-2"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-3",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "PlateHeatExchanger-1",
+            "subTagName": "N3",
+            "chamber": "Chamber-1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-3"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Nozzle-4",
+          "fact": {
+            "type": "Nozzle",
+            "part_of": "PlateHeatExchanger-1",
+            "subTagName": "N4",
+            "chamber": "Chamber-1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Nozzle-4"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Chamber-1",
+          "fact": {
+            "type": "Chamber",
+            "part_of": "PlateHeatExchanger-1",
+            "lowerLimitDesignPressure": "-1.0 bar",
+            "lowerLimitDesignTemperature": "-45.0 °C",
+            "subTagName": "Chamber 1",
+            "upperLimitDesignPressure": "60.0 bar",
+            "upperLimitDesignTemperature": "100.0 °C"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "Chamber-2",
+          "fact": {
+            "type": "Chamber",
+            "part_of": "PlateHeatExchanger-1",
+            "lowerLimitDesignPressure": "-1.0 bar",
+            "lowerLimitDesignTemperature": "-45.0 °C",
+            "subTagName": "Chamber 2",
+            "upperLimitDesignPressure": "30.0 bar",
+            "upperLimitDesignTemperature": "100.0 °C"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Chamber-2"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "PlateHeatExchanger-1": {
+          "name": "H1201",
+          "type": "PlateHeatExchanger",
+          "step": 1
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "claim": {
+            "predicate": "cited",
+            "refs": [
+              "R2"
+            ]
+          },
+          "text": "The nozzles of H1201 that belong to Chamber 1 are N3 (Nozzle-3) and N4 (Nozzle-4)  . [R2]",
+          "refs": [
+            "R2"
+          ],
+          "facts": [
+            {
+              "id": "F1",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "PlateHeatExchanger-1",
+              "qualifiers": {
+                "field": "id"
+              },
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.0"
+              ]
+            },
+            {
+              "id": "F2",
+              "predicate": "identified_as",
+              "subject": "PlateHeatExchanger-1",
+              "value": "H1201",
+              "qualifiers": {
+                "field": "name"
+              },
+              "tool": "find_entities",
+              "evidence_id": "PlateHeatExchanger-1",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PlateHeatExchanger-1"
+              ],
+              "refs": [
+                "E1.1",
+                "E1.0",
+                "E2.1",
+                "E2.0"
+              ]
+            },
+            {
+              "id": "F20",
+              "predicate": "is_a",
+              "subject": "Nozzle-3",
+              "value": "Nozzle",
+              "qualifiers": {
+                "part_of": "PlateHeatExchanger-1"
+              },
+              "tool": "get_entity",
+              "evidence_id": "Nozzle-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "Nozzle-3"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            },
+            {
+              "id": "F21",
+              "predicate": "has_property",
+              "subject": "Nozzle-3",
+              "value": "N3",
+              "qualifiers": {
+                "property": "subTagName",
+                "owner": "PlateHeatExchanger-1"
+              },
+              "tool": "get_entity",
+              "evidence_id": "Nozzle-3",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "Nozzle-3"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            },
+            {
+              "id": "F23",
+              "predicate": "is_a",
+              "subject": "Nozzle-4",
+              "value": "Nozzle",
+              "qualifiers": {
+                "part_of": "PlateHeatExchanger-1"
+              },
+              "tool": "get_entity",
+              "evidence_id": "Nozzle-4",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "Nozzle-4"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            },
+            {
+              "id": "F24",
+              "predicate": "has_property",
+              "subject": "Nozzle-4",
+              "value": "N4",
+              "qualifiers": {
+                "property": "subTagName",
+                "owner": "PlateHeatExchanger-1"
+              },
+              "tool": "get_entity",
+              "evidence_id": "Nozzle-4",
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "Nozzle-4"
+              ],
+              "refs": [
+                "E2.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 5,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 3,
+        "prompt_tokens": 10760,
+        "completion_tokens": 617,
+        "total_tokens": 11377,
+        "reasoning_tokens": 505
+      },
+      "duration_ms": 9576.5,
+      "answered_at": "2026-10-03 13:04:59"
+    }
+  ]
+}

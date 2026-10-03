@@ -1,0 +1,160 @@
+{
+ "description": "Equipment example E12 (DEXPI): one plate heat exchanger with two chambers, four nozzles and an equipment bar.",
+ "pid": "data/dexpi-1.3-examples/E12V01-VER.EX01.xml",
+ "questions": [
+  {
+   "id": "e12-01",
+   "category": "entity resolution",
+   "question": "What kind of equipment is H1201, and what are its design heat flow rate and heat transfer area?",
+   "gold": [
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "H1201"
+     }
+    },
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "PlateHeatExchanger-1"
+      ],
+      "requested_properties": [
+       "designHeatFlowRate",
+       "designHeatTransferArea"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "plate heat exchanger",
+     "any_of": [
+      "PlateHeatExchanger",
+      "plate heat exchanger"
+     ],
+     "evidence": [
+      "PlateHeatExchanger"
+     ]
+    },
+    {
+     "fact": "313.0 kW",
+     "any_of": [
+      "re:313(\\.0)?\\s*kw"
+     ],
+     "evidence": [
+      "313.0 kW"
+     ]
+    },
+    {
+     "fact": "46.8 m2",
+     "any_of": [
+      "re:46\\.8\\s*m\\s*(2|²)"
+     ],
+     "evidence": [
+      "46.8 m2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "e12-02",
+   "category": "sub-objects",
+   "question": "Which nozzles of H1201 belong to Chamber 1?",
+   "gold": [
+    {
+     "tool": "get_entity",
+     "args": {
+      "entity_id": "PlateHeatExchanger-1",
+      "include_children": true
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "N3",
+     "any_of": [
+      "N3"
+     ],
+     "evidence": [
+      "N3"
+     ]
+    },
+    {
+     "fact": "N4",
+     "any_of": [
+      "N4"
+     ],
+     "evidence": [
+      "N4"
+     ]
+    }
+   ],
+   "forbidden": [
+    {
+     "fact": "a nozzle of the other chamber",
+     "any_of": [
+      "N1",
+      "N2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "e12-03",
+   "category": "chamber properties",
+   "question": "What is the lower design temperature limit of Chamber 1 of H1201?",
+   "gold": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "PlateHeatExchanger-1"
+      ],
+      "requested_properties": [
+       "lowerLimitDesignTemperature"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "-45.0 °C",
+     "any_of": [
+      "re:-\\s*45(\\.0)?\\s*°?\\s*c\\b"
+     ],
+     "evidence": [
+      "-45.0 °C"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "e12-04",
+   "category": "connectivity / missing",
+   "question": "What is H1201 connected to?",
+   "gold": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "PlateHeatExchanger-1",
+      "direction": "both",
+      "relationship": "all"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "no connections are drawn",
+     "any_of": [
+      "re:(no|not)\\b[^.]{0,60}(connect|pipe|piping)",
+      "re:(isn't|is not|not) connected"
+     ],
+     "evidence": [
+      "\"connections\": []"
+     ]
+    }
+   ]
+  }
+ ]
+}
