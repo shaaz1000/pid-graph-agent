@@ -1682,7 +1682,7 @@ All from the DeepSeek run.
 
 ## Testing strategy
 
-784 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
+785 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
 
 | Layer | File | Tests | What it pins down |
 |---|---|---|---|
@@ -1705,7 +1705,7 @@ All from the DeepSeek run.
 | DEXPI examples | `test_dexpi_examples.py` | 42 | All 34 official examples pass every ingestion stage; `SignalLineFunction` links; `--pid`; no suite names in code |
 | Cross-P&ID suites | `test_datasets.py` | 38 | Each suite names a real file; every gold fact re-derived from that file's graph |
 | Identifier robustness | `test_validator_identifiers.py` | 19 | Tags with spaces, superscript identifiers, relation words inside names, shared loop numbers; the must-reject cases on those identifiers |
-| Follow-up round | `test_followup.py` | 93 | Graph analyses on C01 and on every official example; structured answers, request coverage, the final repair; status wording with provenance; every gold fact re-derived; scoring and consistency. See [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md) |
+| Follow-up round | `test_followup.py` | 94 | Graph analyses on C01 and on every official example; structured answers, request coverage, the final repair; status wording with provenance; every gold fact re-derived; scoring and consistency. See [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md) |
 | Relation grounding | `test_relation_grounding.py` | 33 | Hedge words do not disable relation checks; negation scope; the relation vocabulary in both directions; statements with nothing checkable are at most limited |
 
 **What the tests give confidence in.**

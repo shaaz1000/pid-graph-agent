@@ -144,9 +144,10 @@ identified a status-message provenance issue: a tool's status message can repeat
 which the model chooses, so a cited status row could print model-chosen text. No evaluated
 answer contained injected model prose (5 status rows were cited; 2 repeated an input that was
 not in the question, both graph ids or a type name). The rendering path was hardened afterward
-in separate commits (`cdec2a8` and the one after it): a status is now stated in fixed
+in separate commits (`cdec2a8` and the two after it): a status is now stated in fixed
 application wording, and a value is shown only if it occurs in the user's question as whole
-words or is canonical graph data. The hardened code did not produce the recorded results.
+words or is canonical graph data, and then only in that canonical spelling, never as the
+model wrote it. The hardened code did not produce the recorded results.
 
 ## Limitations
 
@@ -171,7 +172,7 @@ keep the structured answer contract.
 ## Reproduce
 
 ```bash
-uv run pytest                                              # 784 deterministic tests, no key
+uv run pytest                                              # 785 deterministic tests, no key
 uv run python evals/followup/followup.py                   # re-score the saved runs, no key
 uv run python evals/followup/followup.py --run complex     # ask the 27 complex questions
 uv run python evals/followup/followup.py --run consistency --repeats 3

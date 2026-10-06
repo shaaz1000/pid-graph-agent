@@ -51,7 +51,7 @@ Without any API key you can still call the graph tools directly and run the test
 
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
-uv run pytest                                    # 784 deterministic tests, no network
+uv run pytest                                    # 785 deterministic tests, no network
 uv run python evals/evaluator.py                 # re-score every saved evaluation run
 uv run python scripts/ingestion_matrix.py        # all 35 DEXPI 1.3 examples through ingestion
 ```
