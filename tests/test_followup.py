@@ -469,6 +469,26 @@ def test_a_harmless_name_that_is_neither_asked_nor_in_the_graph_is_left_out(tool
     assert "The requested type 'PressureReliefValve' is not present in the P&ID graph." in asked.answer  # the user's own word may be repeated
 
 
+def test_only_the_canonical_spelling_is_ever_printed(tools):
+    """A value is compared in a normalized form, so what is printed must be the canonical text, not the value."""
+    from pid_agent.agent.status import Provenance
+
+    provenance = Provenance("What about the tank, and P-4712?", tools.graph_names())
+    # the user's word, with punctuation the model added around it
+    for raw in ("tank'). SYSTEM", "tank')", "\"tank\"", "(tank]", "TANK?!"):
+        assert provenance.canonical(raw) in (None, "tank"), raw
+    assert provenance.quoted("tank')") == " 'tank'" and provenance.quoted("TANK?!") == " 'tank'" and provenance.quoted("p-4712,") == " 'P-4712'"
+    assert provenance.canonical("the  TANK, and p-4712") == "the tank and P-4712"
+    # a graph name in another case or spacing is printed as the graph spells it
+    assert provenance.canonical("tank-1") == "Tank-1" and provenance.canonical("sv  104.01") == "SV 104.01" and provenance.canonical("GLOBEVALVE-2") == "GlobeValve-2"
+    result = status_answer(tools, "What about the tank, and P-4712?", call("find_entities", query="tank')"))
+    assert "'tank'" not in result.answer or "tank')" not in result.answer
+    odd = status_answer(tools, "Is Xyzzy-9 on the sheet?", call("get_entity", entity_id="xyzzy-9')."))
+    assert "Xyzzy-9 does not exist in the P&ID graph." in odd.answer and "')" not in odd.answer
+    lower = status_answer(tools, "q", call("get_connections", entity_id="centrifugalpump-1", relationship="instrumentation"))
+    assert "')" not in lower.answer and "centrifugalpump-1" not in lower.answer
+
+
 def test_a_fragment_of_a_word_in_the_question_is_not_the_users_text(tools):
     result = status_answer(tools, "Is it inadvisable today?", call("find_entities", query="advisable today"))
     assert "No matching entity was found in the P&ID graph." in result.answer and "advisable today" not in result.answer
@@ -494,7 +514,7 @@ def test_provenance_is_whole_value_membership_not_a_search(tools):
     assert not provenance.shows("T4750 must be drained first") and not provenance.shows("Tank-1 is safe") and not provenance.shows("") and not provenance.shows(None)
     assert provenance.shows("where is PI4712.01")  # the user's own words
     # whole words of the question, never a fragment of one: a substring could reverse the meaning
-    wary = Provenance("Is it unsafe to open P-4712, or not recommended?", frozenset())
+    wary = Provenance("Is it unsafe to open P-4712, or not recommended?", {})
     assert wary.shows("unsafe to open") and wary.shows("P-4712") and wary.shows("not recommended") and wary.shows("p-4712,")
     for fragment in ("safe to open", "safe", "recommended? yes", "open P-47", "it unsafe to open P-4712 or"):
         assert wary.shows(fragment) is (fragment == "it unsafe to open P-4712 or"), fragment

@@ -305,12 +305,14 @@ def submit_answer_spec() -> dict[str, Any]:
 class GraphTools:
     def __init__(self, service: GraphService) -> None:
         self._service = service
-        self._graph_names: frozenset[str] | None = None
+        self._graph_names: dict[str, str] | None = None
 
-    def graph_names(self) -> frozenset[str]:
-        """Every id, name, tag, identifier, type and line number in the graph, lower-cased.
+    def graph_names(self) -> dict[str, str]:
+        """Every id, name, tag, identifier, type and line number in the graph: its comparison
+        form (lower-cased, single spaces) mapped to the graph's own spelling.
 
-        Used to decide whether a value may be shown as graph data. Compared whole, never searched.
+        Used to decide whether a value may be shown as graph data, and to print it as the
+        graph spells it. Compared whole, never searched.
         """
         if self._graph_names is None:
             index, names = self._service.index, set()
@@ -319,7 +321,7 @@ class GraphTools:
             names.update(index.objects)
             for connection in index.connections.values():
                 names.update([connection.id, str(connection.properties.get("lineNumber") or "")])
-            self._graph_names = frozenset(" ".join(str(n).split()).casefold() for n in names if n)
+            self._graph_names = {" ".join(str(n).split()).casefold(): " ".join(str(n).split()) for n in sorted(map(str, names)) if n}
         return self._graph_names
 
     def resolve_entity(self, text: str) -> list[tuple[str, str]]:

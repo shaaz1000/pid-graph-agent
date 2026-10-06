@@ -15,7 +15,8 @@ Nothing is filtered or judged by its wording. A value either has a known origin 
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Any
 
 DIRECTIONS = {"downstream", "upstream", "both", "any"}
@@ -24,31 +25,48 @@ RELATIONSHIPS = {"piping", "instrumentation", "all"}
 
 @dataclass(frozen=True)
 class Provenance:
-    """What may be shown: text of the user's question and names that exist in the graph."""
+    """What may be shown: text of the user's question and names that exist in the graph.
+
+    ``graph_names`` maps the comparison form of every graph name to the graph's own spelling.
+    What is printed is always that canonical spelling, or the user's words as the user wrote
+    them. The value a tool was called with is only ever compared, never printed.
+    """
 
     question: str = ""
-    graph_names: frozenset[str] = frozenset()
+    graph_names: Mapping[str, str] = field(default_factory=dict)
 
-    def shows(self, value: Any) -> bool:
+    def canonical(self, value: Any) -> str | None:
+        """The text to print for ``value``, or None if its origin is not established."""
         text = " ".join(str(value).split()) if isinstance(value, str) else ""
         if len(text) < 2:
-            return False
-        return text.casefold() in self.graph_names or self._in_question(text)
+            return None
+        if text.casefold() in self.graph_names:
+            return self.graph_names[text.casefold()]
+        return self._from_question(text)
 
-    def _in_question(self, text: str) -> bool:
-        """Whether ``text`` is a run of whole words of the question.
+    def _from_question(self, text: str) -> str | None:
+        """The run of whole words of the question that ``text`` matches, as the user wrote it.
 
         Whole words, not characters: "safe to open" is not in "Is it unsafe to open?".
         """
-        asked, wanted = _words(self.question), _words(text)
-        return bool(wanted) and any(asked[i : i + len(wanted)] == wanted for i in range(len(asked) - len(wanted) + 1))
+        written = [word.strip(EDGE_PUNCTUATION) for word in self.question.split()]
+        written = [word for word in written if word]
+        asked, wanted = [word.casefold() for word in written], _words(text)
+        for start in range(len(asked) - len(wanted) + 1):
+            if wanted and asked[start : start + len(wanted)] == wanted:
+                return " ".join(written[start : start + len(wanted)])
+        return None
+
+    def shows(self, value: Any) -> bool:
+        return self.canonical(value) is not None
 
     def quoted(self, value: Any) -> str:
-        """`` '<value>'`` when it may be shown, otherwise nothing."""
-        return f" '{' '.join(str(value).split())}'" if self.shows(value) else ""
+        """`` '<canonical spelling>'`` when the value may be shown, otherwise nothing."""
+        shown = self.canonical(value)
+        return f" '{shown}'" if shown is not None else ""
 
     def named(self, value: Any, otherwise: str) -> str:
-        return " ".join(str(value).split()) if self.shows(value) else otherwise
+        return self.canonical(value) or otherwise
 
 
 EDGE_PUNCTUATION = ".,;:!?\"'()[]{}"
@@ -60,7 +78,7 @@ def _words(text: str) -> list[str]:
 
 
 def _ids(items: list[Any], provenance: Provenance) -> list[str]:
-    return [str(i) for i in items if provenance.shows(i)]
+    return [shown for shown in (provenance.canonical(i) for i in items) if shown is not None]
 
 
 def status_statement(result: dict[str, Any], provenance: Provenance) -> str | None:
@@ -82,7 +100,8 @@ def status_statement(result: dict[str, Any], provenance: Provenance) -> str | No
         ends = (provenance.named(missing.get("source"), "the first item"), provenance.named(missing.get("target"), "the second item"))
         return f"No {direction} piping path from {ends[0]} to {ends[1]} exists in the P&ID graph" + (f" with {', '.join(closed)} treated as closed." if closed else ".")
     if tool == "find_entities":
-        return f"No matching entity was found in the P&ID graph{' for' + provenance.quoted(given.get('query')) if provenance.shows(given.get('query')) else ''}."
+        asked = provenance.quoted(given.get("query"))
+        return f"No matching entity was found in the P&ID graph{' for' + asked if asked else ''}."
     if tool == "list_entities":
         kind = provenance.quoted(given.get("entity_type"))
         return f"No entity of type{kind} with the requested property value exists in the P&ID graph." if given.get("property_filter") else f"The requested type{kind} is not present in the P&ID graph."
