@@ -1,0 +1,4667 @@
+{
+  "run_id": "20261007T010348",
+  "suite": "complex",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "temperature": 0.0,
+  "answer_mode": "structured",
+  "repeats": 1,
+  "commit": "0aaab031aa4cb75cf7ac5fce5b037ff9eacd5a72",
+  "dirty": true,
+  "diff_sha256": "03bcefca9fa2dbf6df57e219b82b4bae38f396c4984451113170df22a000bb85",
+  "untracked_source_files": [
+    "evals/followup/build_gold.py",
+    "evals/followup/complex/questions.json",
+    "evals/followup/consistency/groups.json",
+    "evals/followup/followup.py",
+    "evals/followup/smoke-1-before-harness-fixes/groq-openai-gpt-oss-120b/complex/report.json",
+    "evals/followup/smoke-1-before-harness-fixes/groq-openai-gpt-oss-120b/complex/run.json",
+    "evals/followup/smoke-1-before-harness-fixes/groq-openai-gpt-oss-120b/complex/transcripts/C1.txt",
+    "evals/followup/smoke-1-before-harness-fixes/groq-openai-gpt-oss-120b/complex/transcripts/C8.txt",
+    "evals/followup/smoke-1-before-harness-fixes/groq-openai-gpt-oss-120b/consistency/report.json",
+    "evals/followup/smoke-1-before-harness-fixes/groq-openai-gpt-oss-120b/consistency/run.json",
+    "evals/followup/smoke-1-before-harness-fixes/groq-openai-gpt-oss-120b/consistency/transcripts/R1b.txt",
+    "evals/followup/smoke-1-before-harness-fixes/groq-openai-gpt-oss-120b/consistency/transcripts/R3b.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/complex/report.json",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/complex/run.json",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/complex/transcripts/C1.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/complex/transcripts/C7.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/complex/transcripts/C8.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/report.json",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/run.json",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/transcripts/R1a.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/transcripts/R1b.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/transcripts/R1c.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/transcripts/R1d.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/transcripts/R3a.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/transcripts/R3b.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/transcripts/R3c.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-nvidia-nemotron-3-super-120b-a12b/consistency/transcripts/R3d.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/complex/report.json",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/complex/run.json",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/complex/transcripts/C1.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/complex/transcripts/C7.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/complex/transcripts/C8.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/report.json",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/run.json",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/transcripts/R1a.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/transcripts/R1b.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/transcripts/R1c.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/transcripts/R1d.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/transcripts/R3a.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/transcripts/R3b.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/transcripts/R3c.txt",
+    "evals/followup/smoke-1-before-harness-fixes/nvidia-openai-gpt-oss-20b/consistency/transcripts/R3d.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/complex/report.json",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/complex/run.json",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/complex/transcripts/C1.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/complex/transcripts/C7.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/complex/transcripts/C8.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/report.json",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/run.json",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/transcripts/R1a.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/transcripts/R1b.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/transcripts/R1c.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/transcripts/R1d.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/transcripts/R3a.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/transcripts/R3b.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/transcripts/R3c.txt",
+    "evals/followup/smoke/nvidia-openai-gpt-oss-20b/consistency/transcripts/R3d.txt",
+    "src/pid_agent/agent/answer.py",
+    "src/pid_agent/graph/analysis.py"
+  ],
+  "started": "2026-10-07 01:03:49",
+  "results": [
+    {
+      "question_id": "C1",
+      "question": "Which valves must be closed to isolate T4750 for maintenance? List them in the order you would close them, explain the order, and say which connections this drawing does not let you isolate.",
+      "answer": "Derived by graph analysis of the drawing\n- GlobeValve 47123/C1 (GlobeValve-2) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47123, DN 80) [E3.2, isolation_boundary]\n- GlobeValve 47127/C1 (GlobeValve-1) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47127, DN 50) [E3.3, isolation_boundary]\n- ButterflyValve 47124/C1 (ButterflyValve-1) is the nearest valve on the downstream side of T4750 (Tank-1) (line 47124, DN 80) [E3.4, isolation_boundary]\n- Every connection of T4750 (Tank-1) ends at a shut-off valve, a relief device or a closed end (3 boundary valves: GlobeValve 47123/C1 (GlobeValve-2), GlobeValve 47127/C1 (GlobeValve-1), ButterflyValve 47124/C1 (ButterflyValve-1)) [E3.6, isolation_boundary]\n\nNot established by the P&ID\n- A P&ID does not contain operating procedures or sequences, such as the order in which to operate valves. Asked about: GlobeValve 47123/C1 (GlobeValve-2), GlobeValve 47127/C1 (GlobeValve-1), ButterflyValve 47124/C1 (ButterflyValve-1).",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "decompose_request",
+          "input": {
+            "requested_outputs": [
+              {
+                "description": "List of valves that must be closed to isolate T4750, in the order to close them",
+                "kind": "items"
+              },
+              {
+                "description": "Explanation of why that order is used",
+                "kind": "explanation"
+              },
+              {
+                "description": "Identify which connections to T4750 cannot be isolated according to the drawing",
+                "kind": "connection_or_route"
+              }
+            ]
+          },
+          "status": "accepted",
+          "result": {
+            "status": "accepted",
+            "requested_outputs": [
+              {
+                "id": "q1",
+                "description": "List of valves that must be closed to isolate T4750, in the order to close them",
+                "kind": "items"
+              },
+              {
+                "id": "q2",
+                "description": "Explanation of why that order is used",
+                "kind": "explanation"
+              },
+              {
+                "id": "q3",
+                "description": "Identify which connections to T4750 cannot be isolated according to the drawing",
+                "kind": "connection_or_route"
+              }
+            ],
+            "message": "Now use the graph tools. In submit_answer, every one of these ids must be covered by cited evidence or by an unknown."
+          },
+          "duration_ms": 0.0,
+          "executed": false
+        },
+        {
+          "step": 2,
+          "tool": "find_entities",
+          "input": {
+            "entity_type": "equipment",
+            "query": "T4750"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "entities": [
+              {
+                "id": "Tank-1",
+                "name": "T4750",
+                "type": "Tank",
+                "category": "equipment",
+                "tag": "T4750",
+                "identifiers": {
+                  "tagName": "T4750"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'T4750'",
+                "links": {
+                  "piping_upstream": 3,
+                  "piping_downstream": 1,
+                  "instrumentation": 1
+                },
+                "ref": "E2.1"
+              }
+            ]
+          },
+          "duration_ms": 2.15,
+          "executed": true
+        },
+        {
+          "step": 3,
+          "tool": "isolation_boundary",
+          "input": {
+            "entity_id": "Tank-1"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R3",
+            "status_ref": "E3.0",
+            "entities": [
+              {
+                "id": "Tank-1",
+                "name": "T4750",
+                "type": "Tank",
+                "category": "equipment",
+                "tag": "T4750",
+                "identifiers": {
+                  "tagName": "T4750"
+                },
+                "ref": "E3.1"
+              }
+            ],
+            "derived": [
+              {
+                "ref": "E3.2",
+                "predicate": "isolation_boundary_valve",
+                "subject": "Tank-1",
+                "object": "GlobeValve-2",
+                "qualifiers": {
+                  "side": "upstream",
+                  "line": "47123",
+                  "diameter": "DN 80",
+                  "connection": "PipingNetworkSegment-3/connections/2"
+                },
+                "statement": "GlobeValve 47123/C1 (GlobeValve-2) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47123, DN 80)"
+              },
+              {
+                "ref": "E3.3",
+                "predicate": "isolation_boundary_valve",
+                "subject": "Tank-1",
+                "object": "GlobeValve-1",
+                "qualifiers": {
+                  "side": "upstream",
+                  "line": "47127",
+                  "diameter": "DN 50",
+                  "connection": "PipingNetworkSegment-19/connections/2"
+                },
+                "statement": "GlobeValve 47127/C1 (GlobeValve-1) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47127, DN 50)"
+              },
+              {
+                "ref": "E3.4",
+                "predicate": "isolation_boundary_valve",
+                "subject": "Tank-1",
+                "object": "ButterflyValve-1",
+                "qualifiers": {
+                  "side": "downstream",
+                  "line": "47124",
+                  "diameter": "DN 80",
+                  "connection": "PipingNetworkSegment-4/connections/1"
+                },
+                "statement": "ButterflyValve 47124/C1 (ButterflyValve-1) is the nearest valve on the downstream side of T4750 (Tank-1) (line 47124, DN 80)"
+              },
+              {
+                "ref": "E3.5",
+                "predicate": "relief_device_on_boundary",
+                "subject": "Tank-1",
+                "object": "SpringLoadedGlobeSafetyValve-1",
+                "qualifiers": {
+                  "side": "upstream",
+                  "line": "47125",
+                  "diameter": "DN 50",
+                  "connection": "PipingNetworkSegment-8/connections/1",
+                  "relieves_region": false
+                },
+                "statement": "SV 104.01 (SpringLoadedGlobeSafetyValve-1) discharges into the piping around T4750 (Tank-1) with no valve in between (line 47125, DN 50); it does not relieve this region"
+              },
+              {
+                "ref": "E3.6",
+                "predicate": "fully_valve_bounded",
+                "subject": "Tank-1",
+                "value": true,
+                "statement": "Every connection of T4750 (Tank-1) ends at a shut-off valve, a relief device or a closed end (3 boundary valves: GlobeValve 47123/C1 (GlobeValve-2), GlobeValve 47127/C1 (GlobeValve-1), ButterflyValve 47124/C1 (ButterflyValve-1))"
+              },
+              {
+                "ref": "E3.7",
+                "predicate": "relief_path_inside_boundary",
+                "subject": "Tank-1",
+                "value": false,
+                "statement": "With the boundary valves treated as closed, T4750 (Tank-1) has no drawn path to a relief device"
+              }
+            ]
+          },
+          "duration_ms": 2.77,
+          "executed": true
+        },
+        {
+          "step": 4,
+          "tool": "submit_answer",
+          "input": {
+            "derived_facts": [
+              {
+                "covers": [
+                  "q1"
+                ],
+                "ref": "E3.2"
+              },
+              {
+                "covers": [
+                  "q1"
+                ],
+                "ref": "E3.3"
+              },
+              {
+                "covers": [
+                  "q1"
+                ],
+                "ref": "E3.4"
+              },
+              {
+                "covers": [
+                  "q3"
+                ],
+                "ref": "E3.6"
+              }
+            ],
+            "summary": null,
+            "unknowns": [
+              {
+                "about": [
+                  "GlobeValve-2",
+                  "GlobeValve-1",
+                  "ButterflyValve-1"
+                ],
+                "category": "operating_procedure",
+                "covers": [
+                  "q2"
+                ],
+                "note": "The drawing does not specify the procedural order for closing isolation valves."
+              }
+            ]
+          },
+          "status": "accepted",
+          "result": {
+            "status": "accepted"
+          },
+          "duration_ms": 0.0,
+          "executed": false
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "Tank-1",
+          "fact": {
+            "type": "Tank",
+            "name": "T4750",
+            "tagName": "T4750"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "Tank-1"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "isolation_boundary:isolation_boundary_valve:Tank-1:GlobeValve-2",
+          "fact": {
+            "predicate": "isolation_boundary_valve",
+            "subject": "Tank-1",
+            "object": "GlobeValve-2",
+            "qualifiers": {
+              "side": "upstream",
+              "line": "47123",
+              "diameter": "DN 80",
+              "connection": "PipingNetworkSegment-3/connections/2"
+            },
+            "operation": "isolation_boundary",
+            "parameters": {
+              "entity_id": "Tank-1"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "Tank-1",
+            "PipingNetworkSegment-3/connections/2",
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-19/connections/2",
+            "PipingNetworkSegment-4/connections/1"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "isolation_boundary:isolation_boundary_valve:Tank-1:GlobeValve-1",
+          "fact": {
+            "predicate": "isolation_boundary_valve",
+            "subject": "Tank-1",
+            "object": "GlobeValve-1",
+            "qualifiers": {
+              "side": "upstream",
+              "line": "47127",
+              "diameter": "DN 50",
+              "connection": "PipingNetworkSegment-19/connections/2"
+            },
+            "operation": "isolation_boundary",
+            "parameters": {
+              "entity_id": "Tank-1"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "Tank-1",
+            "PipingNetworkSegment-3/connections/2",
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-19/connections/2",
+            "PipingNetworkSegment-4/connections/1"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "isolation_boundary:isolation_boundary_valve:Tank-1:ButterflyValve-1",
+          "fact": {
+            "predicate": "isolation_boundary_valve",
+            "subject": "Tank-1",
+            "object": "ButterflyValve-1",
+            "qualifiers": {
+              "side": "downstream",
+              "line": "47124",
+              "diameter": "DN 80",
+              "connection": "PipingNetworkSegment-4/connections/1"
+            },
+            "operation": "isolation_boundary",
+            "parameters": {
+              "entity_id": "Tank-1"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "Tank-1",
+            "PipingNetworkSegment-3/connections/2",
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-19/connections/2",
+            "PipingNetworkSegment-4/connections/1"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "isolation_boundary:relief_device_on_boundary:Tank-1:SpringLoadedGlobeSafetyValve-1",
+          "fact": {
+            "predicate": "relief_device_on_boundary",
+            "subject": "Tank-1",
+            "object": "SpringLoadedGlobeSafetyValve-1",
+            "qualifiers": {
+              "side": "upstream",
+              "line": "47125",
+              "diameter": "DN 50",
+              "connection": "PipingNetworkSegment-8/connections/1",
+              "relieves_region": false
+            },
+            "operation": "isolation_boundary",
+            "parameters": {
+              "entity_id": "Tank-1"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "Tank-1",
+            "PipingNetworkSegment-3/connections/2",
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-19/connections/2",
+            "PipingNetworkSegment-4/connections/1"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "isolation_boundary:fully_valve_bounded:Tank-1:None",
+          "fact": {
+            "predicate": "fully_valve_bounded",
+            "subject": "Tank-1",
+            "qualifiers": {},
+            "operation": "isolation_boundary",
+            "parameters": {
+              "entity_id": "Tank-1"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "Tank-1",
+            "PipingNetworkSegment-3/connections/2",
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-19/connections/2",
+            "PipingNetworkSegment-4/connections/1"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "isolation_boundary:relief_path_inside_boundary:Tank-1:None",
+          "fact": {
+            "predicate": "relief_path_inside_boundary",
+            "subject": "Tank-1",
+            "qualifiers": {},
+            "operation": "isolation_boundary",
+            "parameters": {
+              "entity_id": "Tank-1"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "Tank-1",
+            "PipingNetworkSegment-3/connections/2",
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-19/connections/2",
+            "PipingNetworkSegment-4/connections/1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "Tank-1": {
+          "name": "T4750",
+          "type": "Tank",
+          "step": 2
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "text": "GlobeValve 47123/C1 (GlobeValve-2) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47123, DN 80) [E3.2]",
+          "refs": [
+            "E3.2"
+          ],
+          "facts": [
+            {
+              "predicate": "isolation_boundary_valve",
+              "subject": "Tank-1",
+              "object": "GlobeValve-2",
+              "value": null,
+              "qualifiers": {
+                "side": "upstream",
+                "line": "47123",
+                "diameter": "DN 80"
+              }
+            }
+          ]
+        },
+        {
+          "text": "GlobeValve 47127/C1 (GlobeValve-1) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47127, DN 50) [E3.3]",
+          "refs": [
+            "E3.3"
+          ],
+          "facts": [
+            {
+              "predicate": "isolation_boundary_valve",
+              "subject": "Tank-1",
+              "object": "GlobeValve-1",
+              "value": null,
+              "qualifiers": {
+                "side": "upstream",
+                "line": "47127",
+                "diameter": "DN 50"
+              }
+            }
+          ]
+        },
+        {
+          "text": "ButterflyValve 47124/C1 (ButterflyValve-1) is the nearest valve on the downstream side of T4750 (Tank-1) (line 47124, DN 80) [E3.4]",
+          "refs": [
+            "E3.4"
+          ],
+          "facts": [
+            {
+              "predicate": "isolation_boundary_valve",
+              "subject": "Tank-1",
+              "object": "ButterflyValve-1",
+              "value": null,
+              "qualifiers": {
+                "side": "downstream",
+                "line": "47124",
+                "diameter": "DN 80"
+              }
+            }
+          ]
+        },
+        {
+          "text": "Every connection of T4750 (Tank-1) ends at a shut-off valve, a relief device or a closed end (3 boundary valves: GlobeValve 47123/C1 (GlobeValve-2), GlobeValve 47127/C1 (GlobeValve-1), ButterflyValve 47124/C1 (ButterflyValve-1)) [E3.6]",
+          "refs": [
+            "E3.6"
+          ],
+          "facts": [
+            {
+              "predicate": "fully_valve_bounded",
+              "subject": "Tank-1",
+              "object": null,
+              "value": true,
+              "qualifiers": {}
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 4,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 4,
+        "prompt_tokens": 14989,
+        "completion_tokens": 1228,
+        "total_tokens": 16217
+      },
+      "duration_ms": 55801.5,
+      "answer_mode": "structured",
+      "submission": {
+        "direct_facts": [],
+        "derived_facts": [
+          {
+            "ref": "E3.2",
+            "text": "GlobeValve 47123/C1 (GlobeValve-2) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47123, DN 80)",
+            "facts": [
+              {
+                "p": "isolation_boundary_valve",
+                "s": "Tank-1",
+                "o": "GlobeValve-2",
+                "q": {
+                  "side": "upstream",
+                  "line": "47123",
+                  "diameter": "DN 80"
+                }
+              }
+            ],
+            "covers": [
+              "q1"
+            ],
+            "operation": "isolation_boundary"
+          },
+          {
+            "ref": "E3.3",
+            "text": "GlobeValve 47127/C1 (GlobeValve-1) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47127, DN 50)",
+            "facts": [
+              {
+                "p": "isolation_boundary_valve",
+                "s": "Tank-1",
+                "o": "GlobeValve-1",
+                "q": {
+                  "side": "upstream",
+                  "line": "47127",
+                  "diameter": "DN 50"
+                }
+              }
+            ],
+            "covers": [
+              "q1"
+            ],
+            "operation": "isolation_boundary"
+          },
+          {
+            "ref": "E3.4",
+            "text": "ButterflyValve 47124/C1 (ButterflyValve-1) is the nearest valve on the downstream side of T4750 (Tank-1) (line 47124, DN 80)",
+            "facts": [
+              {
+                "p": "isolation_boundary_valve",
+                "s": "Tank-1",
+                "o": "ButterflyValve-1",
+                "q": {
+                  "side": "downstream",
+                  "line": "47124",
+                  "diameter": "DN 80"
+                }
+              }
+            ],
+            "covers": [
+              "q1"
+            ],
+            "operation": "isolation_boundary"
+          },
+          {
+            "ref": "E3.6",
+            "text": "Every connection of T4750 (Tank-1) ends at a shut-off valve, a relief device or a closed end (3 boundary valves: GlobeValve 47123/C1 (GlobeValve-2), GlobeValve 47127/C1 (GlobeValve-1), ButterflyValve 47124/C1 (ButterflyValve-1))",
+            "facts": [
+              {
+                "p": "fully_valve_bounded",
+                "s": "Tank-1",
+                "v": true
+              }
+            ],
+            "covers": [
+              "q3"
+            ],
+            "operation": "isolation_boundary"
+          }
+        ],
+        "unknowns": [
+          {
+            "category": "operating_procedure",
+            "about": [
+              "GlobeValve-2",
+              "GlobeValve-1",
+              "ButterflyValve-1"
+            ],
+            "about_names": [
+              "GlobeValve 47123/C1 (GlobeValve-2)",
+              "GlobeValve 47127/C1 (GlobeValve-1)",
+              "ButterflyValve 47124/C1 (ButterflyValve-1)"
+            ],
+            "covers": [
+              "q2"
+            ],
+            "note": "The drawing does not specify the procedural order for closing isolation valves."
+          }
+        ],
+        "requested_outputs": [
+          {
+            "id": "q1",
+            "description": "List of valves that must be closed to isolate T4750, in the order to close them",
+            "kind": "items",
+            "covered_by": {
+              "direct": [],
+              "derived": [
+                "E3.2",
+                "E3.3",
+                "E3.4"
+              ],
+              "unknown": []
+            }
+          },
+          {
+            "id": "q2",
+            "description": "Explanation of why that order is used",
+            "kind": "explanation",
+            "covered_by": {
+              "direct": [],
+              "derived": [],
+              "unknown": [
+                "operating_procedure"
+              ]
+            }
+          },
+          {
+            "id": "q3",
+            "description": "Identify which connections to T4750 cannot be isolated according to the drawing",
+            "kind": "connection_or_route",
+            "covered_by": {
+              "direct": [],
+              "derived": [
+                "E3.6"
+              ],
+              "unknown": []
+            }
+          }
+        ],
+        "model_summary": null,
+        "notes": []
+      },
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "description": "List of valves that must be closed to isolate T4750, in the order to close them",
+          "kind": "items"
+        },
+        {
+          "id": "q2",
+          "description": "Explanation of why that order is used",
+          "kind": "explanation"
+        },
+        {
+          "id": "q3",
+          "description": "Identify which connections to T4750 cannot be isolated according to the drawing",
+          "kind": "connection_or_route"
+        }
+      ],
+      "tool_results": [
+        {
+          "tool": "find_entities",
+          "status": "success",
+          "input": {
+            "query": "T4750",
+            "entity_type": "equipment"
+          },
+          "entities": [
+            {
+              "id": "Tank-1",
+              "name": "T4750",
+              "type": "Tank",
+              "category": "equipment",
+              "tag": "T4750",
+              "identifiers": {
+                "tagName": "T4750"
+              },
+              "match_tier": "exact_tag",
+              "confidence": 1.0,
+              "match_reason": "tagName = 'T4750'",
+              "identifier_kind": "source_identifier",
+              "links": {
+                "piping_upstream": 3,
+                "piping_downstream": 1,
+                "instrumentation": 1
+              },
+              "ref": "E2.1"
+            }
+          ],
+          "connections": [],
+          "paths": [],
+          "boundaries": [],
+          "properties": {},
+          "derived": [],
+          "resolution": {
+            "status": "unique",
+            "ambiguous": false,
+            "match_count": 1,
+            "suggestions": []
+          },
+          "evidence": [
+            {
+              "kind": "entity",
+              "id": "Tank-1",
+              "fact": {
+                "type": "Tank",
+                "name": "T4750",
+                "tagName": "T4750"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "Tank-1"
+              ]
+            }
+          ],
+          "warnings": [],
+          "meta": {
+            "duration_ms": 2.15
+          },
+          "result_ref": "R2",
+          "status_ref": "E2.0"
+        },
+        {
+          "tool": "isolation_boundary",
+          "status": "success",
+          "input": {
+            "entity_id": "Tank-1"
+          },
+          "entities": [
+            {
+              "id": "Tank-1",
+              "name": "T4750",
+              "type": "Tank",
+              "category": "equipment",
+              "tag": "T4750",
+              "identifiers": {
+                "tagName": "T4750"
+              },
+              "ref": "E3.1"
+            }
+          ],
+          "connections": [],
+          "paths": [],
+          "boundaries": [],
+          "properties": {},
+          "derived": [
+            {
+              "predicate": "isolation_boundary_valve",
+              "subject": "Tank-1",
+              "object": "GlobeValve-2",
+              "qualifiers": {
+                "side": "upstream",
+                "line": "47123",
+                "diameter": "DN 80",
+                "connection": "PipingNetworkSegment-3/connections/2"
+              },
+              "statement": "GlobeValve 47123/C1 (GlobeValve-2) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47123, DN 80)",
+              "operation": "isolation_boundary",
+              "parameters": {
+                "entity_id": "Tank-1"
+              },
+              "source_entities": [
+                "Tank-1"
+              ],
+              "source_connections": [
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ],
+              "ref": "E3.2"
+            },
+            {
+              "predicate": "isolation_boundary_valve",
+              "subject": "Tank-1",
+              "object": "GlobeValve-1",
+              "qualifiers": {
+                "side": "upstream",
+                "line": "47127",
+                "diameter": "DN 50",
+                "connection": "PipingNetworkSegment-19/connections/2"
+              },
+              "statement": "GlobeValve 47127/C1 (GlobeValve-1) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47127, DN 50)",
+              "operation": "isolation_boundary",
+              "parameters": {
+                "entity_id": "Tank-1"
+              },
+              "source_entities": [
+                "Tank-1"
+              ],
+              "source_connections": [
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ],
+              "ref": "E3.3"
+            },
+            {
+              "predicate": "isolation_boundary_valve",
+              "subject": "Tank-1",
+              "object": "ButterflyValve-1",
+              "qualifiers": {
+                "side": "downstream",
+                "line": "47124",
+                "diameter": "DN 80",
+                "connection": "PipingNetworkSegment-4/connections/1"
+              },
+              "statement": "ButterflyValve 47124/C1 (ButterflyValve-1) is the nearest valve on the downstream side of T4750 (Tank-1) (line 47124, DN 80)",
+              "operation": "isolation_boundary",
+              "parameters": {
+                "entity_id": "Tank-1"
+              },
+              "source_entities": [
+                "Tank-1"
+              ],
+              "source_connections": [
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ],
+              "ref": "E3.4"
+            },
+            {
+              "predicate": "relief_device_on_boundary",
+              "subject": "Tank-1",
+              "object": "SpringLoadedGlobeSafetyValve-1",
+              "qualifiers": {
+                "side": "upstream",
+                "line": "47125",
+                "diameter": "DN 50",
+                "connection": "PipingNetworkSegment-8/connections/1",
+                "relieves_region": false
+              },
+              "statement": "SV 104.01 (SpringLoadedGlobeSafetyValve-1) discharges into the piping around T4750 (Tank-1) with no valve in between (line 47125, DN 50); it does not relieve this region",
+              "operation": "isolation_boundary",
+              "parameters": {
+                "entity_id": "Tank-1"
+              },
+              "source_entities": [
+                "Tank-1"
+              ],
+              "source_connections": [
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ],
+              "ref": "E3.5"
+            },
+            {
+              "predicate": "fully_valve_bounded",
+              "subject": "Tank-1",
+              "qualifiers": {},
+              "statement": "Every connection of T4750 (Tank-1) ends at a shut-off valve, a relief device or a closed end (3 boundary valves: GlobeValve 47123/C1 (GlobeValve-2), GlobeValve 47127/C1 (GlobeValve-1), ButterflyValve 47124/C1 (ButterflyValve-1))",
+              "operation": "isolation_boundary",
+              "parameters": {
+                "entity_id": "Tank-1"
+              },
+              "source_entities": [
+                "Tank-1"
+              ],
+              "source_connections": [
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ],
+              "value": true,
+              "ref": "E3.6"
+            },
+            {
+              "predicate": "relief_path_inside_boundary",
+              "subject": "Tank-1",
+              "qualifiers": {},
+              "statement": "With the boundary valves treated as closed, T4750 (Tank-1) has no drawn path to a relief device",
+              "operation": "isolation_boundary",
+              "parameters": {
+                "entity_id": "Tank-1"
+              },
+              "source_entities": [
+                "Tank-1"
+              ],
+              "source_connections": [
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ],
+              "value": false,
+              "ref": "E3.7"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "derived",
+              "id": "isolation_boundary:isolation_boundary_valve:Tank-1:GlobeValve-2",
+              "fact": {
+                "predicate": "isolation_boundary_valve",
+                "subject": "Tank-1",
+                "object": "GlobeValve-2",
+                "qualifiers": {
+                  "side": "upstream",
+                  "line": "47123",
+                  "diameter": "DN 80",
+                  "connection": "PipingNetworkSegment-3/connections/2"
+                },
+                "operation": "isolation_boundary",
+                "parameters": {
+                  "entity_id": "Tank-1"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "Tank-1",
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ]
+            },
+            {
+              "kind": "derived",
+              "id": "isolation_boundary:isolation_boundary_valve:Tank-1:GlobeValve-1",
+              "fact": {
+                "predicate": "isolation_boundary_valve",
+                "subject": "Tank-1",
+                "object": "GlobeValve-1",
+                "qualifiers": {
+                  "side": "upstream",
+                  "line": "47127",
+                  "diameter": "DN 50",
+                  "connection": "PipingNetworkSegment-19/connections/2"
+                },
+                "operation": "isolation_boundary",
+                "parameters": {
+                  "entity_id": "Tank-1"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "Tank-1",
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ]
+            },
+            {
+              "kind": "derived",
+              "id": "isolation_boundary:isolation_boundary_valve:Tank-1:ButterflyValve-1",
+              "fact": {
+                "predicate": "isolation_boundary_valve",
+                "subject": "Tank-1",
+                "object": "ButterflyValve-1",
+                "qualifiers": {
+                  "side": "downstream",
+                  "line": "47124",
+                  "diameter": "DN 80",
+                  "connection": "PipingNetworkSegment-4/connections/1"
+                },
+                "operation": "isolation_boundary",
+                "parameters": {
+                  "entity_id": "Tank-1"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "Tank-1",
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ]
+            },
+            {
+              "kind": "derived",
+              "id": "isolation_boundary:relief_device_on_boundary:Tank-1:SpringLoadedGlobeSafetyValve-1",
+              "fact": {
+                "predicate": "relief_device_on_boundary",
+                "subject": "Tank-1",
+                "object": "SpringLoadedGlobeSafetyValve-1",
+                "qualifiers": {
+                  "side": "upstream",
+                  "line": "47125",
+                  "diameter": "DN 50",
+                  "connection": "PipingNetworkSegment-8/connections/1",
+                  "relieves_region": false
+                },
+                "operation": "isolation_boundary",
+                "parameters": {
+                  "entity_id": "Tank-1"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "Tank-1",
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ]
+            },
+            {
+              "kind": "derived",
+              "id": "isolation_boundary:fully_valve_bounded:Tank-1:None",
+              "fact": {
+                "predicate": "fully_valve_bounded",
+                "subject": "Tank-1",
+                "qualifiers": {},
+                "operation": "isolation_boundary",
+                "parameters": {
+                  "entity_id": "Tank-1"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "Tank-1",
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ]
+            },
+            {
+              "kind": "derived",
+              "id": "isolation_boundary:relief_path_inside_boundary:Tank-1:None",
+              "fact": {
+                "predicate": "relief_path_inside_boundary",
+                "subject": "Tank-1",
+                "qualifiers": {},
+                "operation": "isolation_boundary",
+                "parameters": {
+                  "entity_id": "Tank-1"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "Tank-1",
+                "PipingNetworkSegment-3/connections/2",
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-4/connections/1"
+              ]
+            }
+          ],
+          "warnings": [],
+          "meta": {
+            "region_entities": [
+              "Tank-1"
+            ],
+            "boundary_valves": [
+              "GlobeValve-2",
+              "GlobeValve-1",
+              "ButterflyValve-1"
+            ],
+            "relief_devices": [
+              "SpringLoadedGlobeSafetyValve-1"
+            ],
+            "connections_without_valve": 0,
+            "duration_ms": 2.77
+          },
+          "result_ref": "R3",
+          "status_ref": "E3.0"
+        }
+      ],
+      "group": null,
+      "repeat": 1,
+      "answered_at": "2026-10-07 01:04:44"
+    },
+    {
+      "question_id": "C7",
+      "question": "Does H1008 have a path to a pressure relief device? What has to happen for that path to be open?",
+      "answer": "Derived by graph analysis of the drawing\n- SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve: both of TubularHeatExchanger-1, 3 pipe(s) away, through Tank-1 [E7.1, traverse]\n- Chamber boundary at TubularHeatExchanger-1: entered through Chamber-3, not continued into Chamber-4 [E7.7, traverse]\n- Chamber boundary at TubularHeatExchanger-1: entered through Chamber-4, not continued into Chamber-3 [E7.8, traverse]\n- Chamber boundary at TubularHeatExchanger-1: entered through Chamber-4, not continued into Chamber-3 [E7.9, traverse]\n\nNot established by the P&ID\n- A P&ID does not show operating state: which valves are open or closed, or what is running or flowing. Asked about: GlobeValve 47127/C1 (GlobeValve-1).",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "decompose_request",
+          "input": {
+            "requested_outputs": [
+              {
+                "description": "Whether H1008 has a path to a pressure relief device",
+                "kind": "connection_or_route"
+              },
+              {
+                "description": "What must occur for that path to be open",
+                "kind": "explanation"
+              }
+            ]
+          },
+          "status": "accepted",
+          "result": {
+            "status": "accepted",
+            "requested_outputs": [
+              {
+                "id": "q1",
+                "description": "Whether H1008 has a path to a pressure relief device",
+                "kind": "connection_or_route"
+              },
+              {
+                "id": "q2",
+                "description": "What must occur for that path to be open",
+                "kind": "explanation"
+              }
+            ],
+            "message": "Now use the graph tools. In submit_answer, every one of these ids must be covered by cited evidence or by an unknown."
+          },
+          "duration_ms": 0.0,
+          "executed": false
+        },
+        {
+          "step": 2,
+          "tool": "find_entities",
+          "input": {
+            "entity_type": null,
+            "query": "H1008"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "entities": [
+              {
+                "id": "TubularHeatExchanger-1",
+                "name": "H1008",
+                "type": "TubularHeatExchanger",
+                "category": "equipment",
+                "tag": "H1008",
+                "identifiers": {
+                  "tagName": "H1008"
+                },
+                "match_tier": "exact_tag",
+                "match_reason": "tagName = 'H1008'",
+                "links": {
+                  "piping_upstream": 1,
+                  "piping_downstream": 2,
+                  "open_ended_pipes": 1
+                },
+                "ref": "E2.1"
+              }
+            ]
+          },
+          "duration_ms": 2.45,
+          "executed": true
+        },
+        {
+          "step": 3,
+          "tool": "find_entities",
+          "input": {
+            "entity_type": null,
+            "query": "relief"
+          },
+          "status": "not_found",
+          "result": {
+            "status": "not_found",
+            "result_ref": "R3",
+            "status_ref": "E3.0",
+            "message": "No entity in the P&ID graph matches 'relief'.",
+            "resolution": {
+              "status": "none",
+              "ambiguous": false,
+              "match_count": 0,
+              "suggestions": []
+            }
+          },
+          "duration_ms": 9.91,
+          "executed": true
+        },
+        {
+          "step": 4,
+          "tool": "list_entities",
+          "input": {
+            "entity_type": "relief"
+          },
+          "status": "empty",
+          "result": {
+            "status": "empty",
+            "result_ref": "R4",
+            "status_ref": "E4.0",
+            "message": "'relief' is not a type present in the P&ID graph.",
+            "properties": {
+              "types": {
+                "ActuatingFunction": 3,
+                "BallValve": 5,
+                "BlindFlange": 2,
+                "ButterflyValve": 1,
+                "CentrifugalPump": 1,
+                "FlowInPipeOffPageConnector": 1,
+                "FlowOutPipeOffPageConnector": 1,
+                "GlobeValve": 3,
+                "PipeReducer": 1,
+                "PipeTee": 5,
+                "PipingNetworkSystem": 11,
+                "PlateHeatExchanger": 1,
+                "ProcessInstrumentationFunction": 4,
+                "ProcessSignalGeneratingFunction": 3,
+                "ReciprocatingPump": 1,
+                "SpringLoadedGlobeSafetyValve": 1,
+                "SwingCheckValve": 1,
+                "Tank": 1,
+                "TubularHeatExchanger": 1
+              }
+            }
+          },
+          "duration_ms": 1.26,
+          "executed": true
+        },
+        {
+          "step": 5,
+          "tool": "find_entities",
+          "input": {
+            "entity_type": "SpringLoadedGlobeSafetyValve",
+            "query": "*"
+          },
+          "status": "not_found",
+          "result": {
+            "status": "not_found",
+            "result_ref": "R5",
+            "status_ref": "E5.0",
+            "message": "No entity in the P&ID graph matches '*'.",
+            "resolution": {
+              "status": "none",
+              "ambiguous": false,
+              "match_count": 0,
+              "suggestions": []
+            }
+          },
+          "duration_ms": 3.12,
+          "executed": true
+        },
+        {
+          "step": 6,
+          "tool": "list_entities",
+          "input": {
+            "entity_type": "SpringLoadedGlobeSafetyValve",
+            "properties": [
+              "tag",
+              "id"
+            ]
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R6",
+            "status_ref": "E6.0",
+            "entities": [
+              {
+                "id": "SpringLoadedGlobeSafetyValve-1",
+                "name": "SV 104.01",
+                "type": "SpringLoadedGlobeSafetyValve",
+                "category": "piping_component",
+                "identifiers": {
+                  "positionNumber": "SV 104.01"
+                },
+                "attributes": [],
+                "ref": "E6.1"
+              }
+            ],
+            "meta": {
+              "count": 1
+            }
+          },
+          "duration_ms": 2.58,
+          "executed": true
+        },
+        {
+          "step": 7,
+          "tool": "traverse",
+          "input": {
+            "direction": "both",
+            "entity_types": [
+              "SpringLoadedGlobeSafetyValve"
+            ],
+            "max_depth": 20,
+            "start_entity_id": "TubularHeatExchanger-1"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R7",
+            "status_ref": "E7.0",
+            "entities": [
+              {
+                "ref": "E7.1",
+                "id": "SpringLoadedGlobeSafetyValve-1",
+                "name": "SV 104.01",
+                "type": "SpringLoadedGlobeSafetyValve",
+                "category": "piping_component",
+                "distance": 3,
+                "via": "Tank-1",
+                "through_equipment": [
+                  "Tank-1"
+                ]
+              }
+            ],
+            "connections": [
+              {
+                "ref": "E7.2",
+                "from": "TubularHeatExchanger-1 (H1008)",
+                "to": "GlobeValve-1 (GlobeValve 47127/C1)",
+                "lineNumber": "47127",
+                "nominalDiameterRepresentation": "DN 50"
+              },
+              {
+                "ref": "E7.3",
+                "from": "GlobeValve-1 (GlobeValve 47127/C1)",
+                "to": "Tank-1 (T4750)",
+                "lineNumber": "47127",
+                "nominalDiameterRepresentation": "DN 50"
+              },
+              {
+                "ref": "E7.4",
+                "from": "SpringLoadedGlobeSafetyValve-1 (SV 104.01)",
+                "to": "Tank-1 (T4750)",
+                "lineNumber": "47125",
+                "nominalDiameterRepresentation": "DN 50"
+              },
+              {
+                "ref": "E7.5",
+                "from": null,
+                "to": "TubularHeatExchanger-1 (H1008)",
+                "lineNumber": "47140",
+                "nominalDiameterRepresentation": "DN 50",
+                "open_end": "source",
+                "note": "This pipe exists in the DEXPI model but has no source item on this drawing, so pyDEXPI's conceptual graph omits it. Where it comes from is not represented."
+              },
+              {
+                "ref": "E7.6",
+                "from": "GlobeValve-3 (GlobeValve 47141/C1)",
+                "to": null,
+                "lineNumber": "47141",
+                "nominalDiameterRepresentation": "DN 50",
+                "open_end": "target",
+                "note": "This pipe exists in the DEXPI model but has no target item on this drawing, so pyDEXPI's conceptual graph omits it. Where it leads is not represented."
+              }
+            ],
+            "boundaries": [
+              {
+                "type": "chamber_boundary",
+                "equipment": "TubularHeatExchanger-1",
+                "entered_chamber": "Chamber-3",
+                "blocked_chamber": "Chamber-4",
+                "blocked_connection": "PipingNetworkSegment-23/connections/1",
+                "direction": "both",
+                "ref": "E7.7"
+              },
+              {
+                "type": "chamber_boundary",
+                "equipment": "TubularHeatExchanger-1",
+                "entered_chamber": "Chamber-4",
+                "blocked_chamber": "Chamber-3",
+                "blocked_connection": "PipingNetworkSegment-19/connections/1",
+                "direction": "both",
+                "ref": "E7.8"
+              },
+              {
+                "type": "chamber_boundary",
+                "equipment": "TubularHeatExchanger-1",
+                "entered_chamber": "Chamber-4",
+                "blocked_chamber": "Chamber-3",
+                "blocked_connection": "PipingNetworkSegment-15/connections/1",
+                "direction": "both",
+                "ref": "E7.9"
+              }
+            ],
+            "warnings": [
+              "2 connection(s) are open-ended: the pipe exists in the DEXPI model but its other end is not represented on this drawing, so no neighbour can be stated.",
+              "Did not continue through TubularHeatExchanger-1 from Chamber-3 to Chamber-4 via PipingNetworkSegment-23/connections/1: these are separate chambers (sides) of the equipment.",
+              "Did not continue through TubularHeatExchanger-1 from Chamber-4 to Chamber-3 via PipingNetworkSegment-19/connections/1: these are separate chambers (sides) of the equipment.",
+              "Did not continue through TubularHeatExchanger-1 from Chamber-4 to Chamber-3 via PipingNetworkSegment-15/connections/1: these are separate chambers (sides) of the equipment."
+            ],
+            "meta": {
+              "max_depth": 20
+            }
+          },
+          "duration_ms": 5.29,
+          "executed": true
+        },
+        {
+          "step": 8,
+          "tool": "submit_answer",
+          "input": {
+            "derived_facts": [
+              {
+                "covers": [
+                  "q1"
+                ],
+                "ref": "R7"
+              }
+            ],
+            "summary": "H1008 is connected via GlobeValve-1 and Tank-1 to SpringLoadedGlobeSafetyValve SV 104.01, a pressure relief device. The drawing shows the route but does not specify valve positions; the path is open only if intervening shut‑off valves such as GlobeValve-1 are not closed.",
+            "unknowns": [
+              {
+                "about": [
+                  "GlobeValve-1"
+                ],
+                "category": "operating_state",
+                "covers": [
+                  "q2"
+                ],
+                "note": "The P&ID does not indicate the valve's position; the path would be open if any intervening shut‑off valve (e.g., GlobeValve-1) is not closed."
+              }
+            ]
+          },
+          "status": "accepted",
+          "result": {
+            "status": "accepted"
+          },
+          "duration_ms": 0.0,
+          "executed": false
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "TubularHeatExchanger-1",
+          "fact": {
+            "type": "TubularHeatExchanger",
+            "name": "H1008",
+            "tagName": "H1008"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "TubularHeatExchanger-1"
+          ]
+        },
+        {
+          "kind": "entity",
+          "id": "SpringLoadedGlobeSafetyValve-1",
+          "fact": {
+            "type": "SpringLoadedGlobeSafetyValve",
+            "name": "SV 104.01",
+            "positionNumber": "SV 104.01"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "SpringLoadedGlobeSafetyValve-1"
+          ]
+        },
+        {
+          "kind": "path",
+          "id": "TubularHeatExchanger-1->SpringLoadedGlobeSafetyValve-1",
+          "fact": {
+            "entities": [
+              "TubularHeatExchanger-1",
+              "GlobeValve-1",
+              "Tank-1",
+              "SpringLoadedGlobeSafetyValve-1"
+            ],
+            "connections": [
+              "PipingNetworkSegment-19/connections/1",
+              "PipingNetworkSegment-19/connections/2",
+              "PipingNetworkSegment-8/connections/1"
+            ],
+            "distance": 3
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-19/connections/1",
+            "PipingNetworkSegment-19/connections/2",
+            "PipingNetworkSegment-8/connections/1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-19/connections/1",
+          "fact": {
+            "source": "TubularHeatExchanger-1",
+            "target": "GlobeValve-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-19",
+            "fluidCode": "MNc",
+            "insulationThickness": "80.0 mm",
+            "insulationType": "Q",
+            "nominalDiameterNumericalValueRepresentation": "50",
+            "nominalDiameterRepresentation": "DN 50",
+            "nominalDiameterStandard": "DN 50 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "pipingClassCode": "75HB13",
+            "primarySecondaryPipingNetworkSegment": "secondary segment",
+            "segmentNumber": "S1",
+            "lineNumber": "47127"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-19/connections/1",
+            "PipingNetworkSegment-19",
+            "PipingNetworkSystem-7"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-19/connections/2",
+          "fact": {
+            "source": "GlobeValve-1",
+            "target": "Tank-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-19",
+            "fluidCode": "MNc",
+            "insulationThickness": "80.0 mm",
+            "insulationType": "Q",
+            "nominalDiameterNumericalValueRepresentation": "50",
+            "nominalDiameterRepresentation": "DN 50",
+            "nominalDiameterStandard": "DN 50 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "pipingClassCode": "75HB13",
+            "primarySecondaryPipingNetworkSegment": "secondary segment",
+            "segmentNumber": "S1",
+            "lineNumber": "47127"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-19/connections/2",
+            "PipingNetworkSegment-19",
+            "PipingNetworkSystem-7"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "PipingNetworkSegment-8/connections/1",
+          "fact": {
+            "source": "SpringLoadedGlobeSafetyValve-1",
+            "target": "Tank-1",
+            "relationship": "piping",
+            "connection_type": "pipe",
+            "segment_id": "PipingNetworkSegment-8",
+            "fluidCode": "MNc",
+            "nominalDiameterNumericalValueRepresentation": "50",
+            "nominalDiameterRepresentation": "DN 50",
+            "nominalDiameterStandard": "DN 50 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "pipingClassCode": "75HB13",
+            "primarySecondaryPipingNetworkSegment": "secondary segment",
+            "segmentNumber": "S2",
+            "lineNumber": "47125"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-8/connections/1",
+            "PipingNetworkSegment-8",
+            "PipingNetworkSystem-5"
+          ]
+        },
+        {
+          "kind": "open_end",
+          "id": "PipingNetworkSegment-22/connections/1",
+          "fact": {
+            "source": null,
+            "target": "TubularHeatExchanger-1",
+            "relationship": "piping",
+            "connection_type": "open_end",
+            "segment_id": "PipingNetworkSegment-22",
+            "fluidCode": "QSa",
+            "insulationThickness": "80.0 mm",
+            "insulationType": "Q",
+            "lineNumber": "47140",
+            "nominalDiameterNumericalValueRepresentation": "50",
+            "nominalDiameterRepresentation": "DN 50",
+            "nominalDiameterStandard": "DN 50 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "pipingClassCode": "75HB13",
+            "primarySecondaryPipingNetworkSegment": "secondary segment",
+            "segmentNumber": "S1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-22/connections/1",
+            "PipingNetworkSegment-22",
+            "PipingNetworkSystem-10"
+          ]
+        },
+        {
+          "kind": "open_end",
+          "id": "PipingNetworkSegment-23/connections/2",
+          "fact": {
+            "source": "GlobeValve-3",
+            "target": null,
+            "relationship": "piping",
+            "connection_type": "open_end",
+            "segment_id": "PipingNetworkSegment-23",
+            "fluidCode": "QSb",
+            "insulationThickness": "80.0 mm",
+            "insulationType": "Q",
+            "lineNumber": "47141",
+            "nominalDiameterNumericalValueRepresentation": "50",
+            "nominalDiameterRepresentation": "DN 50",
+            "nominalDiameterStandard": "DN 50 (DIN 2448)",
+            "nominalDiameterTypeRepresentation": "DN",
+            "pipingClassCode": "75HB13",
+            "primarySecondaryPipingNetworkSegment": "secondary segment",
+            "segmentNumber": "S1"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-23/connections/2",
+            "PipingNetworkSegment-23",
+            "PipingNetworkSystem-11"
+          ]
+        },
+        {
+          "kind": "boundary",
+          "id": "TubularHeatExchanger-1:Chamber-3|Chamber-4",
+          "fact": {
+            "type": "chamber_boundary",
+            "equipment": "TubularHeatExchanger-1",
+            "entered_chamber": "Chamber-3",
+            "blocked_chamber": "Chamber-4",
+            "blocked_connection": "PipingNetworkSegment-23/connections/1",
+            "direction": "both",
+            "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "TubularHeatExchanger-1",
+            "Chamber-3",
+            "Chamber-4",
+            "PipingNetworkSegment-23/connections/1"
+          ]
+        },
+        {
+          "kind": "boundary",
+          "id": "TubularHeatExchanger-1:Chamber-4|Chamber-3",
+          "fact": {
+            "type": "chamber_boundary",
+            "equipment": "TubularHeatExchanger-1",
+            "entered_chamber": "Chamber-4",
+            "blocked_chamber": "Chamber-3",
+            "blocked_connection": "PipingNetworkSegment-19/connections/1",
+            "direction": "both",
+            "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "TubularHeatExchanger-1",
+            "Chamber-4",
+            "Chamber-3",
+            "PipingNetworkSegment-19/connections/1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "TubularHeatExchanger-1": {
+          "name": "H1008",
+          "type": "TubularHeatExchanger",
+          "step": 2
+        },
+        "SpringLoadedGlobeSafetyValve-1": {
+          "name": "SV 104.01",
+          "type": "SpringLoadedGlobeSafetyValve",
+          "step": 6
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "text": "SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve: both of TubularHeatExchanger-1, 3 pipe(s) away, through Tank-1 [E7.1]",
+          "refs": [
+            "E7.1"
+          ],
+          "facts": [
+            {
+              "predicate": "is_a",
+              "subject": "SpringLoadedGlobeSafetyValve-1",
+              "object": null,
+              "value": "SpringLoadedGlobeSafetyValve",
+              "qualifiers": {}
+            },
+            {
+              "predicate": "is_a",
+              "subject": "SpringLoadedGlobeSafetyValve-1",
+              "object": null,
+              "value": "piping_component",
+              "qualifiers": {}
+            },
+            {
+              "predicate": "reaches",
+              "subject": "TubularHeatExchanger-1",
+              "object": "SpringLoadedGlobeSafetyValve-1",
+              "value": null,
+              "qualifiers": {
+                "direction": "both"
+              }
+            }
+          ]
+        },
+        {
+          "text": "Chamber boundary at TubularHeatExchanger-1: entered through Chamber-3, not continued into Chamber-4 [E7.7]",
+          "refs": [
+            "E7.7"
+          ],
+          "facts": [
+            {
+              "predicate": "chamber_boundary",
+              "subject": "TubularHeatExchanger-1",
+              "object": null,
+              "value": null,
+              "qualifiers": {
+                "entered_chamber": "Chamber-3",
+                "blocked_chamber": "Chamber-4"
+              }
+            }
+          ]
+        },
+        {
+          "text": "Chamber boundary at TubularHeatExchanger-1: entered through Chamber-4, not continued into Chamber-3 [E7.8]",
+          "refs": [
+            "E7.8"
+          ],
+          "facts": [
+            {
+              "predicate": "chamber_boundary",
+              "subject": "TubularHeatExchanger-1",
+              "object": null,
+              "value": null,
+              "qualifiers": {
+                "entered_chamber": "Chamber-4",
+                "blocked_chamber": "Chamber-3"
+              }
+            }
+          ]
+        },
+        {
+          "text": "Chamber boundary at TubularHeatExchanger-1: entered through Chamber-4, not continued into Chamber-3 [E7.9]",
+          "refs": [
+            "E7.9"
+          ],
+          "facts": [
+            {
+              "predicate": "chamber_boundary",
+              "subject": "TubularHeatExchanger-1",
+              "object": null,
+              "value": null,
+              "qualifiers": {
+                "entered_chamber": "Chamber-4",
+                "blocked_chamber": "Chamber-3"
+              }
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 4,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 7,
+      "usage": {
+        "llm_calls": 8,
+        "prompt_tokens": 33305,
+        "completion_tokens": 1754,
+        "total_tokens": 35059
+      },
+      "duration_ms": 239824.0,
+      "answer_mode": "structured",
+      "submission": {
+        "direct_facts": [],
+        "derived_facts": [
+          {
+            "ref": "E7.1",
+            "text": "SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve: both of TubularHeatExchanger-1, 3 pipe(s) away, through Tank-1",
+            "facts": [
+              {
+                "p": "is_a",
+                "s": "SpringLoadedGlobeSafetyValve-1",
+                "v": "SpringLoadedGlobeSafetyValve"
+              },
+              {
+                "p": "is_a",
+                "s": "SpringLoadedGlobeSafetyValve-1",
+                "v": "piping_component"
+              },
+              {
+                "p": "reaches",
+                "s": "TubularHeatExchanger-1",
+                "o": "SpringLoadedGlobeSafetyValve-1",
+                "q": {
+                  "direction": "both"
+                }
+              }
+            ],
+            "covers": [
+              "q1"
+            ],
+            "operation": "traverse"
+          },
+          {
+            "ref": "E7.7",
+            "text": "Chamber boundary at TubularHeatExchanger-1: entered through Chamber-3, not continued into Chamber-4",
+            "facts": [
+              {
+                "p": "chamber_boundary",
+                "s": "TubularHeatExchanger-1",
+                "q": {
+                  "entered_chamber": "Chamber-3",
+                  "blocked_chamber": "Chamber-4"
+                }
+              }
+            ],
+            "covers": [
+              "q1"
+            ],
+            "operation": "traverse"
+          },
+          {
+            "ref": "E7.8",
+            "text": "Chamber boundary at TubularHeatExchanger-1: entered through Chamber-4, not continued into Chamber-3",
+            "facts": [
+              {
+                "p": "chamber_boundary",
+                "s": "TubularHeatExchanger-1",
+                "q": {
+                  "entered_chamber": "Chamber-4",
+                  "blocked_chamber": "Chamber-3"
+                }
+              }
+            ],
+            "covers": [
+              "q1"
+            ],
+            "operation": "traverse"
+          },
+          {
+            "ref": "E7.9",
+            "text": "Chamber boundary at TubularHeatExchanger-1: entered through Chamber-4, not continued into Chamber-3",
+            "facts": [
+              {
+                "p": "chamber_boundary",
+                "s": "TubularHeatExchanger-1",
+                "q": {
+                  "entered_chamber": "Chamber-4",
+                  "blocked_chamber": "Chamber-3"
+                }
+              }
+            ],
+            "covers": [
+              "q1"
+            ],
+            "operation": "traverse"
+          }
+        ],
+        "unknowns": [
+          {
+            "category": "operating_state",
+            "about": [
+              "GlobeValve-1"
+            ],
+            "about_names": [
+              "GlobeValve 47127/C1 (GlobeValve-1)"
+            ],
+            "covers": [
+              "q2"
+            ],
+            "note": "The P&ID does not indicate the valve's position; the path would be open if any intervening shut‑off valve (e.g., GlobeValve-1) is not closed."
+          }
+        ],
+        "requested_outputs": [
+          {
+            "id": "q1",
+            "description": "Whether H1008 has a path to a pressure relief device",
+            "kind": "connection_or_route",
+            "covered_by": {
+              "direct": [],
+              "derived": [
+                "E7.1",
+                "E7.7",
+                "E7.8",
+                "E7.9"
+              ],
+              "unknown": []
+            }
+          },
+          {
+            "id": "q2",
+            "description": "What must occur for that path to be open",
+            "kind": "explanation",
+            "covered_by": {
+              "direct": [],
+              "derived": [],
+              "unknown": [
+                "operating_state"
+              ]
+            }
+          }
+        ],
+        "model_summary": "H1008 is connected via GlobeValve-1 and Tank-1 to SpringLoadedGlobeSafetyValve SV 104.01, a pressure relief device. The drawing shows the route but does not specify valve positions; the path is open only if intervening shut‑off valves such as GlobeValve-1 are not closed.",
+        "notes": []
+      },
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "description": "Whether H1008 has a path to a pressure relief device",
+          "kind": "connection_or_route"
+        },
+        {
+          "id": "q2",
+          "description": "What must occur for that path to be open",
+          "kind": "explanation"
+        }
+      ],
+      "tool_results": [
+        {
+          "tool": "find_entities",
+          "status": "success",
+          "input": {
+            "query": "H1008",
+            "entity_type": null
+          },
+          "entities": [
+            {
+              "id": "TubularHeatExchanger-1",
+              "name": "H1008",
+              "type": "TubularHeatExchanger",
+              "category": "equipment",
+              "tag": "H1008",
+              "identifiers": {
+                "tagName": "H1008"
+              },
+              "match_tier": "exact_tag",
+              "confidence": 1.0,
+              "match_reason": "tagName = 'H1008'",
+              "identifier_kind": "source_identifier",
+              "links": {
+                "piping_upstream": 1,
+                "piping_downstream": 2,
+                "open_ended_pipes": 1
+              },
+              "ref": "E2.1"
+            }
+          ],
+          "connections": [],
+          "paths": [],
+          "boundaries": [],
+          "properties": {},
+          "derived": [],
+          "resolution": {
+            "status": "unique",
+            "ambiguous": false,
+            "match_count": 1,
+            "suggestions": []
+          },
+          "evidence": [
+            {
+              "kind": "entity",
+              "id": "TubularHeatExchanger-1",
+              "fact": {
+                "type": "TubularHeatExchanger",
+                "name": "H1008",
+                "tagName": "H1008"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "TubularHeatExchanger-1"
+              ]
+            }
+          ],
+          "warnings": [],
+          "meta": {
+            "duration_ms": 2.45
+          },
+          "result_ref": "R2",
+          "status_ref": "E2.0"
+        },
+        {
+          "tool": "find_entities",
+          "status": "not_found",
+          "input": {
+            "query": "relief",
+            "entity_type": null
+          },
+          "message": "No entity in the P&ID graph matches 'relief'.",
+          "entities": [],
+          "connections": [],
+          "paths": [],
+          "boundaries": [],
+          "properties": {},
+          "derived": [],
+          "resolution": {
+            "status": "none",
+            "ambiguous": false,
+            "match_count": 0,
+            "suggestions": []
+          },
+          "evidence": [],
+          "warnings": [],
+          "meta": {
+            "duration_ms": 9.91
+          },
+          "result_ref": "R3",
+          "status_ref": "E3.0"
+        },
+        {
+          "tool": "list_entities",
+          "status": "empty",
+          "input": {
+            "entity_type": "relief",
+            "properties": null,
+            "property_filter": null
+          },
+          "message": "'relief' is not a type present in the P&ID graph.",
+          "entities": [],
+          "connections": [],
+          "paths": [],
+          "boundaries": [],
+          "properties": {
+            "types": {
+              "ActuatingFunction": 3,
+              "BallValve": 5,
+              "BlindFlange": 2,
+              "ButterflyValve": 1,
+              "CentrifugalPump": 1,
+              "FlowInPipeOffPageConnector": 1,
+              "FlowOutPipeOffPageConnector": 1,
+              "GlobeValve": 3,
+              "PipeReducer": 1,
+              "PipeTee": 5,
+              "PipingNetworkSystem": 11,
+              "PlateHeatExchanger": 1,
+              "ProcessInstrumentationFunction": 4,
+              "ProcessSignalGeneratingFunction": 3,
+              "ReciprocatingPump": 1,
+              "SpringLoadedGlobeSafetyValve": 1,
+              "SwingCheckValve": 1,
+              "Tank": 1,
+              "TubularHeatExchanger": 1
+            }
+          },
+          "derived": [],
+          "evidence": [],
+          "warnings": [],
+          "meta": {
+            "duration_ms": 1.26
+          },
+          "result_ref": "R4",
+          "status_ref": "E4.0"
+        },
+        {
+          "tool": "find_entities",
+          "status": "not_found",
+          "input": {
+            "query": "*",
+            "entity_type": "SpringLoadedGlobeSafetyValve"
+          },
+          "message": "No entity in the P&ID graph matches '*'.",
+          "entities": [],
+          "connections": [],
+          "paths": [],
+          "boundaries": [],
+          "properties": {},
+          "derived": [],
+          "resolution": {
+            "status": "none",
+            "ambiguous": false,
+            "match_count": 0,
+            "suggestions": []
+          },
+          "evidence": [],
+          "warnings": [],
+          "meta": {
+            "duration_ms": 3.12
+          },
+          "result_ref": "R5",
+          "status_ref": "E5.0"
+        },
+        {
+          "tool": "list_entities",
+          "status": "success",
+          "input": {
+            "entity_type": "SpringLoadedGlobeSafetyValve",
+            "properties": [
+              "tag",
+              "id"
+            ],
+            "property_filter": null
+          },
+          "entities": [
+            {
+              "id": "SpringLoadedGlobeSafetyValve-1",
+              "name": "SV 104.01",
+              "type": "SpringLoadedGlobeSafetyValve",
+              "category": "piping_component",
+              "identifiers": {
+                "positionNumber": "SV 104.01"
+              },
+              "attributes": [],
+              "ref": "E6.1"
+            }
+          ],
+          "connections": [],
+          "paths": [],
+          "boundaries": [],
+          "properties": {},
+          "derived": [],
+          "evidence": [
+            {
+              "kind": "entity",
+              "id": "SpringLoadedGlobeSafetyValve-1",
+              "fact": {
+                "type": "SpringLoadedGlobeSafetyValve",
+                "name": "SV 104.01",
+                "positionNumber": "SV 104.01"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "SpringLoadedGlobeSafetyValve-1"
+              ]
+            }
+          ],
+          "warnings": [],
+          "meta": {
+            "count": 1,
+            "duration_ms": 2.58
+          },
+          "result_ref": "R6",
+          "status_ref": "E6.0"
+        },
+        {
+          "tool": "traverse",
+          "status": "success",
+          "input": {
+            "start_entity_id": "TubularHeatExchanger-1",
+            "direction": "both",
+            "entity_types": [
+              "SpringLoadedGlobeSafetyValve"
+            ],
+            "max_depth": 20,
+            "stop_at_types": null
+          },
+          "entities": [
+            {
+              "id": "SpringLoadedGlobeSafetyValve-1",
+              "name": "SV 104.01",
+              "type": "SpringLoadedGlobeSafetyValve",
+              "category": "piping_component",
+              "identifiers": {
+                "positionNumber": "SV 104.01"
+              },
+              "distance": 3,
+              "path_entities": [
+                "TubularHeatExchanger-1",
+                "GlobeValve-1",
+                "Tank-1",
+                "SpringLoadedGlobeSafetyValve-1"
+              ],
+              "path_connections": [
+                "PipingNetworkSegment-19/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-8/connections/1"
+              ],
+              "through_equipment": [
+                "Tank-1"
+              ],
+              "ref": "E7.1"
+            }
+          ],
+          "connections": [
+            {
+              "id": "PipingNetworkSegment-19/connections/1",
+              "source": {
+                "id": "TubularHeatExchanger-1",
+                "name": "H1008",
+                "type": "TubularHeatExchanger"
+              },
+              "target": {
+                "id": "GlobeValve-1",
+                "name": "GlobeValve 47127/C1",
+                "type": "GlobeValve"
+              },
+              "relationship": "piping",
+              "connection_type": "pipe",
+              "properties": {
+                "segment_id": "PipingNetworkSegment-19",
+                "fluidCode": "MNc",
+                "insulationThickness": "80.0 mm",
+                "insulationType": "Q",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S1",
+                "lineNumber": "47127"
+              },
+              "source_nozzle": {
+                "id": "Nozzle-11",
+                "sub_tag": "N2",
+                "chamber_id": "Chamber-3"
+              },
+              "provenance": {
+                "derived_from": "conceptual_graph",
+                "present_in_conceptual_graph": true,
+                "source_object_ids": [
+                  "PipingNetworkSegment-19/connections/1",
+                  "PipingNetworkSegment-19",
+                  "PipingNetworkSystem-7"
+                ]
+              },
+              "flow": "source_to_target",
+              "ref": "E7.2"
+            },
+            {
+              "id": "PipingNetworkSegment-19/connections/2",
+              "source": {
+                "id": "GlobeValve-1",
+                "name": "GlobeValve 47127/C1",
+                "type": "GlobeValve"
+              },
+              "target": {
+                "id": "Tank-1",
+                "name": "T4750",
+                "type": "Tank"
+              },
+              "relationship": "piping",
+              "connection_type": "pipe",
+              "properties": {
+                "segment_id": "PipingNetworkSegment-19",
+                "fluidCode": "MNc",
+                "insulationThickness": "80.0 mm",
+                "insulationType": "Q",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S1",
+                "lineNumber": "47127"
+              },
+              "target_nozzle": {
+                "id": "Nozzle-12",
+                "sub_tag": "N6"
+              },
+              "provenance": {
+                "derived_from": "conceptual_graph",
+                "present_in_conceptual_graph": true,
+                "source_object_ids": [
+                  "PipingNetworkSegment-19/connections/2",
+                  "PipingNetworkSegment-19",
+                  "PipingNetworkSystem-7"
+                ]
+              },
+              "flow": "source_to_target",
+              "ref": "E7.3"
+            },
+            {
+              "id": "PipingNetworkSegment-8/connections/1",
+              "source": {
+                "id": "SpringLoadedGlobeSafetyValve-1",
+                "name": "SV 104.01",
+                "type": "SpringLoadedGlobeSafetyValve"
+              },
+              "target": {
+                "id": "Tank-1",
+                "name": "T4750",
+                "type": "Tank"
+              },
+              "relationship": "piping",
+              "connection_type": "pipe",
+              "properties": {
+                "segment_id": "PipingNetworkSegment-8",
+                "fluidCode": "MNc",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S2",
+                "lineNumber": "47125"
+              },
+              "target_nozzle": {
+                "id": "Nozzle-8",
+                "sub_tag": "N5"
+              },
+              "provenance": {
+                "derived_from": "conceptual_graph",
+                "present_in_conceptual_graph": true,
+                "source_object_ids": [
+                  "PipingNetworkSegment-8/connections/1",
+                  "PipingNetworkSegment-8",
+                  "PipingNetworkSystem-5"
+                ]
+              },
+              "flow": "source_to_target",
+              "ref": "E7.4"
+            },
+            {
+              "id": "PipingNetworkSegment-22/connections/1",
+              "target": {
+                "id": "TubularHeatExchanger-1",
+                "name": "H1008",
+                "type": "TubularHeatExchanger"
+              },
+              "relationship": "piping",
+              "connection_type": "open_end",
+              "properties": {
+                "segment_id": "PipingNetworkSegment-22",
+                "fluidCode": "QSa",
+                "insulationThickness": "80.0 mm",
+                "insulationType": "Q",
+                "lineNumber": "47140",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S1"
+              },
+              "target_nozzle": {
+                "id": "Nozzle-15",
+                "sub_tag": "N4",
+                "chamber_id": "Chamber-4"
+              },
+              "open_end": "source",
+              "provenance": {
+                "derived_from": "plant_graph",
+                "present_in_conceptual_graph": false,
+                "source_object_ids": [
+                  "PipingNetworkSegment-22/connections/1",
+                  "PipingNetworkSegment-22",
+                  "PipingNetworkSystem-10"
+                ],
+                "note": "This pipe exists in the DEXPI model but has no source item on this drawing, so pyDEXPI's conceptual graph omits it. Where it comes from is not represented."
+              },
+              "source": null,
+              "flow": "source_to_target",
+              "ref": "E7.5"
+            },
+            {
+              "id": "PipingNetworkSegment-23/connections/2",
+              "source": {
+                "id": "GlobeValve-3",
+                "name": "GlobeValve 47141/C1",
+                "type": "GlobeValve"
+              },
+              "relationship": "piping",
+              "connection_type": "open_end",
+              "properties": {
+                "segment_id": "PipingNetworkSegment-23",
+                "fluidCode": "QSb",
+                "insulationThickness": "80.0 mm",
+                "insulationType": "Q",
+                "lineNumber": "47141",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S1"
+              },
+              "open_end": "target",
+              "provenance": {
+                "derived_from": "plant_graph",
+                "present_in_conceptual_graph": false,
+                "source_object_ids": [
+                  "PipingNetworkSegment-23/connections/2",
+                  "PipingNetworkSegment-23",
+                  "PipingNetworkSystem-11"
+                ],
+                "note": "This pipe exists in the DEXPI model but has no target item on this drawing, so pyDEXPI's conceptual graph omits it. Where it leads is not represented."
+              },
+              "target": null,
+              "flow": "source_to_target",
+              "ref": "E7.6"
+            }
+          ],
+          "paths": [],
+          "boundaries": [
+            {
+              "type": "chamber_boundary",
+              "equipment": "TubularHeatExchanger-1",
+              "entered_chamber": "Chamber-3",
+              "blocked_chamber": "Chamber-4",
+              "blocked_connection": "PipingNetworkSegment-23/connections/1",
+              "direction": "both",
+              "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)",
+              "ref": "E7.7"
+            },
+            {
+              "type": "chamber_boundary",
+              "equipment": "TubularHeatExchanger-1",
+              "entered_chamber": "Chamber-4",
+              "blocked_chamber": "Chamber-3",
+              "blocked_connection": "PipingNetworkSegment-19/connections/1",
+              "direction": "both",
+              "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)",
+              "ref": "E7.8"
+            },
+            {
+              "type": "chamber_boundary",
+              "equipment": "TubularHeatExchanger-1",
+              "entered_chamber": "Chamber-4",
+              "blocked_chamber": "Chamber-3",
+              "blocked_connection": "PipingNetworkSegment-15/connections/1",
+              "direction": "both",
+              "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)",
+              "ref": "E7.9"
+            }
+          ],
+          "properties": {},
+          "derived": [],
+          "evidence": [
+            {
+              "kind": "path",
+              "id": "TubularHeatExchanger-1->SpringLoadedGlobeSafetyValve-1",
+              "fact": {
+                "entities": [
+                  "TubularHeatExchanger-1",
+                  "GlobeValve-1",
+                  "Tank-1",
+                  "SpringLoadedGlobeSafetyValve-1"
+                ],
+                "connections": [
+                  "PipingNetworkSegment-19/connections/1",
+                  "PipingNetworkSegment-19/connections/2",
+                  "PipingNetworkSegment-8/connections/1"
+                ],
+                "distance": 3
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-19/connections/1",
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-8/connections/1"
+              ]
+            },
+            {
+              "kind": "connection",
+              "id": "PipingNetworkSegment-19/connections/1",
+              "fact": {
+                "source": "TubularHeatExchanger-1",
+                "target": "GlobeValve-1",
+                "relationship": "piping",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-19",
+                "fluidCode": "MNc",
+                "insulationThickness": "80.0 mm",
+                "insulationType": "Q",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S1",
+                "lineNumber": "47127"
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-19/connections/1",
+                "PipingNetworkSegment-19",
+                "PipingNetworkSystem-7"
+              ]
+            },
+            {
+              "kind": "connection",
+              "id": "PipingNetworkSegment-19/connections/2",
+              "fact": {
+                "source": "GlobeValve-1",
+                "target": "Tank-1",
+                "relationship": "piping",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-19",
+                "fluidCode": "MNc",
+                "insulationThickness": "80.0 mm",
+                "insulationType": "Q",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S1",
+                "lineNumber": "47127"
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-19/connections/2",
+                "PipingNetworkSegment-19",
+                "PipingNetworkSystem-7"
+              ]
+            },
+            {
+              "kind": "connection",
+              "id": "PipingNetworkSegment-8/connections/1",
+              "fact": {
+                "source": "SpringLoadedGlobeSafetyValve-1",
+                "target": "Tank-1",
+                "relationship": "piping",
+                "connection_type": "pipe",
+                "segment_id": "PipingNetworkSegment-8",
+                "fluidCode": "MNc",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S2",
+                "lineNumber": "47125"
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-8/connections/1",
+                "PipingNetworkSegment-8",
+                "PipingNetworkSystem-5"
+              ]
+            },
+            {
+              "kind": "open_end",
+              "id": "PipingNetworkSegment-22/connections/1",
+              "fact": {
+                "source": null,
+                "target": "TubularHeatExchanger-1",
+                "relationship": "piping",
+                "connection_type": "open_end",
+                "segment_id": "PipingNetworkSegment-22",
+                "fluidCode": "QSa",
+                "insulationThickness": "80.0 mm",
+                "insulationType": "Q",
+                "lineNumber": "47140",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S1"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-22/connections/1",
+                "PipingNetworkSegment-22",
+                "PipingNetworkSystem-10"
+              ]
+            },
+            {
+              "kind": "open_end",
+              "id": "PipingNetworkSegment-23/connections/2",
+              "fact": {
+                "source": "GlobeValve-3",
+                "target": null,
+                "relationship": "piping",
+                "connection_type": "open_end",
+                "segment_id": "PipingNetworkSegment-23",
+                "fluidCode": "QSb",
+                "insulationThickness": "80.0 mm",
+                "insulationType": "Q",
+                "lineNumber": "47141",
+                "nominalDiameterNumericalValueRepresentation": "50",
+                "nominalDiameterRepresentation": "DN 50",
+                "nominalDiameterStandard": "DN 50 (DIN 2448)",
+                "nominalDiameterTypeRepresentation": "DN",
+                "pipingClassCode": "75HB13",
+                "primarySecondaryPipingNetworkSegment": "secondary segment",
+                "segmentNumber": "S1"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-23/connections/2",
+                "PipingNetworkSegment-23",
+                "PipingNetworkSystem-11"
+              ]
+            },
+            {
+              "kind": "boundary",
+              "id": "TubularHeatExchanger-1:Chamber-3|Chamber-4",
+              "fact": {
+                "type": "chamber_boundary",
+                "equipment": "TubularHeatExchanger-1",
+                "entered_chamber": "Chamber-3",
+                "blocked_chamber": "Chamber-4",
+                "blocked_connection": "PipingNetworkSegment-23/connections/1",
+                "direction": "both",
+                "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "TubularHeatExchanger-1",
+                "Chamber-3",
+                "Chamber-4",
+                "PipingNetworkSegment-23/connections/1"
+              ]
+            },
+            {
+              "kind": "boundary",
+              "id": "TubularHeatExchanger-1:Chamber-4|Chamber-3",
+              "fact": {
+                "type": "chamber_boundary",
+                "equipment": "TubularHeatExchanger-1",
+                "entered_chamber": "Chamber-4",
+                "blocked_chamber": "Chamber-3",
+                "blocked_connection": "PipingNetworkSegment-19/connections/1",
+                "direction": "both",
+                "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "TubularHeatExchanger-1",
+                "Chamber-4",
+                "Chamber-3",
+                "PipingNetworkSegment-19/connections/1"
+              ]
+            },
+            {
+              "kind": "boundary",
+              "id": "TubularHeatExchanger-1:Chamber-4|Chamber-3",
+              "fact": {
+                "type": "chamber_boundary",
+                "equipment": "TubularHeatExchanger-1",
+                "entered_chamber": "Chamber-4",
+                "blocked_chamber": "Chamber-3",
+                "blocked_connection": "PipingNetworkSegment-15/connections/1",
+                "direction": "both",
+                "reason": "the path entered the equipment through one chamber; the blocked connection attaches to a different chamber (another side of the equipment)"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "TubularHeatExchanger-1",
+                "Chamber-4",
+                "Chamber-3",
+                "PipingNetworkSegment-15/connections/1"
+              ]
+            }
+          ],
+          "warnings": [
+            "2 connection(s) are open-ended: the pipe exists in the DEXPI model but its other end is not represented on this drawing, so no neighbour can be stated.",
+            "Did not continue through TubularHeatExchanger-1 from Chamber-3 to Chamber-4 via PipingNetworkSegment-23/connections/1: these are separate chambers (sides) of the equipment.",
+            "Did not continue through TubularHeatExchanger-1 from Chamber-4 to Chamber-3 via PipingNetworkSegment-19/connections/1: these are separate chambers (sides) of the equipment.",
+            "Did not continue through TubularHeatExchanger-1 from Chamber-4 to Chamber-3 via PipingNetworkSegment-15/connections/1: these are separate chambers (sides) of the equipment."
+          ],
+          "meta": {
+            "visited_entities": 26,
+            "max_depth": 20,
+            "cycle_detected": false,
+            "start_is_in_cycle": false,
+            "truncated_by_max_depth": false,
+            "stopped_at": [],
+            "endpoints": [],
+            "endpoint_details": [],
+            "unexplored_beyond_max_depth": [],
+            "duration_ms": 5.29
+          },
+          "result_ref": "R7",
+          "status_ref": "E7.0"
+        }
+      ],
+      "group": null,
+      "repeat": 1,
+      "answered_at": "2026-10-07 01:08:45"
+    },
+    {
+      "question_id": "C8",
+      "question": "Map all connections for PICSA4712.02: where its measurement is taken, every hop to the final element, the final element's fail position, and the piping context of that valve.",
+      "answer": "Facts in the drawing\n- ControlledActuator-1: failAction = fail close [E3.13]\n- PipingNetworkSegment-19: lineNumber = 47127 [E3.18]\n- PipingNetworkSegment-19: nominalDiameterRepresentation = DN 50 [E3.19]\n\nDerived by graph analysis of the drawing\n- The measurement used by ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) is taken at BlindFlange 47126/C11 (BlindFlange-2) [E3.23, trace_instrumentation]\n- Signal chain: BlindFlange 47126/C11 (BlindFlange-2) [measurement point, line 47126] -> PT4712.02 (ProcessSignalGeneratingFunction-2) -> ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) -> PV4712.02 (ActuatingFunction-1) [encoded fail action: fail close] -> GlobeValve 47127/C1 (GlobeValve-1) [operated valve, line 47127] [E3.22, trace_instrumentation]",
+      "trace": [
+        {
+          "step": 1,
+          "tool": "decompose_request",
+          "input": {
+            "requested_outputs": [
+              {
+                "description": "Location where PICSA4712.02 measurement is taken",
+                "kind": "connection_or_route"
+              },
+              {
+                "description": "Sequence of hops from PICSA4712.02 to the final element",
+                "kind": "connection_or_route"
+              },
+              {
+                "description": "Fail position of the final element (valve)",
+                "kind": "property"
+              },
+              {
+                "description": "Piping context of that valve (line numbers, diameters, upstream/downstream connections)",
+                "kind": "connection_or_route"
+              }
+            ]
+          },
+          "status": "accepted",
+          "result": {
+            "status": "accepted",
+            "requested_outputs": [
+              {
+                "id": "q1",
+                "description": "Location where PICSA4712.02 measurement is taken",
+                "kind": "connection_or_route"
+              },
+              {
+                "id": "q2",
+                "description": "Sequence of hops from PICSA4712.02 to the final element",
+                "kind": "connection_or_route"
+              },
+              {
+                "id": "q3",
+                "description": "Fail position of the final element (valve)",
+                "kind": "property"
+              },
+              {
+                "id": "q4",
+                "description": "Piping context of that valve (line numbers, diameters, upstream/downstream connections)",
+                "kind": "connection_or_route"
+              }
+            ],
+            "message": "Now use the graph tools. In submit_answer, every one of these ids must be covered by cited evidence or by an unknown."
+          },
+          "duration_ms": 0.0,
+          "executed": false
+        },
+        {
+          "step": 2,
+          "tool": "find_entities",
+          "input": {
+            "entity_type": null,
+            "query": "PICSA4712.02"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R2",
+            "status_ref": "E2.0",
+            "entities": [
+              {
+                "id": "ProcessInstrumentationFunction-2",
+                "name": "ProcessInstrumentationFunction PICSA4712.02",
+                "type": "ProcessInstrumentationFunction",
+                "category": "instrumentation",
+                "identifiers": {
+                  "processInstrumentationFunctionNumber": "4712.02",
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "4712.02",
+                  "instrumentTag": "PICSA4712.02"
+                },
+                "identifier_notes": {
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-2"
+                },
+                "match_tier": "identifier",
+                "match_reason": "derived identifier instrumentTag = 'PICSA4712.02' (composed from processInstrumentationFunctionCategory + processInstrumentationFunctions + processInstrumentationFunctionNumber); not a literal field in the DEXPI file",
+                "identifier_kind": "derived_identifier",
+                "links": {
+                  "instrumentation": 2
+                },
+                "ref": "E2.1"
+              }
+            ]
+          },
+          "duration_ms": 2.9,
+          "executed": true
+        },
+        {
+          "step": 3,
+          "tool": "trace_instrumentation",
+          "input": {
+            "entity_id": "ProcessInstrumentationFunction-2"
+          },
+          "status": "success",
+          "result": {
+            "status": "success",
+            "result_ref": "R3",
+            "status_ref": "E3.0",
+            "entities": [
+              {
+                "id": "ProcessInstrumentationFunction-2",
+                "name": "ProcessInstrumentationFunction PICSA4712.02",
+                "type": "ProcessInstrumentationFunction",
+                "category": "instrumentation",
+                "identifiers": {
+                  "processInstrumentationFunctionNumber": "4712.02",
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "4712.02",
+                  "instrumentTag": "PICSA4712.02"
+                },
+                "identifier_notes": {
+                  "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-2"
+                },
+                "ref": "E3.1"
+              }
+            ],
+            "connections": [
+              {
+                "id": "MeasuringLineFunction-2",
+                "from": "ProcessSignalGeneratingFunction-2 (PT4712.02)",
+                "to": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PICSA4712.02)",
+                "type": "measuring_line",
+                "relationship": "instrumentation",
+                "ref": "E3.2",
+                "meaning": "the measurement taken by 'from' is the input of 'to'"
+              },
+              {
+                "id": "OperatedValveReference-1",
+                "from": "ActuatingFunction-1 (PV4712.02)",
+                "to": "GlobeValve-1 (GlobeValve 47127/C1)",
+                "type": "operated_valve_reference",
+                "relationship": "instrumentation",
+                "ref": "E3.3",
+                "meaning": "'from' is the actuating function that operates the valve 'to'",
+                "subTagName": "PV4712.02_YV"
+              },
+              {
+                "id": "ProcessSignalGeneratingFunction-2/sensingLocation",
+                "from": "ProcessSignalGeneratingFunction-2 (PT4712.02)",
+                "to": "BlindFlange-2 (BlindFlange 47126/C11)",
+                "type": "sensing_location",
+                "relationship": "instrumentation",
+                "ref": "E3.4",
+                "meaning": "'from' measures at 'to'"
+              },
+              {
+                "id": "SignalConveyingFunction-1",
+                "from": "ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PICSA4712.02)",
+                "to": "ActuatingFunction-1 (PV4712.02)",
+                "type": "signal_line",
+                "relationship": "instrumentation",
+                "ref": "E3.5",
+                "meaning": "'from' sends its control signal to 'to'"
+              }
+            ],
+            "properties": {
+              "ProcessInstrumentationFunction-2": {
+                "found": [
+                  {
+                    "ref": "E3.6",
+                    "property": "location",
+                    "value": "central"
+                  },
+                  {
+                    "ref": "E3.7",
+                    "property": "processInstrumentationFunctionCategory",
+                    "value": "P"
+                  },
+                  {
+                    "ref": "E3.8",
+                    "property": "processInstrumentationFunctionNumber",
+                    "value": "4712.02"
+                  },
+                  {
+                    "ref": "E3.9",
+                    "property": "processInstrumentationFunctions",
+                    "value": "ICSA"
+                  },
+                  {
+                    "ref": "E3.10",
+                    "property": "instrumentationLoopFunctionNumber",
+                    "value": "4712.02",
+                    "on": "InstrumentationLoopFunction-2",
+                    "scope": "child:InstrumentationLoopFunction"
+                  }
+                ],
+                "missing": []
+              },
+              "ActuatingFunction-1": {
+                "found": [
+                  {
+                    "ref": "E3.11",
+                    "property": "actuatingFunctionNumber",
+                    "value": "PV4712.02"
+                  },
+                  {
+                    "ref": "E3.12",
+                    "property": "deviceTypeName",
+                    "value": "general",
+                    "on": "ControlledActuator-1",
+                    "scope": "child:ControlledActuator"
+                  },
+                  {
+                    "ref": "E3.13",
+                    "property": "failAction",
+                    "value": "fail close",
+                    "on": "ControlledActuator-1",
+                    "scope": "child:ControlledActuator"
+                  },
+                  {
+                    "ref": "E3.14",
+                    "property": "failActionRepresentation",
+                    "value": "F.C.",
+                    "on": "ControlledActuator-1",
+                    "scope": "child:ControlledActuator"
+                  },
+                  {
+                    "ref": "E3.15",
+                    "property": "subTagName",
+                    "value": "PV4712.02_YC",
+                    "on": "ControlledActuator-1",
+                    "scope": "child:ControlledActuator"
+                  },
+                  {
+                    "ref": "E3.16",
+                    "property": "actuatingSystemNumber",
+                    "value": "PV4712.02",
+                    "on": "ActuatingSystem-1",
+                    "scope": "child:ActuatingSystem"
+                  }
+                ],
+                "missing": []
+              },
+              "ProcessSignalGeneratingFunction-2": {
+                "found": [
+                  {
+                    "ref": "E3.17",
+                    "property": "processSignalGeneratingFunctionNumber",
+                    "value": "PT4712.02"
+                  }
+                ],
+                "missing": []
+              },
+              "GlobeValve-1": {
+                "found": [
+                  {
+                    "ref": "E3.18",
+                    "property": "lineNumber",
+                    "value": "47127",
+                    "on": "PipingNetworkSegment-19",
+                    "scope": "owning_segment"
+                  },
+                  {
+                    "ref": "E3.19",
+                    "property": "nominalDiameterRepresentation",
+                    "value": "DN 50",
+                    "on": "PipingNetworkSegment-19",
+                    "scope": "owning_segment"
+                  }
+                ],
+                "missing": []
+              },
+              "BlindFlange-2": {
+                "found": [
+                  {
+                    "ref": "E3.20",
+                    "property": "lineNumber",
+                    "value": "47126",
+                    "on": "PipingNetworkSegment-17",
+                    "scope": "owning_segment"
+                  },
+                  {
+                    "ref": "E3.21",
+                    "property": "nominalDiameterRepresentation",
+                    "value": "DN 25",
+                    "on": "PipingNetworkSegment-17",
+                    "scope": "owning_segment"
+                  }
+                ],
+                "missing": []
+              }
+            },
+            "derived": [
+              {
+                "ref": "E3.22",
+                "predicate": "signal_chain",
+                "subject": "BlindFlange-2",
+                "object": "GlobeValve-1",
+                "qualifiers": {
+                  "elements": [
+                    "BlindFlange-2",
+                    "ProcessSignalGeneratingFunction-2",
+                    "ProcessInstrumentationFunction-2",
+                    "ActuatingFunction-1",
+                    "GlobeValve-1"
+                  ],
+                  "fail_action": "fail close"
+                },
+                "statement": "Signal chain: BlindFlange 47126/C11 (BlindFlange-2) [measurement point, line 47126] -> PT4712.02 (ProcessSignalGeneratingFunction-2) -> ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) -> PV4712.02 (ActuatingFunction-1) [encoded fail action: fail close] -> GlobeValve 47127/C1 (GlobeValve-1) [operated valve, line 47127]"
+              },
+              {
+                "ref": "E3.23",
+                "predicate": "loop_measured_at",
+                "subject": "ProcessInstrumentationFunction-2",
+                "object": "BlindFlange-2",
+                "statement": "The measurement used by ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) is taken at BlindFlange 47126/C11 (BlindFlange-2)"
+              },
+              {
+                "ref": "E3.24",
+                "predicate": "loop_acts_on",
+                "subject": "ProcessInstrumentationFunction-2",
+                "object": "GlobeValve-1",
+                "qualifiers": {
+                  "fail_action": "fail close",
+                  "via": "ActuatingFunction-1",
+                  "line": "47127"
+                },
+                "statement": "ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) acts on GlobeValve 47127/C1 (GlobeValve-1) on line 47127 through PV4712.02 (ActuatingFunction-1); encoded fail action of the actuator: fail close"
+              }
+            ],
+            "meta": {
+              "chains": 1
+            }
+          },
+          "duration_ms": 1.83,
+          "executed": true
+        },
+        {
+          "step": 4,
+          "tool": "submit_answer",
+          "input": {
+            "derived_facts": [
+              {
+                "covers": [
+                  "q1"
+                ],
+                "ref": "E3.23"
+              },
+              {
+                "covers": [
+                  "q2"
+                ],
+                "ref": "E3.22"
+              }
+            ],
+            "direct_facts": [
+              {
+                "covers": [
+                  "q3"
+                ],
+                "ref": "E3.13"
+              },
+              {
+                "covers": [
+                  "q4"
+                ],
+                "ref": "E3.18"
+              },
+              {
+                "covers": [
+                  "q4"
+                ],
+                "ref": "E3.19"
+              }
+            ],
+            "summary": null,
+            "unknowns": []
+          },
+          "status": "accepted",
+          "result": {
+            "status": "accepted"
+          },
+          "duration_ms": 0.0,
+          "executed": false
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "entity",
+          "id": "ProcessInstrumentationFunction-2",
+          "fact": {
+            "type": "ProcessInstrumentationFunction",
+            "name": "ProcessInstrumentationFunction PICSA4712.02",
+            "processInstrumentationFunctionNumber": "4712.02",
+            "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "4712.02",
+            "instrumentTag": "PICSA4712.02"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "MeasuringLineFunction-2",
+          "fact": {
+            "source": "ProcessSignalGeneratingFunction-2",
+            "target": "ProcessInstrumentationFunction-2",
+            "relationship": "instrumentation",
+            "connection_type": "measuring_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "MeasuringLineFunction-2",
+            "ProcessSignalGeneratingFunction-2",
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "OperatedValveReference-1",
+          "fact": {
+            "source": "ActuatingFunction-1",
+            "target": "GlobeValve-1",
+            "relationship": "instrumentation",
+            "connection_type": "operated_valve_reference",
+            "subTagName": "PV4712.02_YV"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "OperatedValveReference-1",
+            "ActuatingFunction-1",
+            "GlobeValve-1"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "ProcessSignalGeneratingFunction-2/sensingLocation",
+          "fact": {
+            "source": "ProcessSignalGeneratingFunction-2",
+            "target": "BlindFlange-2",
+            "relationship": "instrumentation",
+            "connection_type": "sensing_location"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "ProcessSignalGeneratingFunction-2",
+            "BlindFlange-2"
+          ]
+        },
+        {
+          "kind": "connection",
+          "id": "SignalConveyingFunction-1",
+          "fact": {
+            "source": "ProcessInstrumentationFunction-2",
+            "target": "ActuatingFunction-1",
+            "relationship": "instrumentation",
+            "connection_type": "signal_line"
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "SignalConveyingFunction-1",
+            "ProcessInstrumentationFunction-2",
+            "ActuatingFunction-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessInstrumentationFunction-2.location",
+          "fact": {
+            "object_id": "ProcessInstrumentationFunction-2",
+            "property": "location",
+            "value": "central",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessInstrumentationFunction-2.processInstrumentationFunctionCategory",
+          "fact": {
+            "object_id": "ProcessInstrumentationFunction-2",
+            "property": "processInstrumentationFunctionCategory",
+            "value": "P",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessInstrumentationFunction-2.processInstrumentationFunctionNumber",
+          "fact": {
+            "object_id": "ProcessInstrumentationFunction-2",
+            "property": "processInstrumentationFunctionNumber",
+            "value": "4712.02",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessInstrumentationFunction-2.processInstrumentationFunctions",
+          "fact": {
+            "object_id": "ProcessInstrumentationFunction-2",
+            "property": "processInstrumentationFunctions",
+            "value": "ICSA",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessInstrumentationFunction-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "InstrumentationLoopFunction-2.instrumentationLoopFunctionNumber",
+          "fact": {
+            "object_id": "InstrumentationLoopFunction-2",
+            "property": "instrumentationLoopFunctionNumber",
+            "value": "4712.02",
+            "scope": "child:InstrumentationLoopFunction"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "InstrumentationLoopFunction-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ActuatingFunction-1.actuatingFunctionNumber",
+          "fact": {
+            "object_id": "ActuatingFunction-1",
+            "property": "actuatingFunctionNumber",
+            "value": "PV4712.02",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ActuatingFunction-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ControlledActuator-1.deviceTypeName",
+          "fact": {
+            "object_id": "ControlledActuator-1",
+            "property": "deviceTypeName",
+            "value": "general",
+            "scope": "child:ControlledActuator"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ControlledActuator-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ControlledActuator-1.failAction",
+          "fact": {
+            "object_id": "ControlledActuator-1",
+            "property": "failAction",
+            "value": "fail close",
+            "scope": "child:ControlledActuator"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ControlledActuator-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ControlledActuator-1.failActionRepresentation",
+          "fact": {
+            "object_id": "ControlledActuator-1",
+            "property": "failActionRepresentation",
+            "value": "F.C.",
+            "scope": "child:ControlledActuator"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ControlledActuator-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ControlledActuator-1.subTagName",
+          "fact": {
+            "object_id": "ControlledActuator-1",
+            "property": "subTagName",
+            "value": "PV4712.02_YC",
+            "scope": "child:ControlledActuator"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ControlledActuator-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ActuatingSystem-1.actuatingSystemNumber",
+          "fact": {
+            "object_id": "ActuatingSystem-1",
+            "property": "actuatingSystemNumber",
+            "value": "PV4712.02",
+            "scope": "child:ActuatingSystem"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ActuatingSystem-1"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "ProcessSignalGeneratingFunction-2.processSignalGeneratingFunctionNumber",
+          "fact": {
+            "object_id": "ProcessSignalGeneratingFunction-2",
+            "property": "processSignalGeneratingFunctionNumber",
+            "value": "PT4712.02",
+            "scope": "own"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "ProcessSignalGeneratingFunction-2"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSegment-19.lineNumber",
+          "fact": {
+            "object_id": "PipingNetworkSegment-19",
+            "property": "lineNumber",
+            "value": "47127",
+            "scope": "owning_segment"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-19"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSegment-19.nominalDiameterRepresentation",
+          "fact": {
+            "object_id": "PipingNetworkSegment-19",
+            "property": "nominalDiameterRepresentation",
+            "value": "DN 50",
+            "scope": "owning_segment"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-19"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSegment-17.lineNumber",
+          "fact": {
+            "object_id": "PipingNetworkSegment-17",
+            "property": "lineNumber",
+            "value": "47126",
+            "scope": "owning_segment"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-17"
+          ]
+        },
+        {
+          "kind": "property",
+          "id": "PipingNetworkSegment-17.nominalDiameterRepresentation",
+          "fact": {
+            "object_id": "PipingNetworkSegment-17",
+            "property": "nominalDiameterRepresentation",
+            "value": "DN 25",
+            "scope": "owning_segment"
+          },
+          "source_graph": "plant_graph",
+          "source_object_ids": [
+            "PipingNetworkSegment-17"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "trace_instrumentation:signal_chain:BlindFlange-2:GlobeValve-1",
+          "fact": {
+            "predicate": "signal_chain",
+            "subject": "BlindFlange-2",
+            "object": "GlobeValve-1",
+            "qualifiers": {
+              "elements": [
+                "BlindFlange-2",
+                "ProcessSignalGeneratingFunction-2",
+                "ProcessInstrumentationFunction-2",
+                "ActuatingFunction-1",
+                "GlobeValve-1"
+              ],
+              "fail_action": "fail close"
+            },
+            "operation": "trace_instrumentation",
+            "parameters": {
+              "entity_id": "ProcessInstrumentationFunction-2"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "BlindFlange-2",
+            "ProcessSignalGeneratingFunction-2",
+            "ProcessInstrumentationFunction-2",
+            "ActuatingFunction-1",
+            "GlobeValve-1",
+            "ProcessSignalGeneratingFunction-2/sensingLocation",
+            "MeasuringLineFunction-2",
+            "SignalConveyingFunction-1",
+            "OperatedValveReference-1"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "trace_instrumentation:loop_measured_at:ProcessInstrumentationFunction-2:BlindFlange-2",
+          "fact": {
+            "predicate": "loop_measured_at",
+            "subject": "ProcessInstrumentationFunction-2",
+            "object": "BlindFlange-2",
+            "qualifiers": {},
+            "operation": "trace_instrumentation",
+            "parameters": {
+              "entity_id": "ProcessInstrumentationFunction-2"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "BlindFlange-2",
+            "ProcessSignalGeneratingFunction-2",
+            "ProcessInstrumentationFunction-2",
+            "ActuatingFunction-1",
+            "GlobeValve-1",
+            "ProcessSignalGeneratingFunction-2/sensingLocation",
+            "MeasuringLineFunction-2",
+            "SignalConveyingFunction-1",
+            "OperatedValveReference-1"
+          ]
+        },
+        {
+          "kind": "derived",
+          "id": "trace_instrumentation:loop_acts_on:ProcessInstrumentationFunction-2:GlobeValve-1",
+          "fact": {
+            "predicate": "loop_acts_on",
+            "subject": "ProcessInstrumentationFunction-2",
+            "object": "GlobeValve-1",
+            "qualifiers": {
+              "fail_action": "fail close",
+              "via": "ActuatingFunction-1",
+              "line": "47127"
+            },
+            "operation": "trace_instrumentation",
+            "parameters": {
+              "entity_id": "ProcessInstrumentationFunction-2"
+            }
+          },
+          "source_graph": "conceptual_graph",
+          "source_object_ids": [
+            "BlindFlange-2",
+            "ProcessSignalGeneratingFunction-2",
+            "ProcessInstrumentationFunction-2",
+            "ActuatingFunction-1",
+            "GlobeValve-1",
+            "ProcessSignalGeneratingFunction-2/sensingLocation",
+            "MeasuringLineFunction-2",
+            "SignalConveyingFunction-1",
+            "OperatedValveReference-1"
+          ]
+        }
+      ],
+      "resolved_entities": {
+        "ProcessInstrumentationFunction-2": {
+          "name": "ProcessInstrumentationFunction PICSA4712.02",
+          "type": "ProcessInstrumentationFunction",
+          "step": 2
+        }
+      },
+      "grounding_status": "grounded",
+      "grounding_level": "grounded",
+      "claims": [
+        {
+          "text": "ControlledActuator-1: failAction = fail close [E3.13]",
+          "refs": [
+            "E3.13"
+          ],
+          "facts": [
+            {
+              "predicate": "has_property",
+              "subject": "ControlledActuator-1",
+              "object": null,
+              "value": "fail close",
+              "qualifiers": {
+                "property": "failAction",
+                "owner": "ActuatingFunction-1"
+              }
+            }
+          ]
+        },
+        {
+          "text": "PipingNetworkSegment-19: lineNumber = 47127 [E3.18]",
+          "refs": [
+            "E3.18"
+          ],
+          "facts": [
+            {
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-19",
+              "object": null,
+              "value": "47127",
+              "qualifiers": {
+                "property": "lineNumber",
+                "owner": "GlobeValve-1"
+              }
+            }
+          ]
+        },
+        {
+          "text": "PipingNetworkSegment-19: nominalDiameterRepresentation = DN 50 [E3.19]",
+          "refs": [
+            "E3.19"
+          ],
+          "facts": [
+            {
+              "predicate": "has_property",
+              "subject": "PipingNetworkSegment-19",
+              "object": null,
+              "value": "DN 50",
+              "qualifiers": {
+                "property": "nominalDiameterRepresentation",
+                "owner": "GlobeValve-1"
+              }
+            }
+          ]
+        },
+        {
+          "text": "The measurement used by ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) is taken at BlindFlange 47126/C11 (BlindFlange-2) [E3.23]",
+          "refs": [
+            "E3.23"
+          ],
+          "facts": [
+            {
+              "predicate": "loop_measured_at",
+              "subject": "ProcessInstrumentationFunction-2",
+              "object": "BlindFlange-2",
+              "value": null,
+              "qualifiers": {}
+            }
+          ]
+        },
+        {
+          "text": "Signal chain: BlindFlange 47126/C11 (BlindFlange-2) [measurement point, line 47126] -> PT4712.02 (ProcessSignalGeneratingFunction-2) -> ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) -> PV4712.02 (ActuatingFunction-1) [encoded fail action: fail close] -> GlobeValve 47127/C1 (GlobeValve-1) [operated valve, line 47127] [E3.22]",
+          "refs": [
+            "E3.22"
+          ],
+          "facts": [
+            {
+              "predicate": "signal_chain",
+              "subject": "BlindFlange-2",
+              "object": "GlobeValve-1",
+              "value": null,
+              "qualifiers": {
+                "elements": [
+                  "BlindFlange-2",
+                  "ProcessSignalGeneratingFunction-2",
+                  "ProcessInstrumentationFunction-2",
+                  "ActuatingFunction-1",
+                  "GlobeValve-1"
+                ],
+                "fail_action": "fail close"
+              }
+            }
+          ]
+        }
+      ],
+      "rejected_claims": [],
+      "grounding_gaps": [],
+      "truncated_outputs": 0,
+      "claims_checked": 5,
+      "unsupported_claims": [],
+      "rejected_drafts": [],
+      "iterations": 3,
+      "usage": {
+        "llm_calls": 4,
+        "prompt_tokens": 16203,
+        "completion_tokens": 1089,
+        "total_tokens": 17292
+      },
+      "duration_ms": 106111.0,
+      "answer_mode": "structured",
+      "submission": {
+        "direct_facts": [
+          {
+            "ref": "E3.13",
+            "text": "ControlledActuator-1: failAction = fail close",
+            "facts": [
+              {
+                "p": "has_property",
+                "s": "ControlledActuator-1",
+                "v": "fail close",
+                "q": {
+                  "property": "failAction",
+                  "owner": "ActuatingFunction-1"
+                }
+              }
+            ],
+            "covers": [
+              "q3"
+            ]
+          },
+          {
+            "ref": "E3.18",
+            "text": "PipingNetworkSegment-19: lineNumber = 47127",
+            "facts": [
+              {
+                "p": "has_property",
+                "s": "PipingNetworkSegment-19",
+                "v": "47127",
+                "q": {
+                  "property": "lineNumber",
+                  "owner": "GlobeValve-1"
+                }
+              }
+            ],
+            "covers": [
+              "q4"
+            ]
+          },
+          {
+            "ref": "E3.19",
+            "text": "PipingNetworkSegment-19: nominalDiameterRepresentation = DN 50",
+            "facts": [
+              {
+                "p": "has_property",
+                "s": "PipingNetworkSegment-19",
+                "v": "DN 50",
+                "q": {
+                  "property": "nominalDiameterRepresentation",
+                  "owner": "GlobeValve-1"
+                }
+              }
+            ],
+            "covers": [
+              "q4"
+            ]
+          }
+        ],
+        "derived_facts": [
+          {
+            "ref": "E3.23",
+            "text": "The measurement used by ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) is taken at BlindFlange 47126/C11 (BlindFlange-2)",
+            "facts": [
+              {
+                "p": "loop_measured_at",
+                "s": "ProcessInstrumentationFunction-2",
+                "o": "BlindFlange-2"
+              }
+            ],
+            "covers": [
+              "q1"
+            ],
+            "operation": "trace_instrumentation"
+          },
+          {
+            "ref": "E3.22",
+            "text": "Signal chain: BlindFlange 47126/C11 (BlindFlange-2) [measurement point, line 47126] -> PT4712.02 (ProcessSignalGeneratingFunction-2) -> ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) -> PV4712.02 (ActuatingFunction-1) [encoded fail action: fail close] -> GlobeValve 47127/C1 (GlobeValve-1) [operated valve, line 47127]",
+            "facts": [
+              {
+                "p": "signal_chain",
+                "s": "BlindFlange-2",
+                "o": "GlobeValve-1",
+                "q": {
+                  "elements": [
+                    "BlindFlange-2",
+                    "ProcessSignalGeneratingFunction-2",
+                    "ProcessInstrumentationFunction-2",
+                    "ActuatingFunction-1",
+                    "GlobeValve-1"
+                  ],
+                  "fail_action": "fail close"
+                }
+              }
+            ],
+            "covers": [
+              "q2"
+            ],
+            "operation": "trace_instrumentation"
+          }
+        ],
+        "unknowns": [],
+        "requested_outputs": [
+          {
+            "id": "q1",
+            "description": "Location where PICSA4712.02 measurement is taken",
+            "kind": "connection_or_route",
+            "covered_by": {
+              "direct": [],
+              "derived": [
+                "E3.23"
+              ],
+              "unknown": []
+            }
+          },
+          {
+            "id": "q2",
+            "description": "Sequence of hops from PICSA4712.02 to the final element",
+            "kind": "connection_or_route",
+            "covered_by": {
+              "direct": [],
+              "derived": [
+                "E3.22"
+              ],
+              "unknown": []
+            }
+          },
+          {
+            "id": "q3",
+            "description": "Fail position of the final element (valve)",
+            "kind": "property",
+            "covered_by": {
+              "direct": [
+                "E3.13"
+              ],
+              "derived": [],
+              "unknown": []
+            }
+          },
+          {
+            "id": "q4",
+            "description": "Piping context of that valve (line numbers, diameters, upstream/downstream connections)",
+            "kind": "connection_or_route",
+            "covered_by": {
+              "direct": [
+                "E3.18",
+                "E3.19"
+              ],
+              "derived": [],
+              "unknown": []
+            }
+          }
+        ],
+        "model_summary": null,
+        "notes": []
+      },
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "description": "Location where PICSA4712.02 measurement is taken",
+          "kind": "connection_or_route"
+        },
+        {
+          "id": "q2",
+          "description": "Sequence of hops from PICSA4712.02 to the final element",
+          "kind": "connection_or_route"
+        },
+        {
+          "id": "q3",
+          "description": "Fail position of the final element (valve)",
+          "kind": "property"
+        },
+        {
+          "id": "q4",
+          "description": "Piping context of that valve (line numbers, diameters, upstream/downstream connections)",
+          "kind": "connection_or_route"
+        }
+      ],
+      "tool_results": [
+        {
+          "tool": "find_entities",
+          "status": "success",
+          "input": {
+            "query": "PICSA4712.02",
+            "entity_type": null
+          },
+          "entities": [
+            {
+              "id": "ProcessInstrumentationFunction-2",
+              "name": "ProcessInstrumentationFunction PICSA4712.02",
+              "type": "ProcessInstrumentationFunction",
+              "category": "instrumentation",
+              "identifiers": {
+                "processInstrumentationFunctionNumber": "4712.02",
+                "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "4712.02",
+                "instrumentTag": "PICSA4712.02"
+              },
+              "identifier_notes": {
+                "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-2",
+                "instrumentTag": "derived_identifier: composed from processInstrumentationFunctionCategory + processInstrumentationFunctions + processInstrumentationFunctionNumber"
+              },
+              "match_tier": "identifier",
+              "confidence": 0.95,
+              "match_reason": "derived identifier instrumentTag = 'PICSA4712.02' (composed from processInstrumentationFunctionCategory + processInstrumentationFunctions + processInstrumentationFunctionNumber); not a literal field in the DEXPI file",
+              "identifier_kind": "derived_identifier",
+              "links": {
+                "instrumentation": 2
+              },
+              "ref": "E2.1"
+            }
+          ],
+          "connections": [],
+          "paths": [],
+          "boundaries": [],
+          "properties": {},
+          "derived": [],
+          "resolution": {
+            "status": "unique",
+            "ambiguous": false,
+            "match_count": 1,
+            "suggestions": []
+          },
+          "evidence": [
+            {
+              "kind": "entity",
+              "id": "ProcessInstrumentationFunction-2",
+              "fact": {
+                "type": "ProcessInstrumentationFunction",
+                "name": "ProcessInstrumentationFunction PICSA4712.02",
+                "processInstrumentationFunctionNumber": "4712.02",
+                "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "4712.02",
+                "instrumentTag": "PICSA4712.02"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ]
+            }
+          ],
+          "warnings": [],
+          "meta": {
+            "duration_ms": 2.9
+          },
+          "result_ref": "R2",
+          "status_ref": "E2.0"
+        },
+        {
+          "tool": "trace_instrumentation",
+          "status": "success",
+          "input": {
+            "entity_id": "ProcessInstrumentationFunction-2"
+          },
+          "entities": [
+            {
+              "id": "ProcessInstrumentationFunction-2",
+              "name": "ProcessInstrumentationFunction PICSA4712.02",
+              "type": "ProcessInstrumentationFunction",
+              "category": "instrumentation",
+              "identifiers": {
+                "processInstrumentationFunctionNumber": "4712.02",
+                "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "4712.02",
+                "instrumentTag": "PICSA4712.02"
+              },
+              "identifier_notes": {
+                "InstrumentationLoopFunction.instrumentationLoopFunctionNumber": "alias: attribute instrumentationLoopFunctionNumber of the associated InstrumentationLoopFunction InstrumentationLoopFunction-2",
+                "instrumentTag": "derived_identifier: composed from processInstrumentationFunctionCategory + processInstrumentationFunctions + processInstrumentationFunctionNumber"
+              },
+              "ref": "E3.1"
+            }
+          ],
+          "connections": [
+            {
+              "id": "MeasuringLineFunction-2",
+              "source": {
+                "id": "ProcessSignalGeneratingFunction-2",
+                "name": "PT4712.02",
+                "type": "ProcessSignalGeneratingFunction"
+              },
+              "target": {
+                "id": "ProcessInstrumentationFunction-2",
+                "name": "ProcessInstrumentationFunction PICSA4712.02",
+                "type": "ProcessInstrumentationFunction"
+              },
+              "relationship": "instrumentation",
+              "connection_type": "measuring_line",
+              "properties": {},
+              "provenance": {
+                "derived_from": "conceptual_graph",
+                "present_in_conceptual_graph": true,
+                "source_object_ids": [
+                  "MeasuringLineFunction-2",
+                  "ProcessSignalGeneratingFunction-2",
+                  "ProcessInstrumentationFunction-2"
+                ]
+              },
+              "ref": "E3.2"
+            },
+            {
+              "id": "OperatedValveReference-1",
+              "source": {
+                "id": "ActuatingFunction-1",
+                "name": "PV4712.02",
+                "type": "ActuatingFunction"
+              },
+              "target": {
+                "id": "GlobeValve-1",
+                "name": "GlobeValve 47127/C1",
+                "type": "GlobeValve"
+              },
+              "relationship": "instrumentation",
+              "connection_type": "operated_valve_reference",
+              "properties": {
+                "subTagName": "PV4712.02_YV"
+              },
+              "provenance": {
+                "derived_from": "conceptual_graph",
+                "present_in_conceptual_graph": true,
+                "source_object_ids": [
+                  "OperatedValveReference-1",
+                  "ActuatingFunction-1",
+                  "GlobeValve-1"
+                ]
+              },
+              "ref": "E3.3"
+            },
+            {
+              "id": "ProcessSignalGeneratingFunction-2/sensingLocation",
+              "source": {
+                "id": "ProcessSignalGeneratingFunction-2",
+                "name": "PT4712.02",
+                "type": "ProcessSignalGeneratingFunction"
+              },
+              "target": {
+                "id": "BlindFlange-2",
+                "name": "BlindFlange 47126/C11",
+                "type": "BlindFlange"
+              },
+              "relationship": "instrumentation",
+              "connection_type": "sensing_location",
+              "properties": {},
+              "provenance": {
+                "derived_from": "conceptual_graph",
+                "present_in_conceptual_graph": true,
+                "source_object_ids": [
+                  "ProcessSignalGeneratingFunction-2",
+                  "BlindFlange-2"
+                ]
+              },
+              "ref": "E3.4"
+            },
+            {
+              "id": "SignalConveyingFunction-1",
+              "source": {
+                "id": "ProcessInstrumentationFunction-2",
+                "name": "ProcessInstrumentationFunction PICSA4712.02",
+                "type": "ProcessInstrumentationFunction"
+              },
+              "target": {
+                "id": "ActuatingFunction-1",
+                "name": "PV4712.02",
+                "type": "ActuatingFunction"
+              },
+              "relationship": "instrumentation",
+              "connection_type": "signal_line",
+              "properties": {},
+              "provenance": {
+                "derived_from": "conceptual_graph",
+                "present_in_conceptual_graph": true,
+                "source_object_ids": [
+                  "SignalConveyingFunction-1",
+                  "ProcessInstrumentationFunction-2",
+                  "ActuatingFunction-1"
+                ]
+              },
+              "ref": "E3.5"
+            }
+          ],
+          "paths": [],
+          "boundaries": [],
+          "properties": {
+            "ProcessInstrumentationFunction-2": {
+              "found": [
+                {
+                  "property": "location",
+                  "value": "central",
+                  "source_object_id": "ProcessInstrumentationFunction-2",
+                  "scope": "own",
+                  "ref": "E3.6"
+                },
+                {
+                  "property": "processInstrumentationFunctionCategory",
+                  "value": "P",
+                  "source_object_id": "ProcessInstrumentationFunction-2",
+                  "scope": "own",
+                  "ref": "E3.7"
+                },
+                {
+                  "property": "processInstrumentationFunctionNumber",
+                  "value": "4712.02",
+                  "source_object_id": "ProcessInstrumentationFunction-2",
+                  "scope": "own",
+                  "ref": "E3.8"
+                },
+                {
+                  "property": "processInstrumentationFunctions",
+                  "value": "ICSA",
+                  "source_object_id": "ProcessInstrumentationFunction-2",
+                  "scope": "own",
+                  "ref": "E3.9"
+                },
+                {
+                  "property": "instrumentationLoopFunctionNumber",
+                  "value": "4712.02",
+                  "source_object_id": "InstrumentationLoopFunction-2",
+                  "scope": "child:InstrumentationLoopFunction",
+                  "ref": "E3.10"
+                }
+              ],
+              "missing": [],
+              "available": [
+                "instrumentationLoopFunctionNumber",
+                "location",
+                "processInstrumentationFunctionCategory",
+                "processInstrumentationFunctionNumber",
+                "processInstrumentationFunctions"
+              ]
+            },
+            "ActuatingFunction-1": {
+              "found": [
+                {
+                  "property": "actuatingFunctionNumber",
+                  "value": "PV4712.02",
+                  "source_object_id": "ActuatingFunction-1",
+                  "scope": "own",
+                  "ref": "E3.11"
+                },
+                {
+                  "property": "deviceTypeName",
+                  "value": "general",
+                  "source_object_id": "ControlledActuator-1",
+                  "scope": "child:ControlledActuator",
+                  "ref": "E3.12"
+                },
+                {
+                  "property": "failAction",
+                  "value": "fail close",
+                  "source_object_id": "ControlledActuator-1",
+                  "scope": "child:ControlledActuator",
+                  "ref": "E3.13"
+                },
+                {
+                  "property": "failActionRepresentation",
+                  "value": "F.C.",
+                  "source_object_id": "ControlledActuator-1",
+                  "scope": "child:ControlledActuator",
+                  "ref": "E3.14"
+                },
+                {
+                  "property": "subTagName",
+                  "value": "PV4712.02_YC",
+                  "source_object_id": "ControlledActuator-1",
+                  "scope": "child:ControlledActuator",
+                  "ref": "E3.15"
+                },
+                {
+                  "property": "actuatingSystemNumber",
+                  "value": "PV4712.02",
+                  "source_object_id": "ActuatingSystem-1",
+                  "scope": "child:ActuatingSystem",
+                  "ref": "E3.16"
+                }
+              ],
+              "missing": [],
+              "available": [
+                "actuatingFunctionNumber",
+                "actuatingSystemNumber",
+                "deviceTypeName",
+                "failAction",
+                "failActionRepresentation",
+                "subTagName"
+              ]
+            },
+            "ProcessSignalGeneratingFunction-2": {
+              "found": [
+                {
+                  "property": "processSignalGeneratingFunctionNumber",
+                  "value": "PT4712.02",
+                  "source_object_id": "ProcessSignalGeneratingFunction-2",
+                  "scope": "own",
+                  "ref": "E3.17"
+                }
+              ],
+              "missing": [],
+              "available": [
+                "processSignalGeneratingFunctionNumber"
+              ]
+            },
+            "GlobeValve-1": {
+              "found": [
+                {
+                  "property": "lineNumber",
+                  "value": "47127",
+                  "source_object_id": "PipingNetworkSegment-19",
+                  "scope": "owning_segment",
+                  "ref": "E3.18"
+                },
+                {
+                  "property": "nominalDiameterRepresentation",
+                  "value": "DN 50",
+                  "source_object_id": "PipingNetworkSegment-19",
+                  "scope": "owning_segment",
+                  "ref": "E3.19"
+                }
+              ],
+              "missing": [],
+              "available": [
+                "lineNumber",
+                "nominalDiameterRepresentation"
+              ]
+            },
+            "BlindFlange-2": {
+              "found": [
+                {
+                  "property": "lineNumber",
+                  "value": "47126",
+                  "source_object_id": "PipingNetworkSegment-17",
+                  "scope": "owning_segment",
+                  "ref": "E3.20"
+                },
+                {
+                  "property": "nominalDiameterRepresentation",
+                  "value": "DN 25",
+                  "source_object_id": "PipingNetworkSegment-17",
+                  "scope": "owning_segment",
+                  "ref": "E3.21"
+                }
+              ],
+              "missing": [],
+              "available": [
+                "lineNumber",
+                "nominalDiameterRepresentation"
+              ]
+            }
+          },
+          "derived": [
+            {
+              "predicate": "signal_chain",
+              "subject": "BlindFlange-2",
+              "object": "GlobeValve-1",
+              "qualifiers": {
+                "elements": [
+                  "BlindFlange-2",
+                  "ProcessSignalGeneratingFunction-2",
+                  "ProcessInstrumentationFunction-2",
+                  "ActuatingFunction-1",
+                  "GlobeValve-1"
+                ],
+                "fail_action": "fail close"
+              },
+              "statement": "Signal chain: BlindFlange 47126/C11 (BlindFlange-2) [measurement point, line 47126] -> PT4712.02 (ProcessSignalGeneratingFunction-2) -> ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) -> PV4712.02 (ActuatingFunction-1) [encoded fail action: fail close] -> GlobeValve 47127/C1 (GlobeValve-1) [operated valve, line 47127]",
+              "operation": "trace_instrumentation",
+              "parameters": {
+                "entity_id": "ProcessInstrumentationFunction-2"
+              },
+              "source_entities": [
+                "BlindFlange-2",
+                "ProcessSignalGeneratingFunction-2",
+                "ProcessInstrumentationFunction-2",
+                "ActuatingFunction-1",
+                "GlobeValve-1"
+              ],
+              "source_connections": [
+                "ProcessSignalGeneratingFunction-2/sensingLocation",
+                "MeasuringLineFunction-2",
+                "SignalConveyingFunction-1",
+                "OperatedValveReference-1"
+              ],
+              "ref": "E3.22"
+            },
+            {
+              "predicate": "loop_measured_at",
+              "subject": "ProcessInstrumentationFunction-2",
+              "object": "BlindFlange-2",
+              "qualifiers": {},
+              "statement": "The measurement used by ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) is taken at BlindFlange 47126/C11 (BlindFlange-2)",
+              "operation": "trace_instrumentation",
+              "parameters": {
+                "entity_id": "ProcessInstrumentationFunction-2"
+              },
+              "source_entities": [
+                "BlindFlange-2",
+                "ProcessSignalGeneratingFunction-2",
+                "ProcessInstrumentationFunction-2",
+                "ActuatingFunction-1",
+                "GlobeValve-1"
+              ],
+              "source_connections": [
+                "ProcessSignalGeneratingFunction-2/sensingLocation",
+                "MeasuringLineFunction-2",
+                "SignalConveyingFunction-1",
+                "OperatedValveReference-1"
+              ],
+              "ref": "E3.23"
+            },
+            {
+              "predicate": "loop_acts_on",
+              "subject": "ProcessInstrumentationFunction-2",
+              "object": "GlobeValve-1",
+              "qualifiers": {
+                "fail_action": "fail close",
+                "via": "ActuatingFunction-1",
+                "line": "47127"
+              },
+              "statement": "ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) acts on GlobeValve 47127/C1 (GlobeValve-1) on line 47127 through PV4712.02 (ActuatingFunction-1); encoded fail action of the actuator: fail close",
+              "operation": "trace_instrumentation",
+              "parameters": {
+                "entity_id": "ProcessInstrumentationFunction-2"
+              },
+              "source_entities": [
+                "BlindFlange-2",
+                "ProcessSignalGeneratingFunction-2",
+                "ProcessInstrumentationFunction-2",
+                "ActuatingFunction-1",
+                "GlobeValve-1"
+              ],
+              "source_connections": [
+                "ProcessSignalGeneratingFunction-2/sensingLocation",
+                "MeasuringLineFunction-2",
+                "SignalConveyingFunction-1",
+                "OperatedValveReference-1"
+              ],
+              "ref": "E3.24"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "connection",
+              "id": "MeasuringLineFunction-2",
+              "fact": {
+                "source": "ProcessSignalGeneratingFunction-2",
+                "target": "ProcessInstrumentationFunction-2",
+                "relationship": "instrumentation",
+                "connection_type": "measuring_line"
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "MeasuringLineFunction-2",
+                "ProcessSignalGeneratingFunction-2",
+                "ProcessInstrumentationFunction-2"
+              ]
+            },
+            {
+              "kind": "connection",
+              "id": "OperatedValveReference-1",
+              "fact": {
+                "source": "ActuatingFunction-1",
+                "target": "GlobeValve-1",
+                "relationship": "instrumentation",
+                "connection_type": "operated_valve_reference",
+                "subTagName": "PV4712.02_YV"
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "OperatedValveReference-1",
+                "ActuatingFunction-1",
+                "GlobeValve-1"
+              ]
+            },
+            {
+              "kind": "connection",
+              "id": "ProcessSignalGeneratingFunction-2/sensingLocation",
+              "fact": {
+                "source": "ProcessSignalGeneratingFunction-2",
+                "target": "BlindFlange-2",
+                "relationship": "instrumentation",
+                "connection_type": "sensing_location"
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "ProcessSignalGeneratingFunction-2",
+                "BlindFlange-2"
+              ]
+            },
+            {
+              "kind": "connection",
+              "id": "SignalConveyingFunction-1",
+              "fact": {
+                "source": "ProcessInstrumentationFunction-2",
+                "target": "ActuatingFunction-1",
+                "relationship": "instrumentation",
+                "connection_type": "signal_line"
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "SignalConveyingFunction-1",
+                "ProcessInstrumentationFunction-2",
+                "ActuatingFunction-1"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ProcessInstrumentationFunction-2.location",
+              "fact": {
+                "object_id": "ProcessInstrumentationFunction-2",
+                "property": "location",
+                "value": "central",
+                "scope": "own"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ProcessInstrumentationFunction-2.processInstrumentationFunctionCategory",
+              "fact": {
+                "object_id": "ProcessInstrumentationFunction-2",
+                "property": "processInstrumentationFunctionCategory",
+                "value": "P",
+                "scope": "own"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ProcessInstrumentationFunction-2.processInstrumentationFunctionNumber",
+              "fact": {
+                "object_id": "ProcessInstrumentationFunction-2",
+                "property": "processInstrumentationFunctionNumber",
+                "value": "4712.02",
+                "scope": "own"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ProcessInstrumentationFunction-2.processInstrumentationFunctions",
+              "fact": {
+                "object_id": "ProcessInstrumentationFunction-2",
+                "property": "processInstrumentationFunctions",
+                "value": "ICSA",
+                "scope": "own"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessInstrumentationFunction-2"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "InstrumentationLoopFunction-2.instrumentationLoopFunctionNumber",
+              "fact": {
+                "object_id": "InstrumentationLoopFunction-2",
+                "property": "instrumentationLoopFunctionNumber",
+                "value": "4712.02",
+                "scope": "child:InstrumentationLoopFunction"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "InstrumentationLoopFunction-2"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ActuatingFunction-1.actuatingFunctionNumber",
+              "fact": {
+                "object_id": "ActuatingFunction-1",
+                "property": "actuatingFunctionNumber",
+                "value": "PV4712.02",
+                "scope": "own"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ActuatingFunction-1"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ControlledActuator-1.deviceTypeName",
+              "fact": {
+                "object_id": "ControlledActuator-1",
+                "property": "deviceTypeName",
+                "value": "general",
+                "scope": "child:ControlledActuator"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ControlledActuator-1"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ControlledActuator-1.failAction",
+              "fact": {
+                "object_id": "ControlledActuator-1",
+                "property": "failAction",
+                "value": "fail close",
+                "scope": "child:ControlledActuator"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ControlledActuator-1"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ControlledActuator-1.failActionRepresentation",
+              "fact": {
+                "object_id": "ControlledActuator-1",
+                "property": "failActionRepresentation",
+                "value": "F.C.",
+                "scope": "child:ControlledActuator"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ControlledActuator-1"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ControlledActuator-1.subTagName",
+              "fact": {
+                "object_id": "ControlledActuator-1",
+                "property": "subTagName",
+                "value": "PV4712.02_YC",
+                "scope": "child:ControlledActuator"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ControlledActuator-1"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ActuatingSystem-1.actuatingSystemNumber",
+              "fact": {
+                "object_id": "ActuatingSystem-1",
+                "property": "actuatingSystemNumber",
+                "value": "PV4712.02",
+                "scope": "child:ActuatingSystem"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ActuatingSystem-1"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "ProcessSignalGeneratingFunction-2.processSignalGeneratingFunctionNumber",
+              "fact": {
+                "object_id": "ProcessSignalGeneratingFunction-2",
+                "property": "processSignalGeneratingFunctionNumber",
+                "value": "PT4712.02",
+                "scope": "own"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "ProcessSignalGeneratingFunction-2"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "PipingNetworkSegment-19.lineNumber",
+              "fact": {
+                "object_id": "PipingNetworkSegment-19",
+                "property": "lineNumber",
+                "value": "47127",
+                "scope": "owning_segment"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-19"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "PipingNetworkSegment-19.nominalDiameterRepresentation",
+              "fact": {
+                "object_id": "PipingNetworkSegment-19",
+                "property": "nominalDiameterRepresentation",
+                "value": "DN 50",
+                "scope": "owning_segment"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-19"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "PipingNetworkSegment-17.lineNumber",
+              "fact": {
+                "object_id": "PipingNetworkSegment-17",
+                "property": "lineNumber",
+                "value": "47126",
+                "scope": "owning_segment"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-17"
+              ]
+            },
+            {
+              "kind": "property",
+              "id": "PipingNetworkSegment-17.nominalDiameterRepresentation",
+              "fact": {
+                "object_id": "PipingNetworkSegment-17",
+                "property": "nominalDiameterRepresentation",
+                "value": "DN 25",
+                "scope": "owning_segment"
+              },
+              "source_graph": "plant_graph",
+              "source_object_ids": [
+                "PipingNetworkSegment-17"
+              ]
+            },
+            {
+              "kind": "derived",
+              "id": "trace_instrumentation:signal_chain:BlindFlange-2:GlobeValve-1",
+              "fact": {
+                "predicate": "signal_chain",
+                "subject": "BlindFlange-2",
+                "object": "GlobeValve-1",
+                "qualifiers": {
+                  "elements": [
+                    "BlindFlange-2",
+                    "ProcessSignalGeneratingFunction-2",
+                    "ProcessInstrumentationFunction-2",
+                    "ActuatingFunction-1",
+                    "GlobeValve-1"
+                  ],
+                  "fail_action": "fail close"
+                },
+                "operation": "trace_instrumentation",
+                "parameters": {
+                  "entity_id": "ProcessInstrumentationFunction-2"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "BlindFlange-2",
+                "ProcessSignalGeneratingFunction-2",
+                "ProcessInstrumentationFunction-2",
+                "ActuatingFunction-1",
+                "GlobeValve-1",
+                "ProcessSignalGeneratingFunction-2/sensingLocation",
+                "MeasuringLineFunction-2",
+                "SignalConveyingFunction-1",
+                "OperatedValveReference-1"
+              ]
+            },
+            {
+              "kind": "derived",
+              "id": "trace_instrumentation:loop_measured_at:ProcessInstrumentationFunction-2:BlindFlange-2",
+              "fact": {
+                "predicate": "loop_measured_at",
+                "subject": "ProcessInstrumentationFunction-2",
+                "object": "BlindFlange-2",
+                "qualifiers": {},
+                "operation": "trace_instrumentation",
+                "parameters": {
+                  "entity_id": "ProcessInstrumentationFunction-2"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "BlindFlange-2",
+                "ProcessSignalGeneratingFunction-2",
+                "ProcessInstrumentationFunction-2",
+                "ActuatingFunction-1",
+                "GlobeValve-1",
+                "ProcessSignalGeneratingFunction-2/sensingLocation",
+                "MeasuringLineFunction-2",
+                "SignalConveyingFunction-1",
+                "OperatedValveReference-1"
+              ]
+            },
+            {
+              "kind": "derived",
+              "id": "trace_instrumentation:loop_acts_on:ProcessInstrumentationFunction-2:GlobeValve-1",
+              "fact": {
+                "predicate": "loop_acts_on",
+                "subject": "ProcessInstrumentationFunction-2",
+                "object": "GlobeValve-1",
+                "qualifiers": {
+                  "fail_action": "fail close",
+                  "via": "ActuatingFunction-1",
+                  "line": "47127"
+                },
+                "operation": "trace_instrumentation",
+                "parameters": {
+                  "entity_id": "ProcessInstrumentationFunction-2"
+                }
+              },
+              "source_graph": "conceptual_graph",
+              "source_object_ids": [
+                "BlindFlange-2",
+                "ProcessSignalGeneratingFunction-2",
+                "ProcessInstrumentationFunction-2",
+                "ActuatingFunction-1",
+                "GlobeValve-1",
+                "ProcessSignalGeneratingFunction-2/sensingLocation",
+                "MeasuringLineFunction-2",
+                "SignalConveyingFunction-1",
+                "OperatedValveReference-1"
+              ]
+            }
+          ],
+          "warnings": [],
+          "meta": {
+            "members": [
+              "ProcessInstrumentationFunction-2",
+              "ActuatingFunction-1",
+              "ProcessSignalGeneratingFunction-2",
+              "GlobeValve-1",
+              "BlindFlange-2"
+            ],
+            "chains": 1,
+            "duration_ms": 1.83
+          },
+          "result_ref": "R3",
+          "status_ref": "E3.0"
+        }
+      ],
+      "group": null,
+      "repeat": 1,
+      "answered_at": "2026-10-07 01:10:32"
+    }
+  ]
+}

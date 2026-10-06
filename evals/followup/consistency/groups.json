@@ -1,0 +1,1166 @@
+{
+ "description": "Follow-up evaluation on C01. Every required item is a canonical fact pattern (or several equivalent ones) produced by a graph operation, or a category the answer must name as not established by the P&ID. tests/test_followup.py re-derives every pattern from the graph. Each group lists phrasings that ask for the same facts; 'required' is the target the group shares and consistency is measured against it. 'anchors' are the items a question names (its input), never items of the answer. A phrasing with its own 'required' is judged for correctness against that: R3a can be read literally as the direct connections of the controller.",
+ "pid": "data/C01V04-VER.EX01.xml",
+ "groups": [
+  {
+   "id": "R1",
+   "title": "Isolating a pump",
+   "source": "provided",
+   "complex": true,
+   "anchors": [
+    "ReciprocatingPump-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "ReciprocatingPump-1"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "ReciprocatingPump-1",
+      "relationship": "piping"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "PipeTee-1",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "BallValve-1 bounds ReciprocatingPump-1",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "ReciprocatingPump-1",
+       "o": "BallValve-1"
+      },
+      {
+       "p": "flows_to",
+       "s": "BallValve-1",
+       "o": "ReciprocatingPump-1"
+      }
+     ]
+    },
+    {
+     "fact": "BallValve-2 bounds ReciprocatingPump-1",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "ReciprocatingPump-1",
+       "o": "BallValve-2"
+      }
+     ]
+    },
+    {
+     "fact": "BallValve-3 bounds ReciprocatingPump-1",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "ReciprocatingPump-1",
+       "o": "BallValve-3"
+      }
+     ]
+    },
+    {
+     "fact": "BallValve-4 bounds ReciprocatingPump-1",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "ReciprocatingPump-1",
+       "o": "BallValve-4"
+      }
+     ]
+    },
+    {
+     "fact": "the relief line to SV 104.01 has no isolation valve",
+     "any_of": [
+      {
+       "p": "relief_device_on_boundary",
+       "s": "ReciprocatingPump-1",
+       "o": "SpringLoadedGlobeSafetyValve-1"
+      },
+      {
+       "p": "flows_to",
+       "s": "PipeTee-1",
+       "o": "SpringLoadedGlobeSafetyValve-1"
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "R1a",
+     "question": "Which valves must be closed to isolate P4712 for maintenance?"
+    },
+    {
+     "id": "R1b",
+     "question": "How would you isolate the reciprocating pump?"
+    },
+    {
+     "id": "R1c",
+     "question": "I need to pull the 84 kW pump for repair. What do I shut, and is anything left open?"
+    },
+    {
+     "id": "R1d",
+     "question": "P-4712 isolation: valve list + any gaps"
+    },
+    {
+     "id": "R1e",
+     "question": "Give me the isolation boundary for pump P4712."
+    }
+   ]
+  },
+  {
+   "id": "R2",
+   "title": "Fail-position impact",
+   "source": "provided",
+   "complex": true,
+   "anchors": [],
+   "gold_calls": [
+    {
+     "tool": "trace_instrumentation",
+     "args": {
+      "entity_id": "ActuatingFunction-2"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "CentrifugalPump-1",
+      "target_entity_id": "Tank-1",
+      "blocked_entity_ids": [
+       "GlobeValve-2"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "fail action of ActuatingFunction-2: fail close",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "ActuatingFunction-2",
+       "v": "fail close",
+       "q": {
+        "property": "failAction"
+       }
+      },
+      {
+       "p": "loop_acts_on",
+       "o": "GlobeValve-2",
+       "q": {
+        "fail_action": "fail close"
+       }
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ActuatingFunction-2"
+       ],
+       "q": {
+        "fail_action": "fail close"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "ActuatingFunction-2 operates GlobeValve-2",
+     "any_of": [
+      {
+       "p": "operates",
+       "s": "ActuatingFunction-2",
+       "o": "GlobeValve-2"
+      },
+      {
+       "p": "loop_acts_on",
+       "s": "ProcessInstrumentationFunction-3",
+       "o": "GlobeValve-2"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ActuatingFunction-2",
+        "GlobeValve-2"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "what remains connected with GlobeValve-2 treated as closed",
+     "any_of": [
+      {
+       "p": [
+        "reaches",
+        "path",
+        "no_path"
+       ],
+       "blocked_contains": "GlobeValve-2"
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "R2a",
+     "question": "If HV4750.01 loses its actuating power, what happens to the flow from P4711 to the tank?"
+    },
+    {
+     "id": "R2b",
+     "question": "what happens downstream of the plate exchanger if the hand-switched valve fails?"
+    },
+    {
+     "id": "R2c",
+     "question": "HS4750.01 drops out. Does feed still reach T4750?"
+    },
+    {
+     "id": "R2d",
+     "question": "Suppose the valve on line 47123 goes to its fail position. Which equipment is cut off from the tank, and is anything left without relief?"
+    }
+   ]
+  },
+  {
+   "id": "R3",
+   "title": "Loop mapping, rephrased",
+   "source": "provided",
+   "complex": true,
+   "anchors": [
+    "ProcessInstrumentationFunction-2"
+   ],
+   "gold_calls": [
+    {
+     "tool": "trace_instrumentation",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-2"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "GlobeValve-1",
+      "relationship": "all"
+     }
+    },
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "GlobeValve-1",
+       "ActuatingFunction-1"
+      ]
+     }
+    },
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "TubularHeatExchanger-1"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+     "any_of": [
+      {
+       "p": "senses_at",
+       "s": "ProcessSignalGeneratingFunction-2",
+       "o": "BlindFlange-2"
+      },
+      {
+       "p": "loop_measured_at",
+       "s": "ProcessInstrumentationFunction-2",
+       "o": "BlindFlange-2"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ProcessSignalGeneratingFunction-2",
+        "BlindFlange-2"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "ActuatingFunction-1 operates GlobeValve-1",
+     "any_of": [
+      {
+       "p": "operates",
+       "s": "ActuatingFunction-1",
+       "o": "GlobeValve-1"
+      },
+      {
+       "p": "loop_acts_on",
+       "s": "ProcessInstrumentationFunction-2",
+       "o": "GlobeValve-1"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ActuatingFunction-1",
+        "GlobeValve-1"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "fail action of ActuatingFunction-1: fail close",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "ActuatingFunction-1",
+       "v": "fail close",
+       "q": {
+        "property": "failAction"
+       }
+      },
+      {
+       "p": "loop_acts_on",
+       "o": "GlobeValve-1",
+       "q": {
+        "fail_action": "fail close"
+       }
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ActuatingFunction-1"
+       ],
+       "q": {
+        "fail_action": "fail close"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "GlobeValve-1 is on line 47127",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "GlobeValve-1",
+       "v": "47127",
+       "q": {
+        "property": "lineNumber"
+       }
+      },
+      {
+       "p": "loop_acts_on",
+       "o": "GlobeValve-1",
+       "q": {
+        "line": "47127"
+       }
+      },
+      {
+       "p": "flows_to",
+       "s": "GlobeValve-1",
+       "q": {
+        "lineNumber": "47127"
+       }
+      },
+      {
+       "p": "flows_to",
+       "o": "GlobeValve-1",
+       "q": {
+        "lineNumber": "47127"
+       }
+      },
+      {
+       "p": "isolation_boundary_valve",
+       "o": "GlobeValve-1",
+       "q": {
+        "line": "47127"
+       }
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "R3a",
+     "question": "Map all connections for PICSA4712.02.",
+     "required": [
+      {
+       "fact": "PT4712.02 feeds PICSA4712.02",
+       "any_of": [
+        {
+         "p": "measurement_input_to",
+         "s": "ProcessSignalGeneratingFunction-2",
+         "o": "ProcessInstrumentationFunction-2"
+        },
+        {
+         "p": "signal_chain",
+         "contains": [
+          "ProcessSignalGeneratingFunction-2",
+          "ProcessInstrumentationFunction-2"
+         ]
+        }
+       ]
+      },
+      {
+       "fact": "PICSA4712.02 signals PV4712.02",
+       "any_of": [
+        {
+         "p": "sends_signal_to",
+         "s": "ProcessInstrumentationFunction-2",
+         "o": "ActuatingFunction-1"
+        },
+        {
+         "p": "signal_chain",
+         "contains": [
+          "ProcessInstrumentationFunction-2",
+          "ActuatingFunction-1"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "R3b",
+     "question": "where does the pressure controller on the recip pump discharge get its measurement, and what does it move?"
+    },
+    {
+     "id": "R3c",
+     "question": "PIC 4712.02: sensor, final element, fail position, which line?"
+    },
+    {
+     "id": "R3d",
+     "question": "Which valve closes if the pressure loop on P4712's discharge loses actuator power, and where is that loop's transmitter?"
+    }
+   ]
+  },
+  {
+   "id": "R4",
+   "title": "Blocked-in, rephrased",
+   "source": "provided",
+   "complex": true,
+   "anchors": [],
+   "gold_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "Tank-1"
+     }
+    },
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "ReciprocatingPump-1"
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "T4750 is fully bounded by valves",
+     "any_of": [
+      {
+       "p": "fully_valve_bounded",
+       "s": "Tank-1",
+       "v": true
+      }
+     ]
+    },
+    {
+     "fact": "no relief device stays connected to T4750 inside that boundary",
+     "any_of": [
+      {
+       "p": "relief_path_inside_boundary",
+       "s": "Tank-1",
+       "v": false
+      }
+     ]
+    },
+    {
+     "fact": "P4712 keeps a path to SV 104.01 inside its boundary",
+     "any_of": [
+      {
+       "p": "relief_path_inside_boundary",
+       "s": "ReciprocatingPump-1",
+       "v": true
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "R4a",
+     "question": "Can any equipment on this drawing become blocked in with no visible pressure relief?"
+    },
+    {
+     "id": "R4b",
+     "question": "anything here that can get trapped between closed valves without a relief valve?"
+    },
+    {
+     "id": "R4c",
+     "question": "Which vessels or exchangers could be shut in with nowhere to relieve, given the relief devices shown?"
+    },
+    {
+     "id": "R4d",
+     "question": "blocked-in check for this sheet: equipment + reason"
+    }
+   ]
+  },
+  {
+   "id": "G1",
+   "title": "Isolating a heat exchanger",
+   "source": "own",
+   "complex": true,
+   "anchors": [
+    "TubularHeatExchanger-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "TubularHeatExchanger-1"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "TubularHeatExchanger-1",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "BallValve-4 bounds TubularHeatExchanger-1",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "TubularHeatExchanger-1",
+       "o": "BallValve-4"
+      }
+     ]
+    },
+    {
+     "fact": "BallValve-5 bounds TubularHeatExchanger-1",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "TubularHeatExchanger-1",
+       "o": "BallValve-5"
+      }
+     ]
+    },
+    {
+     "fact": "GlobeValve-1 bounds TubularHeatExchanger-1",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "TubularHeatExchanger-1",
+       "o": "GlobeValve-1"
+      },
+      {
+       "p": "flows_to",
+       "s": "TubularHeatExchanger-1",
+       "o": "GlobeValve-1"
+      }
+     ]
+    },
+    {
+     "fact": "GlobeValve-3 bounds TubularHeatExchanger-1",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "TubularHeatExchanger-1",
+       "o": "GlobeValve-3"
+      },
+      {
+       "p": "flows_to",
+       "s": "TubularHeatExchanger-1",
+       "o": "GlobeValve-3"
+      }
+     ]
+    },
+    {
+     "fact": "no valve before the piping leaves the drawing at the off-page connector",
+     "any_of": [
+      {
+       "p": "unisolated_connection",
+       "s": "TubularHeatExchanger-1",
+       "o": "FlowOutPipeOffPageConnector-1"
+      }
+     ]
+    },
+    {
+     "fact": "line 47140 at TubularHeatExchanger-1 leaves the drawing (open end)",
+     "any_of": [
+      {
+       "p": "open_end",
+       "s": "TubularHeatExchanger-1",
+       "q": {
+        "lineNumber": "47140"
+       }
+      },
+      {
+       "p": "unisolated_connection",
+       "s": "TubularHeatExchanger-1",
+       "q": {
+        "kind": "open_end",
+        "line": "47140"
+       }
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "G1a",
+     "question": "Which valves isolate H1008, and which of its connections cannot be isolated on this drawing?"
+    },
+    {
+     "id": "G1b",
+     "question": "isolation boundary for the tubular heat exchanger"
+    },
+    {
+     "id": "G1c",
+     "question": "H-1008 maintenance: what do I close, any open ends?"
+    },
+    {
+     "id": "G1d",
+     "question": "I need to take the exchanger fed from line 47126 out of service. Valve list and gaps, please."
+    }
+   ]
+  },
+  {
+   "id": "G2",
+   "title": "Reach with one valve closed",
+   "source": "own",
+   "complex": true,
+   "anchors": [
+    "ReciprocatingPump-1",
+    "BallValve-4"
+   ],
+   "gold_calls": [
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "ReciprocatingPump-1",
+      "direction": "downstream",
+      "entity_types": [
+       "equipment"
+      ],
+      "blocked_entity_ids": [
+       "BallValve-4"
+      ]
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ReciprocatingPump-1",
+      "target_entity_id": "TubularHeatExchanger-1",
+      "blocked_entity_ids": [
+       "BallValve-4"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ReciprocatingPump-1",
+      "target_entity_id": "Tank-1",
+      "blocked_entity_ids": [
+       "BallValve-4"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "T4750 is still reachable from P4712 with the valve closed",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "ReciprocatingPump-1",
+       "o": "Tank-1",
+       "q": {
+        "direction": "downstream"
+       },
+       "blocked_contains": "BallValve-4"
+      },
+      {
+       "p": "path",
+       "s": "ReciprocatingPump-1",
+       "o": "Tank-1",
+       "blocked_contains": "BallValve-4"
+      }
+     ]
+    },
+    {
+     "fact": "H1008 is no longer reachable from P4712 with the valve closed",
+     "any_of": [
+      {
+       "p": "no_path",
+       "s": "ReciprocatingPump-1",
+       "o": "TubularHeatExchanger-1",
+       "blocked_contains": "BallValve-4"
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "G2a",
+     "question": "If the valve at 47126/C7 is shut, can P4712 still reach T4750, and can it still reach H1008?"
+    },
+    {
+     "id": "G2b",
+     "question": "recip pump discharge with C7 on line 47126 closed: does it still get to the tank? to the tubular exchanger?"
+    },
+    {
+     "id": "G2c",
+     "question": "Close the ball valve between P4712 and H1008. Which of T4750 and H1008 can the 84 kW pump still reach?"
+    },
+    {
+     "id": "G2d",
+     "question": "47126/C7 shut: P-4712 to T-4750 still connected? P-4712 to H-1008?"
+    }
+   ]
+  },
+  {
+   "id": "G3",
+   "title": "Temperature loop",
+   "source": "own",
+   "complex": true,
+   "anchors": [
+    "ProcessInstrumentationFunction-4"
+   ],
+   "gold_calls": [
+    {
+     "tool": "trace_instrumentation",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-4"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "GlobeValve-3",
+      "relationship": "all"
+     }
+    },
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "GlobeValve-3",
+       "ActuatingFunction-3"
+      ]
+     }
+    },
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "TubularHeatExchanger-1"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "ProcessSignalGeneratingFunction-3 measures at Tank-1",
+     "any_of": [
+      {
+       "p": "senses_at",
+       "s": "ProcessSignalGeneratingFunction-3",
+       "o": "Tank-1"
+      },
+      {
+       "p": "loop_measured_at",
+       "s": "ProcessInstrumentationFunction-4",
+       "o": "Tank-1"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ProcessSignalGeneratingFunction-3",
+        "Tank-1"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "ActuatingFunction-3 operates GlobeValve-3",
+     "any_of": [
+      {
+       "p": "operates",
+       "s": "ActuatingFunction-3",
+       "o": "GlobeValve-3"
+      },
+      {
+       "p": "loop_acts_on",
+       "s": "ProcessInstrumentationFunction-4",
+       "o": "GlobeValve-3"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ActuatingFunction-3",
+        "GlobeValve-3"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "fail action of ActuatingFunction-3: fail open",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "ActuatingFunction-3",
+       "v": "fail open",
+       "q": {
+        "property": "failAction"
+       }
+      },
+      {
+       "p": "loop_acts_on",
+       "o": "GlobeValve-3",
+       "q": {
+        "fail_action": "fail open"
+       }
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ActuatingFunction-3"
+       ],
+       "q": {
+        "fail_action": "fail open"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "GlobeValve-3 is on line 47141",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "GlobeValve-3",
+       "v": "47141",
+       "q": {
+        "property": "lineNumber"
+       }
+      },
+      {
+       "p": "loop_acts_on",
+       "o": "GlobeValve-3",
+       "q": {
+        "line": "47141"
+       }
+      },
+      {
+       "p": "flows_to",
+       "o": "GlobeValve-3",
+       "q": {
+        "lineNumber": "47141"
+       }
+      },
+      {
+       "p": "isolation_boundary_valve",
+       "o": "GlobeValve-3",
+       "q": {
+        "line": "47141"
+       }
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "G3a",
+     "question": "Map TICSA4750.03: where it measures, the valve it acts on, the fail position and the line."
+    },
+    {
+     "id": "G3b",
+     "question": "where does the temperature controller on the tank take its measurement, and what does it move?"
+    },
+    {
+     "id": "G3c",
+     "question": "TIC 4750.03: sensor, final element, fail position, which line?"
+    },
+    {
+     "id": "G3d",
+     "question": "Which valve opens if the temperature loop on T4750 loses actuator power, on which line is it, and where is that loop's sensor?"
+    }
+   ]
+  },
+  {
+   "id": "G4",
+   "title": "An item by tag, type, context and shorthand",
+   "source": "own",
+   "complex": false,
+   "anchors": [
+    "CentrifugalPump-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "CentrifugalPump-1"
+      ],
+      "requested_properties": [
+       "designShaftPower"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "design shaft power of P4711",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "CentrifugalPump-1",
+       "q": {
+        "property": "designShaftPower"
+       }
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "G4a",
+     "question": "What is P4711's design shaft power?"
+    },
+    {
+     "id": "G4b",
+     "question": "design shaft power of the centrifugal pump?"
+    },
+    {
+     "id": "G4c",
+     "question": "The pump that feeds the plate heat exchanger: what is its design shaft power?"
+    },
+    {
+     "id": "G4d",
+     "question": "centrif pump shaft power, kW"
+    }
+   ]
+  },
+  {
+   "id": "G5",
+   "title": "A route with line numbers and sizes",
+   "source": "own",
+   "complex": false,
+   "anchors": [
+    "CentrifugalPump-1",
+    "Tank-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "CentrifugalPump-1",
+      "target_entity_id": "Tank-1"
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "the route P4711 -> T4750 in order",
+     "any_of": [
+      {
+       "p": "path",
+       "s": "CentrifugalPump-1",
+       "o": "Tank-1",
+       "q": {
+        "entities": [
+         "CentrifugalPump-1",
+         "PlateHeatExchanger-1",
+         "GlobeValve-2",
+         "Tank-1"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "fact": "pipe CentrifugalPump-1 -> PlateHeatExchanger-1: line 47122, DN 80",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "CentrifugalPump-1",
+       "o": "PlateHeatExchanger-1",
+       "q": {
+        "lineNumber": "47122",
+        "nominalDiameterRepresentation": "DN 80"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "pipe PlateHeatExchanger-1 -> GlobeValve-2: line 47123, DN 80",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "PlateHeatExchanger-1",
+       "o": "GlobeValve-2",
+       "q": {
+        "lineNumber": "47123",
+        "nominalDiameterRepresentation": "DN 80"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "pipe GlobeValve-2 -> Tank-1: line 47123, DN 80",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "GlobeValve-2",
+       "o": "Tank-1",
+       "q": {
+        "lineNumber": "47123",
+        "nominalDiameterRepresentation": "DN 80"
+       }
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "G5a",
+     "question": "Give the route from P4711 to T4750 with line numbers and sizes."
+    },
+    {
+     "id": "G5b",
+     "question": "how does the centrifugal pump's discharge get to the tank? lines and DN please"
+    },
+    {
+     "id": "G5c",
+     "question": "P4711 -> T4750: components, lines, DN"
+    },
+    {
+     "id": "G5d",
+     "question": "Feed route from the pump on line 47121 to the tank: every item and the size of every pipe."
+    }
+   ]
+  },
+  {
+   "id": "G6",
+   "title": "A relief device by tag, type and context",
+   "source": "own",
+   "complex": false,
+   "anchors": [
+    "SpringLoadedGlobeSafetyValve-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "SpringLoadedGlobeSafetyValve-1"
+      ]
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "SpringLoadedGlobeSafetyValve-1",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "ReciprocatingPump-1"
+     }
+    },
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "Tank-1"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "set pressure of SV 104.01",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "SpringLoadedGlobeSafetyValve-1",
+       "v": "6.0 bar",
+       "q": {
+        "property": "setPressureHigh"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "its inlet comes from the tee on P4712's discharge",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "PipeTee-1",
+       "o": "SpringLoadedGlobeSafetyValve-1"
+      },
+      {
+       "p": "relief_device_on_boundary",
+       "s": "ReciprocatingPump-1",
+       "o": "SpringLoadedGlobeSafetyValve-1"
+      }
+     ]
+    },
+    {
+     "fact": "it discharges to T4750",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "SpringLoadedGlobeSafetyValve-1",
+       "o": "Tank-1"
+      },
+      {
+       "p": "relief_device_on_boundary",
+       "s": "Tank-1",
+       "o": "SpringLoadedGlobeSafetyValve-1"
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "G6a",
+     "question": "What is the set pressure of SV 104.01, and what is it connected between?"
+    },
+    {
+     "id": "G6b",
+     "question": "safety valve: set pressure, where its inlet comes from, where it discharges"
+    },
+    {
+     "id": "G6c",
+     "question": "the relief valve on line 47125: at what pressure is it set and where does it relieve to?"
+    },
+    {
+     "id": "G6d",
+     "question": "SV104.01 set pressure + inlet + outlet"
+    }
+   ]
+  }
+ ]
+}

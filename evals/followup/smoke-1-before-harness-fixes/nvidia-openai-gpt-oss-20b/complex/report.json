@@ -1,0 +1,188 @@
+{
+  "suite": "complex",
+  "provider": "nvidia",
+  "model": "openai/gpt-oss-20b",
+  "commit": "0aaab031aa4cb75cf7ac5fce5b037ff9eacd5a72",
+  "dirty": true,
+  "run_id": "20261007T002012",
+  "questions": 3,
+  "outcomes": {
+    "partial": 2,
+    "correct": 1
+  },
+  "mean_score": 0.756,
+  "required_facts": {
+    "found": 10,
+    "of": 12
+  },
+  "required_unknowns": {
+    "named": 1,
+    "of": 2
+  },
+  "forbidden_facts_cited": 0,
+  "grounding": {
+    "structured_answers": 3,
+    "withheld": 0,
+    "provider_failures": 0,
+    "rejected_submissions": 0,
+    "unsupported_facts_in_answers": 0,
+    "summaries_or_notes_withheld": 4,
+    "answers_with_commentary": 0
+  },
+  "efficiency": {
+    "runs": 3,
+    "llm_calls": 13,
+    "tool_calls": 10,
+    "tokens": 59542,
+    "median_latency_s": 25.8,
+    "mean_latency_s": 29.1
+  },
+  "rows": [
+    {
+      "id": "C1",
+      "source": "provided",
+      "type": "Isolation",
+      "question": "Which valves must be closed to isolate T4750 for maintenance? List them in the order you would close them, explain the order, and say which connections this drawing does not let you isolate.",
+      "outcome": "partial",
+      "score": 0.6,
+      "profile": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "GlobeValve-2 bounds Tank-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "GlobeValve-1 bounds Tank-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ButterflyValve-1 bounds Tank-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the line from SV 104.01 has no isolation valve",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "unknown: operating_procedure",
+          "kind": "unknown",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 5,
+      "cause": "answer synthesis",
+      "answer": "Derived by graph analysis of the drawing\n- GlobeValve 47123/C1 (GlobeValve-2) is the first valve on the upstream side of T4750 (Tank-1) (line 47123, DN 80) [E1.2, isolation_boundary]\n- GlobeValve 47127/C1 (GlobeValve-1) is the first valve on the upstream side of T4750 (Tank-1) (line 47127, DN 50) [E1.3, isolation_boundary]\n- ButterflyValve 47124/C1 (ButterflyValve-1) is the first valve on the downstream side of T4750 (Tank-1) (line 47124, DN 80) [E1.4, isolation_boundary]\n- Every connection of T4750 (Tank-1) ends at a shut-off valve, a relief device or a closed end (3 boundary valves: GlobeValve 47123/C1 (GlobeValve-2), GlobeValve 47127/C1 (GlobeValve-1), ButterflyValve 47124/C1 (ButterflyValve-1)) [E1.6, isolation_boundary]\n- With the boundary valves treated as closed, T4750 (Tank-1) has no drawn path to a relief device [E1.7, isolation_boundary]\n\nSummary (model wording; the lists above are what was checked)\nThe isolation boundary for T4750 lists three shut‑off valves: GlobeValve 47127/C1, GlobeValve 47123/C1 and ButterflyValve 47124/C1. Closing the upstream valves first stops flow into the tank, then closing the downstream valve isolates the tank from the rest of the system. The drawing shows no valve between T4750 and the relief device SV 104.01, so that connection cannot be isolated by valve closure.",
+      "llm_calls": 2,
+      "tool_calls": 1,
+      "latency_s": 25.8
+    },
+    {
+      "id": "C7",
+      "source": "provided",
+      "type": "Relief path",
+      "question": "Does H1008 have a path to a pressure relief device? What has to happen for that path to be open?",
+      "outcome": "partial",
+      "score": 0.667,
+      "profile": [
+        true,
+        false,
+        true
+      ],
+      "required": [
+        {
+          "item": "a drawn route joins H1008 and SV 104.01",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the route to the inlet of SV 104.01 passes BallValve 47126/C7",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "unknown: operating_state / process_behaviour",
+          "kind": "unknown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "operating_state"
+      ],
+      "cited_facts": 8,
+      "cause": "planner/tool choice",
+      "answer": "Derived by graph analysis of the drawing\n- SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve: downstream of TubularHeatExchanger-1, 10 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E7.1, traverse]\n- GlobeValve 47141/C1 (GlobeValve-3): end of drawn piping [E7.0, traverse]\n\nNot established by the P&ID\n- Operating state: The P&ID does not specify whether these valves are open or closed.",
+      "llm_calls": 8,
+      "tool_calls": 7,
+      "latency_s": 39.0
+    },
+    {
+      "id": "C8",
+      "source": "provided",
+      "type": "Loop mapping",
+      "question": "Map all connections for PICSA4712.02: where its measurement is taken, every hop to the final element, the final element's fail position, and the piping context of that valve.",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "PT4712.02 feeds PICSA4712.02",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "PICSA4712.02 signals PV4712.02",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ActuatingFunction-1 operates GlobeValve-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "fail action of ActuatingFunction-1: fail close",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "GlobeValve-1 is on line 47127",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 29,
+      "cause": null,
+      "answer": "Facts in the drawing\n- ControlledActuator-1: failAction = fail close [E2.13]\n- PipingNetworkSegment-19: lineNumber = 47127 [E2.18]\n- PipingNetworkSegment-19: nominalDiameterRepresentation = DN 50 [E2.19]\n- PipingNetworkSegment-17: lineNumber = 47126 [E2.20]\n- PipingNetworkSegment-17: nominalDiameterRepresentation = DN 25 [E2.21]\n- ProcessSignalGeneratingFunction-2 (PT4712.02) -> ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PICSA4712.02) [measuring_line] [E2.2]\n- ActuatingFunction-1 (PV4712.02) -> GlobeValve-1 (GlobeValve 47127/C1) [operated_valve_reference] [E2.3]\n- ProcessSignalGeneratingFunction-2 (PT4712.02) -> BlindFlange-2 (BlindFlange 47126/C11) [sensing_location] [E2.4]\n- ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PICSA4712.02) -> ActuatingFunction-1 (PV4712.02) [signal_line] [E2.5]\n- ProcessInstrumentationFunction-2: location = central [E2.6]\n- ProcessInstrumentationFunction-2: processInstrumentationFunctionCategory = P [E2.7]\n- ProcessInstrumentationFunction-2: processInstrumentationFunctionNumber = 4712.02 [E2.8]\n- ProcessInstrumentationFunction-2: processInstrumentationFunctions = ICSA [E2.9]\n- InstrumentationLoopFunction-2: instrumentationLoopFunctionNumber = 4712.02 [E2.10]\n- ActuatingFunction-1: actuatingFunctionNumber = PV4712.02 [E2.11]\n- ControlledActuator-1: deviceTypeName = general [E2.12]\n- ControlledActuator-1: failActionRepresentation = F.C. [E2.14]\n- ControlledActuator-1: subTagName = PV4712.02_YC [E2.15]\n- ActuatingSystem-1: actuatingSystemNumber = PV4712.02 [E2.16]\n- ProcessSignalGeneratingFunction-2: processSignalGeneratingFunctionNumber = PT4712.02 [E2.17]\n\nDerived by graph analysis of the drawing\n- The measurement used by ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) is taken at BlindFlange 47126/C11 (BlindFlange-2) [E2.23, trace_instrumentation]\n- Signal chain: BlindFlange 47126/C11 (BlindFlange-2) [measurement point, line 47126] -> PT4712.02 (ProcessSignalGeneratingFunction-2) -> ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) -> PV4712.02 (ActuatingFunction-1) [encoded fail action: fail close] -> GlobeValve 47127/C1 (GlobeValve-1) [operated valve, line 47127] [E2.22, trace_instrumentation]\n- ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2) acts on GlobeValve 47127/C1 (GlobeValve-1) on line 47127 through PV4712.02 (ActuatingFunction-1); encoded fail action of the actuator: fail close [E2.24, trace_instrumentation]",
+      "llm_calls": 3,
+      "tool_calls": 2,
+      "latency_s": 22.4
+    }
+  ]
+}

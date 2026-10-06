@@ -1,0 +1,392 @@
+{
+  "suite": "consistency",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "commit": "0aaab031aa4cb75cf7ac5fce5b037ff9eacd5a72",
+  "dirty": true,
+  "run_id": "20261007T011034",
+  "repeats": 1,
+  "groups": 2,
+  "runs": 6,
+  "repeat_consistency": {
+    "consistent_phrasings": 5,
+    "of": 6
+  },
+  "cross_phrasing_consistency": {
+    "consistent_groups": 0,
+    "of": 2
+  },
+  "contradictions": 0,
+  "entity_resolution": {
+    "consistent_groups": 1,
+    "of": 2
+  },
+  "required_fact_recall": 0.425,
+  "jaccard_overlap_mean": 0.707,
+  "inconsistency_causes": {
+    "answer synthesis": 3,
+    "planner/tool choice": 1,
+    "provider/model variance": 1
+  },
+  "grounding": {
+    "structured_answers": 5,
+    "withheld": 0,
+    "provider_failures": 1,
+    "rejected_submissions": 0,
+    "final_repairs": {
+      "attempted": 0,
+      "succeeded": 0
+    },
+    "requested_outputs": {
+      "total": 7,
+      "covered_by_facts": 7,
+      "marked_unknown": 0,
+      "unaccounted": 0
+    },
+    "unsupported_facts_in_answers": 0,
+    "model_text_shown": 0,
+    "answers_with_log_only_summary": 0
+  },
+  "efficiency": {
+    "runs": 6,
+    "llm_calls": 25,
+    "tool_calls": 13,
+    "tokens": 95255,
+    "median_latency_s": 82.2,
+    "mean_latency_s": 97.8
+  },
+  "group_rows": [
+    {
+      "group": "R1",
+      "title": "Isolating a pump",
+      "based_on_complex": true,
+      "runs": 4,
+      "repeat_consistent_phrasings": 4,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.5,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.85,
+      "jaccard_overlap": 0.707,
+      "phrasing_rows": [
+        {
+          "id": "R1a",
+          "question": "Which valves must be closed to isolate P4712 for maintenance?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            0.8
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R1b",
+          "question": "How would you isolate the reciprocating pump?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            0.8
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R1c",
+          "question": "I need to pull the 84 kW pump for repair. What do I shut, and is anything left open?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            1.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R1d",
+          "question": "P-4712 isolation: valve list + any gaps",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            0.8
+          ],
+          "matches_group": true
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "R1a",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.2",
+                  "E4.3",
+                  "E4.4",
+                  "E4.5"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 101.5,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "R1b",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 47.8,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 7,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "list_entities",
+            "get_properties",
+            "get_properties",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E5.2"
+                ],
+                "derived": [
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.6",
+                  "E6.8"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 180.0,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "R1d",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 82.2,
+          "llm_calls": 4
+        }
+      ]
+    },
+    {
+      "group": "R3",
+      "title": "Loop mapping, rephrased",
+      "based_on_complex": true,
+      "runs": 2,
+      "repeat_consistent_phrasings": 1,
+      "phrasings": 2,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.0,
+      "contradictions": [],
+      "entity_resolution_consistent": false,
+      "required_fact_recall": 0.0,
+      "jaccard_overlap": null,
+      "phrasing_rows": [
+        {
+          "id": "R3a",
+          "question": "Map all connections for PICSA4712.02.",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            0.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R3b",
+          "question": "where does the pressure controller on the recip pump discharge get its measurement, and what does it move?",
+          "repeats": 1,
+          "repeat_consistent": false,
+          "recall": [
+            null
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "R3a",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E2.1",
+                  "E3.2",
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 77.5,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R3b",
+          "repeat": 1,
+          "outcome": "provider_failure",
+          "recall": null,
+          "question_outcome": "provider_failure",
+          "question_score": null,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": false,
+          "cited_facts": 0,
+          "cause": "provider/model variance",
+          "tools_used": [],
+          "repair": null,
+          "requested_outputs": [],
+          "latency_s": 2.8,
+          "llm_calls": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,306 @@
+{
+  "suite": "consistency",
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "0aaab031aa4cb75cf7ac5fce5b037ff9eacd5a72",
+  "dirty": true,
+  "run_id": "20261007T002956",
+  "repeats": 1,
+  "groups": 2,
+  "runs": 8,
+  "repeat_consistency": {
+    "consistent_phrasings": 8,
+    "of": 8
+  },
+  "cross_phrasing_consistency": {
+    "consistent_groups": 0,
+    "of": 2
+  },
+  "contradictions": 2,
+  "entity_resolution": {
+    "consistent_groups": 1,
+    "of": 2
+  },
+  "required_fact_recall": 0.7,
+  "jaccard_overlap_mean": 0.253,
+  "inconsistency_causes": {
+    "answer synthesis": 3,
+    "entity resolution": 1
+  },
+  "grounding": {
+    "structured_answers": 8,
+    "withheld": 0,
+    "provider_failures": 0,
+    "rejected_submissions": 0,
+    "unsupported_facts_in_answers": 0,
+    "summaries_or_notes_withheld": 2,
+    "answers_with_commentary": 0
+  },
+  "efficiency": {
+    "runs": 8,
+    "llm_calls": 41,
+    "tool_calls": 32,
+    "tokens": 244350,
+    "median_latency_s": 19.4,
+    "mean_latency_s": 25.9
+  },
+  "group_rows": [
+    {
+      "group": "R1",
+      "title": "Isolating a pump",
+      "based_on_complex": true,
+      "runs": 4,
+      "repeat_consistent_phrasings": 4,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.167,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.9,
+      "jaccard_overlap": 0.46,
+      "phrasing_rows": [
+        {
+          "id": "R1a",
+          "question": "Which valves must be closed to isolate P4712 for maintenance?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            0.8
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R1b",
+          "question": "How would you isolate the reciprocating pump?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            1.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R1c",
+          "question": "I need to pull the 84 kW pump for repair. What do I shut, and is anything left open?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            1.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R1d",
+          "question": "P-4712 isolation: valve list + any gaps",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            0.8
+          ],
+          "matches_group": true
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "R1a",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "latency_s": 14.7,
+          "llm_calls": 3
+        },
+        {
+          "phrasing": "R1b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "missing": [],
+          "unknowns": [
+            "operating_procedure"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 7,
+          "cause": null,
+          "latency_s": 39.0,
+          "llm_calls": 3
+        },
+        {
+          "phrasing": "R1c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 18,
+          "cause": null,
+          "latency_s": 21.5,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "R1d",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": "answer synthesis",
+          "latency_s": 17.3,
+          "llm_calls": 3
+        }
+      ]
+    },
+    {
+      "group": "R3",
+      "title": "Loop mapping, rephrased",
+      "based_on_complex": true,
+      "runs": 4,
+      "repeat_consistent_phrasings": 4,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.167,
+      "contradictions": [
+        {
+          "predicate": "has_property",
+          "subject": "ReciprocatingPump-1",
+          "property": "subTagName",
+          "values": [
+            "[null, \"n1\"]",
+            "[null, \"n2\"]"
+          ]
+        },
+        {
+          "predicate": "has_property",
+          "subject": "ReciprocatingPump-1",
+          "property": "materialOfConstructionCode",
+          "values": [
+            "[null, \"1.4305\"]",
+            "[null, \"1.4306\"]"
+          ]
+        }
+      ],
+      "entity_resolution_consistent": false,
+      "required_fact_recall": 0.5,
+      "jaccard_overlap": 0.046,
+      "phrasing_rows": [
+        {
+          "id": "R3a",
+          "question": "Map all connections for PICSA4712.02.",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            0.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R3b",
+          "question": "where does the pressure controller on the recip pump discharge get its measurement, and what does it move?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R3c",
+          "question": "PIC 4712.02: sensor, final element, fail position, which line?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R3d",
+          "question": "Which valve closes if the pressure loop on P4712's discharge loses actuator power, and where is that loop's transmitter?",
+          "repeats": 1,
+          "repeat_consistent": true,
+          "recall": [
+            0.0
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "R3a",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [],
+          "entities_resolved": false,
+          "cited_facts": 5,
+          "cause": "answer synthesis",
+          "latency_s": 15.3,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R3b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 20,
+          "cause": null,
+          "latency_s": 33.8,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "R3c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": null,
+          "latency_s": 12.3,
+          "llm_calls": 3
+        },
+        {
+          "phrasing": "R3d",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": false,
+          "cited_facts": 23,
+          "cause": "entity resolution",
+          "latency_s": 53.3,
+          "llm_calls": 9
+        }
+      ]
+    }
+  ]
+}
