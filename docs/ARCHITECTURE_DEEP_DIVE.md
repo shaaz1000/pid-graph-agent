@@ -9,7 +9,7 @@ This project answers natural-language questions about one plant drawing, the DEX
 > **Key idea**
 > The LLM interprets intent and plans graph operations; it is not the source of plant knowledge. Plant-specific facts are retrieved from deterministic operations over the pyDEXPI graph. A deterministic grounding validator checks cited identifiers, values and supported relation classes before model-generated prose is shown.
 
-This document was written for the C01 implementation at commit `a8d56b3`. The code has changed since: evidence-reference grounding, the NVIDIA provider, cross-P&ID support (`--pid`, `SignalLineFunction`, validator robustness fixes) and the post-evaluation validator hardening. The README describes those changes; where the two differ, the README and the code are authoritative. The [README](../README.md) is the short version. Entity names such as `P4711` appear freely here because this document explains the dataset; none of this text is sent to the model.
+This document was written for the C01 implementation at commit `a8d56b3`. The code has changed since: evidence-reference grounding, the NVIDIA provider, cross-P&ID support (`--pid`, `SignalLineFunction`, validator robustness fixes), the post-evaluation validator hardening, and the follow-up round (graph analyses, structured answers; see [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md)). The README describes those changes; where the two differ, the README and the code are authoritative. The [README](../README.md) is the short version. Entity names such as `P4711` appear freely here because this document explains the dataset; none of this text is sent to the model.
 
 ---
 
@@ -1682,7 +1682,7 @@ All from the DeepSeek run.
 
 ## Testing strategy
 
-688 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
+784 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
 
 | Layer | File | Tests | What it pins down |
 |---|---|---|---|
@@ -1705,6 +1705,7 @@ All from the DeepSeek run.
 | DEXPI examples | `test_dexpi_examples.py` | 42 | All 34 official examples pass every ingestion stage; `SignalLineFunction` links; `--pid`; no suite names in code |
 | Cross-P&ID suites | `test_datasets.py` | 38 | Each suite names a real file; every gold fact re-derived from that file's graph |
 | Identifier robustness | `test_validator_identifiers.py` | 19 | Tags with spaces, superscript identifiers, relation words inside names, shared loop numbers; the must-reject cases on those identifiers |
+| Follow-up round | `test_followup.py` | 93 | Graph analyses on C01 and on every official example; structured answers, request coverage, the final repair; status wording with provenance; every gold fact re-derived; scoring and consistency. See [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md) |
 | Relation grounding | `test_relation_grounding.py` | 33 | Hedge words do not disable relation checks; negation scope; the relation vocabulary in both directions; statements with nothing checkable are at most limited |
 
 **What the tests give confidence in.**

@@ -28,6 +28,7 @@ local model.
 | Evaluation set, scorer and score | [Evaluation](#evaluation) |
 | A 10-minute explanation with diagrams | [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) |
 | Requirement-by-requirement audit | [docs/SUBMISSION_AUDIT.md](docs/SUBMISSION_AUDIT.md) |
+| Follow-up: complex and rephrased questions | [docs/FOLLOWUP_EXERCISE.md](docs/FOLLOWUP_EXERCISE.md) |
 
 ## How to run
 
@@ -50,7 +51,7 @@ Without any API key you can still call the graph tools directly and run the test
 
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
-uv run pytest                                    # 688 deterministic tests, no network
+uv run pytest                                    # 784 deterministic tests, no network
 uv run python evals/evaluator.py                 # re-score every saved evaluation run
 uv run python scripts/ingestion_matrix.py        # all 35 DEXPI 1.3 examples through ingestion
 ```
@@ -146,7 +147,7 @@ or line plus component number), identifiers inside a phrase, then type words. An
 shared by several items returns all of them flagged ambiguous. Fuzzy matches are only ever
 suggestions.
 
-**Tools.** Seven generic operations, no question-specific ones:
+**Tools.** Seven generic operations, no question-specific ones (three more for multi-step analysis were added in the [follow-up](#follow-up-complex-reasoning-and-rephrasing)):
 `find_entities`, `list_entities`, `get_entity`, `get_connections` (adjacency),
 `traverse` (reachability, cycle-safe, depth-bounded), `find_path` (route) and
 `get_properties`. Every result is structured and carries evidence items that point back to
@@ -510,6 +511,31 @@ After an external-style review, three gaps in the relation check were closed:
 Tests: `tests/test_relation_grounding.py`. Two existing tests changed: a cost test whose
 scripted answer had relied on the hedge bypass, and the documented gloss limitation, which is
 now detected as unchecked instead of passing as grounded.
+
+## Follow-up: Complex Reasoning and Rephrasing
+
+A follow-up exercise asked for operational, multi-step questions (isolation, trips, fail
+positions, blocked-in equipment, loop mapping), for the same question to give the same facts
+when reworded, and for less regex in semantic grounding. For this the agent gained general
+graph operations (isolation boundary, instrumentation chain, line trace, reachability with
+items treated as closed) and a structured answer path, now the default (`ANSWER_MODE=structured`):
+the model records what is asked, cites evidence rows as direct or derived facts, names what the
+P&ID does not establish as typed unknowns, and the application writes the answer. The
+sentence-level validator described above is used only for the recorded runs in this README
+(`ANSWER_MODE=prose`).
+
+Results on C01 with NVIDIA-hosted Nemotron 3 Super, an open-weight model released under the
+NVIDIA Nemotron Open Model License:
+
+- 27 complex questions: mean score 0.64 (11 correct, 11 partial, 3 incorrect, 2 withheld).
+- 10 rephrasing groups, 41 phrasings, 3 repeats each: 22 of 41 phrasings repeat-consistent,
+  1 of 10 groups fully cross-phrasing consistent.
+- 0 contradictions between answers.
+- 0 model-authored factual prose shown, and no cited fact outside the tool evidence.
+
+The agent is safe but not yet consistent on complex phrasings: answers differ in which valid
+facts they retrieve and cite, not in what those facts say. Details, causes and limitations:
+[docs/FOLLOWUP_EXERCISE.md](docs/FOLLOWUP_EXERCISE.md).
 
 ## Limitations
 

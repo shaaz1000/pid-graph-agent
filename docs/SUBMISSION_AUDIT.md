@@ -99,7 +99,7 @@ Run from a new clone of this repository, without an API key:
 |---|---|
 | `uv sync` | installs |
 | `uv run pid-agent tool find_entities '{"query": "P4711"}'` | returns `CentrifugalPump-1` |
-| `uv run pytest` | 688 passed, 4 deselected (count updated after the post-evaluation hardening) |
+| `uv run pytest` | 784 passed, 4 deselected (count updated after the follow-up round) |
 | `uv run python evals/evaluator.py` | re-scores every saved run (C01 and the eight cross-P&ID suites) |
 | `uv run pid-agent-ui` | page loads and shows the graph |
 | `uv run pid-agent "..."` without a key | one-line error naming the variable to set |

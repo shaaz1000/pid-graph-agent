@@ -40,6 +40,7 @@ written; later prompts never overwrite earlier ones.
 | `32-followup-harness-and-evaluator-fixes.md` | No model text in answers, generic unknown coverage, two evaluator defects, tool-name and name-resolution robustness | Preserved development instruction |
 | `33-followup-repair-and-request-coverage.md` | One repair of a rejected final submission; request decomposition with coverage validation; larger-model smoke | Preserved development instruction |
 | `34-followup-model-decision-and-full-run.md` | No paid provider: run the full follow-up on NVIDIA-hosted Nemotron 3 Super (open-weight), commit first | Preserved development instruction |
+| `35-followup-finalization.md` | Commit the evaluation unchanged, fix the status-message provenance issue found by a security review, write the follow-up report | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 
