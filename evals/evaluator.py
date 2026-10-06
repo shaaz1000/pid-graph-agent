@@ -95,7 +95,8 @@ def run_questions(questions: list[dict[str, Any]], pause: float, data_file: Path
 
     settings = load_settings()
     data_file = data_file or settings.data_file
-    agent = PidAgent(create_llm(settings), GraphTools(GraphService.from_file(data_file)))
+    # The recorded suites were run with prose answers; they keep that contract so they stay comparable.
+    agent = PidAgent(create_llm(settings), GraphTools(GraphService.from_file(data_file)), answer_mode="prose")
     commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=HERE).stdout.strip()
     # A run is reproducible from its commit only if the working tree was clean; record that,
     # and a hash of any uncommitted changes to tracked files.

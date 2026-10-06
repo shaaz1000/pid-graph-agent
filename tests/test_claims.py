@@ -258,9 +258,9 @@ def test_20_prompt_injection_asking_for_the_key_or_the_instructions(tools):
 
 
 # ================================================================= other guardrails
-def test_only_the_seven_graph_tools_exist_and_anything_else_is_refused(tools):
+def test_only_the_graph_tools_exist_and_anything_else_is_refused(tools):
     assert sorted(spec["name"] for spec in tool_specs()) == sorted(
-        ["find_entities", "list_entities", "get_entity", "get_connections", "traverse", "find_path", "get_properties"]
+        ["find_entities", "list_entities", "get_entity", "get_connections", "traverse", "find_path", "get_properties", "isolation_boundary", "trace_instrumentation", "trace_line"]
     )
     done = answer("P4711 is CentrifugalPump-1.", claim("identified_as", "CentrifugalPump-1", value="P4711"))
     result, _ = run_agent(tools, "q", [call("run_shell", command="env"), call("read_file", path=".env"), call("find_entities", query="P4711")], done)

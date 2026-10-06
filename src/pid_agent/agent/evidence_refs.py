@@ -147,6 +147,8 @@ def annotate_refs(result: dict[str, Any], step: int) -> dict[str, Any]:
                 report["missing_ref"] = next_ref()
     for row in result.get("boundaries") or []:
         row["ref"] = next_ref()
+    for row in result.get("derived") or []:
+        row["ref"] = next_ref()
     return result
 
 
@@ -612,16 +614,22 @@ def _row_text(row: dict[str, Any], section: str, result: dict[str, Any]) -> str:
     if section == "connections":
         return _connection_line(row)
     if section == "paths":
-        return "Route: " + " -> ".join(f"{e['name']} ({e['id']})" for e in row["entities"]) + f"; {row['length']} pipe(s), direction {row['direction']}"
+        text = "Route: " + " -> ".join(f"{e['name']} ({e['id']})" for e in row["entities"]) + f"; {row['length']} pipe(s), direction {row['direction']}"
+        return text + (f" (with {', '.join(row['blocked'])} treated as closed)" if row.get("blocked") else "")
     if section == "boundaries":
         return f"Chamber boundary at {row['equipment']}: entered through {row['entered_chamber']}, not continued into {row['blocked_chamber']}"
     text = f"{row['name']} ({row['id']}), {row['type']}"
+    if row.get("attributes"):
+        text += ": " + ", ".join(f"{a['property']} = {a['value']}" + (f" (on {a['on']})" if a.get("on") else "") for a in row["attributes"])
     if "distance" in row:
         direction = (result.get("input") or {}).get("direction", "downstream")
         text += f": {direction} of {row['path_entities'][0]}, {row['distance']} pipe(s) away"
         if row.get("through_equipment"):
             text += f", through {', '.join(row['through_equipment'])}"
         text += ", end of drawn piping" if row.get("terminal") else (", piping continues beyond the search depth" if row.get("continues_beyond_max_depth") else "")
+        blocked = (result.get("meta") or {}).get("blocked")
+        if blocked:
+            text += f" (with {', '.join(blocked)} treated as closed)"
     return text
 
 
@@ -641,7 +649,9 @@ def render_rows(refs: list[str], observations: list[dict[str, Any]]) -> list[tup
     by_step = {int(r["result_ref"][1:]): r for r in observations if r.get("result_ref")}
     rows: dict[str, list[str]] = {}
     for step, result in by_step.items():
-        main = "connections" if result["tool"] == "get_connections" else "paths" if result.get("paths") else "entities"
+        main = "connections" if result["tool"] in ("get_connections", "trace_instrumentation", "trace_line") else "paths" if result.get("paths") else "entities"
+        if result.get("derived") and result["tool"] == "isolation_boundary":
+            main = "derived"  # the item itself is context, not a finding
         whole: list[str] = []
         for section in ("entities", "connections", "paths", "boundaries"):
             for row in result.get(section) or []:
@@ -656,6 +666,9 @@ def render_rows(refs: list[str], observations: list[dict[str, Any]]) -> list[tup
                 if report.get("missing_ref"):
                     rows[report["missing_ref"]] = [f"{object_id}: not present in the P&ID: {', '.join(report['missing'])}"]
                     whole.append(report["missing_ref"])
+        for row in result.get("derived") or []:
+            rows[row["ref"]] = [row["statement"]]
+            whole.append(row["ref"])
         status = _status_text(result)
         if status:
             rows[f"E{step}.0"] = status

@@ -20,10 +20,11 @@ def connection_ids(result) -> set[str]:
 
 
 # ------------------------------------------------------------------ envelope
-def test_seven_tools_are_exposed_with_schemas():
+def test_graph_tools_are_exposed_with_schemas():
     specs = tool_specs()
     assert [s["name"] for s in specs] == [
         "find_entities", "list_entities", "get_entity", "get_connections", "traverse", "find_path", "get_properties",
+        "isolation_boundary", "trace_instrumentation", "trace_line",
     ]
     assert all(s["description"] and s["parameters"]["type"] == "object" for s in specs)
 

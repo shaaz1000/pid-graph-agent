@@ -54,6 +54,11 @@ class AgentState(TypedDict, total=False):
     failure_reason: str | None
     failure_category: str | None
     usage: dict[str, int]
+    submission: dict[str, Any] | None  # the validated structured answer, when that contract is used
+    submission_attempts: int
+    requested_outputs: list[dict[str, Any]] | None  # what the question asks for, recorded first
+    decompose_attempts: int
+    repair: dict[str, Any] | None  # the one repair of a rejected final submission
 
 
 class AgentResult(BaseModel):
@@ -83,6 +88,17 @@ class AgentResult(BaseModel):
     iterations: int = 0
     usage: dict[str, int] = Field(default_factory=dict)
     duration_ms: float = 0.0
+    # "structured": the model called submit_answer and the application wrote the answer from
+    # the cited evidence. "prose": the model wrote text with evidence ids (the original contract).
+    answer_mode: str = "prose"
+    # Structured answers only: direct facts, derived facts and unknowns as validated, each
+    # cited row with its canonical facts.
+    submission: dict[str, Any] | None = None
+    # Structured answers only: what the question asks for (q1, q2, ...), recorded before any lookup.
+    requested_outputs: list[dict[str, Any]] | None = None
+    # Structured answers only: set when the final submission was rejected and the model was given
+    # its one chance to repair it. {"initial_problems": [...], "attempted": true, "succeeded": bool}
+    repair: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return self.model_dump(exclude_none=True)

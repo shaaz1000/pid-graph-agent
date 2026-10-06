@@ -26,7 +26,7 @@ from typing import Any
 
 from pid_agent.graph.entity_resolver import camel_tokens
 
-EVIDENCE_SECTIONS = ("entities", "connections", "paths", "boundaries", "properties", "resolution", "evidence")
+EVIDENCE_SECTIONS = ("entities", "connections", "paths", "boundaries", "properties", "derived", "resolution", "evidence")
 UNITS = (
     "m3/h", "m³/h", "kg/h", "l/min", "min-1", "mbar", "barg", "bar", "kPa", "MPa", "Pa", "psi",
     "°C", "°F", "kW", "MW", "m2", "m²", "m3", "m³", "mm", "cm", "km", "rpm", "kg", "%", "m",

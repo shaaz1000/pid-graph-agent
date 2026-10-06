@@ -60,6 +60,7 @@ class ToolCall:
     @classmethod
     def from_raw(cls, call_id: str, name: str, raw_arguments: str | None) -> ToolCall:
         """Parse the model's argument string; a bad string becomes a recorded parse error."""
+        name = clean_tool_name(name)
         raw = raw_arguments or "{}"
         try:
             parsed = json.loads(raw)
@@ -68,6 +69,20 @@ class ToolCall:
         if not isinstance(parsed, dict):
             return cls(call_id, name, None, raw, "arguments must be a JSON object")
         return cls(call_id, name, parsed, raw)
+
+
+# Some hosted models leak chat-protocol control tokens into the name of a tool call
+# ("get_entity<|channel|>commentary"). Such a token starts with this marker.
+CONTROL_TOKEN = "<|"
+
+
+def clean_tool_name(name: str) -> str:
+    """The tool name without a trailing protocol control token.
+
+    Only that contamination is removed. The name is not matched against the known tools and
+    nothing is guessed: a name that is not a tool is still rejected when it is dispatched.
+    """
+    return name.split(CONTROL_TOKEN, 1)[0].strip() if CONTROL_TOKEN in (name or "") else name
 
 
 @dataclass

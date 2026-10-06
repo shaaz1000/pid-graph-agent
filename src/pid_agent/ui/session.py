@@ -29,4 +29,4 @@ def load_graph(settings: Settings) -> GraphSession:
 
 def build_agent(settings: Settings, tools: GraphTools) -> PidAgent:
     """Raises ConfigError when the selected provider has no key or model configured."""
-    return PidAgent(create_llm(settings), tools)
+    return PidAgent(create_llm(settings), tools, answer_mode=settings.answer_mode)

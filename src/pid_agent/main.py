@@ -56,7 +56,7 @@ def _build_agent(settings: Settings):
     from pid_agent.llm import create_llm
 
     llm = create_llm(settings)  # fails early, with a clear message, if the key is missing
-    return PidAgent(llm, _graph_tools(settings))
+    return PidAgent(llm, _graph_tools(settings), answer_mode=settings.answer_mode)
 
 
 def _answer(agent, question: str, args: argparse.Namespace) -> None:

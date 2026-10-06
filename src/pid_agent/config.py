@@ -33,6 +33,10 @@ class Settings:
     # Seconds allowed for one model call; None means the provider adapter's own default.
     llm_timeout_seconds: float | None = None
     max_traversal_depth: int = 25
+    # "structured": the model finishes with submit_answer and the application writes the answer
+    # from the cited evidence. "prose": text with evidence ids, checked sentence by sentence
+    # (the contract of the recorded C01 and cross-P&ID evaluations).
+    answer_mode: str = "structured"
 
     def require_api_key(self) -> str:
         if not self.llm_api_key:
@@ -57,6 +61,13 @@ def _positive_number(name: str) -> float | None:
     return value
 
 
+def _answer_mode() -> str:
+    mode = (os.environ.get("ANSWER_MODE") or "structured").lower()
+    if mode not in ("structured", "prose"):
+        raise ConfigError(f"ANSWER_MODE must be 'structured' or 'prose', got '{mode}'.")
+    return mode
+
+
 def load_settings(env_file: Path | None = None) -> Settings:
     """Build Settings from the process environment, optionally seeded from a .env file."""
     load_dotenv(env_file or PROJECT_ROOT / ".env", override=False)
@@ -70,4 +81,5 @@ def load_settings(env_file: Path | None = None) -> Settings:
         llm_api_key=(os.environ.get(key_variable) or None) if key_variable else None,
         llm_base_url=os.environ.get("LLM_BASE_URL") or None,
         llm_timeout_seconds=_positive_number("LLM_TIMEOUT_SECONDS"),
+        answer_mode=_answer_mode(),
     )

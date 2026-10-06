@@ -33,10 +33,11 @@ def executed(result):
 
 
 # ------------------------------------------------- prompt / tool surface
-def test_only_the_seven_graph_tools_are_offered(tools):
+def test_only_the_graph_tools_are_offered(tools):
     _, llm = run(tools, "q", [call("list_entities")], "Done.")
     assert [t["name"] for t in llm.calls[0]["tools"]] == [
         "find_entities", "list_entities", "get_entity", "get_connections", "traverse", "find_path", "get_properties",
+        "isolation_boundary", "trace_instrumentation", "trace_line",
     ]
 
 

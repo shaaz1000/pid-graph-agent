@@ -23,7 +23,10 @@ CONNECTION_PROPERTIES = (
 )
 # Dropped from the model's view: bookkeeping that carries no plant meaning.
 ENTITY_DROP = {"identifier_origins", "in_topology", "confidence"}
-META_KEEP = ("count", "max_depth", "cycle_detected", "start_is_in_cycle", "truncated_by_max_depth", "stopped_at", "shortest_path_only")
+META_KEEP = ("count", "max_depth", "cycle_detected", "start_is_in_cycle", "truncated_by_max_depth", "stopped_at", "shortest_path_only",
+             "blocked", "blocked_reached", "path_count", "more_paths_exist", "line", "runs", "chains", "connections_without_valve")  # fmt: skip
+# Kept from a computed fact: what it says and how to cite it. Its provenance stays in the trace.
+DERIVED_KEEP = ("ref", "predicate", "subject", "object", "value", "qualifiers", "statement")
 # Per-pipe details not needed to follow a route; get_connections / get_properties have them.
 PATH_STEP_DROP = {"id", "type", "relationship", "nominalDiameterStandard", "pipingClassCode"}
 # What an instrumentation link means, in words, so the model need not know DEXPI class names.
@@ -170,6 +173,7 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
                 "length": path["length"],
                 "direction": path["direction"],
                 "entities": [_ref(e) for e in path["entities"]],
+                **{k: path[k] for k in ("shut_off_valves", "check_valves", "relief_devices", "equipment", "blocked") if k in path},
                 "steps": [
                     {"travelled": s["travelled"], **{k: v for k, v in compact_connection(s["connection"]).items() if k not in PATH_STEP_DROP}}
                     for s in path["steps"]
@@ -181,6 +185,8 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
         out["boundaries"] = [{k: v for k, v in b.items() if k != "reason"} for b in result["boundaries"]]
     if result.get("properties"):
         out["properties"] = _compact_properties(result["properties"])
+    if result.get("derived"):
+        out["derived"] = [{k: row[k] for k in DERIVED_KEEP if row.get(k) not in (None, {}, [])} for row in result["derived"]]
     if result.get("warnings"):
         out["warnings"] = result["warnings"]
     meta = {k: result["meta"][k] for k in META_KEEP if result.get("meta", {}).get(k) not in (None, [], False)}
@@ -222,6 +228,8 @@ def render_evidence(observations: list[dict[str, Any]], limit: int = 40) -> list
                 add(_connection_line(step["connection"]))
         for connection in result.get("connections", []):
             add(_connection_line(connection))
+        for row in result.get("derived", []):
+            add(row["statement"])
         if tool in ("find_entities", "list_entities", "traverse"):
             for entity in result.get("entities", []):
                 suffix = f", distance {entity['distance']}" if "distance" in entity else ""
