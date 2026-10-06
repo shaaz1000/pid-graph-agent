@@ -34,6 +34,12 @@ written; later prompts never overwrite earlier ones.
 | `26-broad-and-deep-generalization-plan.md` | Ingest all 35 official DEXPI 1.3 files, generic dataset selection, SignalLineFunction fix, representative datasets with smoke tests | Preserved development instruction |
 | `27-validator-fixes-and-cross-pid-evaluation.md` | Fix the four generic validator defects found by the smoke test, then one full 37-question cross-P&ID run | Preserved development instruction |
 | `28-post-evaluation-hardening.md` | After the frozen evaluation: close the hedge-word and relation-synonym bypasses, stop token-free factual prose from counting as grounded, correct stale documentation | Preserved development instruction |
+| `29-followup-exercise-from-intuigence.md` | Reviewer feedback and the follow-up exercise (complex and rephrased questions), text of the PDF as received | Authoritative follow-up from Intuigence AI |
+| `30-followup-audit-request.md` | Audit before any change: which question types the tools cover, where regex carries semantics, what is not in DEXPI | Preserved development instruction |
+| `31-followup-structured-answers-and-graph-operations.md` | Structured answers (direct facts, derived facts, unknowns), generic graph operations, consistency evaluator, smoke only | Preserved development instruction |
+| `32-followup-harness-and-evaluator-fixes.md` | No model text in answers, generic unknown coverage, two evaluator defects, tool-name and name-resolution robustness | Preserved development instruction |
+| `33-followup-repair-and-request-coverage.md` | One repair of a rejected final submission; request decomposition with coverage validation; larger-model smoke | Preserved development instruction |
+| `34-followup-model-decision-and-full-run.md` | No paid provider: run the full follow-up on NVIDIA-hosted Nemotron 3 Super (open-weight), commit first | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 
