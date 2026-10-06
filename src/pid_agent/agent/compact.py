@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from pid_agent.agent.status import Provenance, status_statement
+
 CONNECTION_PROPERTIES = (
     "lineNumber",
     "segmentNumber",
@@ -208,8 +210,12 @@ def _connection_line(connection: dict[str, Any]) -> str:
     return f"{c['from']} -> {c['to']} [{c['type']}]" + (f" ({details})" if details else "")
 
 
-def render_evidence(observations: list[dict[str, Any]], limit: int = 40) -> list[str]:
-    """Plain, deterministic statements of what the tool results contain."""
+def render_evidence(observations: list[dict[str, Any]], limit: int = 40, provenance: Provenance | None = None) -> list[str]:
+    """Plain, deterministic statements of what the tool results contain.
+
+    With ``provenance`` a status is given in the application's fixed wording, so that a
+    message repeating the model's own tool input is not shown as evidence.
+    """
     lines: list[str] = []
     seen: set[str] = set()
 
@@ -221,7 +227,7 @@ def render_evidence(observations: list[dict[str, Any]], limit: int = 40) -> list
     for result in observations:
         tool, status = result["tool"], result["status"]
         if status in ("not_found", "ambiguous", "empty", "error") and result.get("message"):
-            add(f"{tool}: {result['message']}")
+            add(f"{tool}: {status_statement(result, provenance) if provenance is not None else result['message']}")
         for path in result.get("paths", []):
             add("path: " + " -> ".join(_ref(e) or "?" for e in path["entities"]))
             for step in path["steps"]:

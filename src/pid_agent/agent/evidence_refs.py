@@ -38,6 +38,7 @@ from pid_agent.agent.claims import (
     validate_claim,
 )
 from pid_agent.agent.compact import _connection_line
+from pid_agent.agent.status import Provenance, status_statement
 from pid_agent.agent.grounding import (
     DISCLAIMER,
     GENERIC_PROPERTY_WORDS,
@@ -633,14 +634,18 @@ def _row_text(row: dict[str, Any], section: str, result: dict[str, Any]) -> str:
     return text
 
 
-def _status_text(result: dict[str, Any]) -> list[str]:
+def _status_text(result: dict[str, Any], provenance: Provenance | None = None) -> list[str]:
+    """The status of a result as text. With ``provenance`` it is the application's fixed
+    wording (see ``status.py``); without it, the tool's own message, as in the prose contract."""
     lines = [str(result["message"])] if result.get("status") in ("not_found", "ambiguous", "empty") and result.get("message") else []
+    if lines and provenance is not None:
+        lines = [status_statement(result, provenance) or "The graph call returned no result."]
     for end in (result.get("meta") or {}).get("endpoint_details") or []:
         lines.append(f"{end['name']} ({end['id']}): " + ("the piping leaves this drawing here; its destination is not shown" if end["kind"] == "drawing_end" else "end of drawn piping"))
     return lines
 
 
-def render_rows(refs: list[str], observations: list[dict[str, Any]]) -> list[tuple[str, str]] | None:
+def render_rows(refs: list[str], observations: list[dict[str, Any]], provenance: Provenance | None = None) -> list[tuple[str, str]] | None:
     """(text, ref) for each cited evidence row, written by code from the structured result.
 
     R<step> stands for the rows that answer that tool's question (reached entities for a
@@ -669,7 +674,7 @@ def render_rows(refs: list[str], observations: list[dict[str, Any]]) -> list[tup
         for row in result.get("derived") or []:
             rows[row["ref"]] = [row["statement"]]
             whole.append(row["ref"])
-        status = _status_text(result)
+        status = _status_text(result, provenance)
         if status:
             rows[f"E{step}.0"] = status
             whole.append(f"E{step}.0")

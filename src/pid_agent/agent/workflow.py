@@ -36,6 +36,7 @@ from pid_agent.agent.prompts import (
     SYSTEM_PROMPT,
 )
 from pid_agent.agent.state import AgentResult, AgentState, TraceStep
+from pid_agent.agent.status import Provenance
 from pid_agent.agent.tools import DECOMPOSE_REQUEST, SUBMIT_ANSWER, GraphTools, decompose_request_spec, requested_outputs, submit_answer_spec, tool_specs
 from pid_agent.llm.base import LLMClient, LLMError, LLMResponse, ToolCall, assistant_message
 
@@ -259,7 +260,7 @@ class PidAgent:
                 trace.append(TraceStep(step=step, tool=DECOMPOSE_REQUEST, input=call.arguments, status=payload["status"], result=payload, executed=False))
             elif call.name == SUBMIT_ANSWER and self._structured and not call.parse_error:
                 # The final answer: checked against the tool results, never executed on the graph.
-                checked = validate_submission(call.arguments or {}, observations, self._tools.resolve_entity, requested)
+                checked = validate_submission(call.arguments or {}, observations, self._tools.resolve_entity, requested, self._provenance(state))
                 attempts += 1
                 if checked.ok:
                     submission = checked.to_dict()
@@ -343,7 +344,7 @@ class PidAgent:
         """Validate a forced submit_answer and record it. Returns (submission or None, problems)."""
         call = next((c for c in response.tool_calls if c.name == SUBMIT_ANSWER and not c.parse_error), None)
         malformed = next((c for c in response.tool_calls if c.name == SUBMIT_ANSWER and c.parse_error), None)
-        checked = validate_submission(call.arguments or {}, state["observations"], self._tools.resolve_entity, state.get("requested_outputs")) if call else None
+        checked = validate_submission(call.arguments or {}, state["observations"], self._tools.resolve_entity, state.get("requested_outputs"), self._provenance(state)) if call else None
         ok = checked is not None and checked.ok
         problems = [] if ok else checked.errors if checked is not None else [f"Malformed submit_answer call: {malformed.parse_error}."] if malformed else ["The model did not call submit_answer."]
         trace.append(TraceStep(step=len(trace) + 1, tool=SUBMIT_ANSWER, input=call.arguments if call else None, status="accepted" if ok else "rejected", executed=False,
@@ -492,8 +493,11 @@ class PidAgent:
                 evidence.setdefault((item["kind"], item["id"]), item)
         return list(evidence.values())
 
-    @staticmethod
-    def _fallback_answer(state: AgentState) -> str:
+    def _provenance(self, state: AgentState) -> Provenance:
+        """What a status row may show: words of the user's question and names in the graph."""
+        return Provenance(state["question"], self._tools.graph_names())
+
+    def _fallback_answer(self, state: AgentState) -> str:
         """A cautious answer assembled directly from structured evidence, with no model text."""
         failure, unsupported = state["failure_reason"], state["unsupported_claims"]
         if failure and failure.startswith("llm_error"):
@@ -512,7 +516,8 @@ class PidAgent:
             head = OUT_OF_SCOPE
         else:
             head = f"{NO_ANSWER} The model did not produce a usable answer."
-        lines = render_evidence(state["observations"])
+        # Structured answers show no text a model could have chosen, also when an answer is withheld.
+        lines = render_evidence(state["observations"], provenance=self._provenance(state) if self._structured else None)
         if not lines:
             return f"{head} No graph evidence was collected."
         return head + "\n\nWhat the graph tools returned:\n" + "\n".join(f"- {line}" for line in lines)

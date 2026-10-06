@@ -305,6 +305,22 @@ def submit_answer_spec() -> dict[str, Any]:
 class GraphTools:
     def __init__(self, service: GraphService) -> None:
         self._service = service
+        self._graph_names: frozenset[str] | None = None
+
+    def graph_names(self) -> frozenset[str]:
+        """Every id, name, tag, identifier, type and line number in the graph, lower-cased.
+
+        Used to decide whether a value may be shown as graph data. Compared whole, never searched.
+        """
+        if self._graph_names is None:
+            index, names = self._service.index, set()
+            for entity in index.entities.values():
+                names.update([entity.id, entity.name, entity.tag or "", entity.type, entity.category, *entity.type_hierarchy, *entity.identifiers.values(), *(c.id for c in entity.children)])
+            names.update(index.objects)
+            for connection in index.connections.values():
+                names.update([connection.id, str(connection.properties.get("lineNumber") or "")])
+            self._graph_names = frozenset(" ".join(str(n).split()).casefold() for n in names if n)
+        return self._graph_names
 
     def resolve_entity(self, text: str) -> list[tuple[str, str]]:
         """(id, name) of the entities an id, tag or name denotes: one, several, or none."""

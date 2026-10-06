@@ -24,6 +24,7 @@ from typing import Any
 
 from pid_agent.agent.claims import build_facts
 from pid_agent.agent.evidence_refs import _status_text, render_rows
+from pid_agent.agent.status import Provenance
 from pid_agent.agent.tools import SubmitAnswerArgs
 
 # Tools whose every row is computed by a graph algorithm rather than read from one object.
@@ -81,8 +82,10 @@ def fact_key(fact: dict[str, Any]) -> str:
 class EvidenceRegistry:
     """Every citable row of the tool results: its kind, its wording and its canonical facts."""
 
-    def __init__(self, observations: list[dict[str, Any]]) -> None:
+    def __init__(self, observations: list[dict[str, Any]], provenance: Provenance | None = None) -> None:
         self.observations = observations
+        # Decides which values a status row may show; nothing from a tool's input by default.
+        self.provenance = provenance or Provenance()
         self._index = build_facts(observations)
         self._kind: dict[str, str] = {}
         self._derived: dict[str, dict[str, Any]] = {}
@@ -119,7 +122,7 @@ class EvidenceRegistry:
 
     def rows(self, ref: str) -> list[tuple[str, str]] | None:
         """(wording, row id) for an evidence id; R<step> gives every row of that result."""
-        return render_rows([ref], self.observations)
+        return render_rows([ref], self.observations, self.provenance)
 
     def kind(self, row_ref: str) -> str:
         return self._kind.get(row_ref, "direct")
@@ -211,11 +214,16 @@ def render_submission(submission: dict[str, Any]) -> str:
 Resolver = Callable[[str], list[tuple[str, str]]]  # an id, tag or name -> the (id, name) it denotes
 
 
-def validate_submission(arguments: dict[str, Any], observations: list[dict[str, Any]], resolve: Resolver | None = None, requested: list[dict[str, Any]] | None = None) -> Submission:
+def validate_submission(arguments: dict[str, Any], observations: list[dict[str, Any]], resolve: Resolver | None = None, requested: list[dict[str, Any]] | None = None,
+                        provenance: Provenance | None = None) -> Submission:
     """Check a ``submit_answer`` call against the tool results and build the answer from it.
 
     ``resolve`` turns what the model wrote in ``unknowns.about`` into entities, with the same
     deterministic resolver the tools use. Without it only ids from the tool results are accepted.
+
+    ``provenance`` (the user's question and the names that exist in the graph) decides which
+    values the status of an empty or failed lookup may show; a tool input is never shown just
+    because a tool repeated it.
 
     ``requested`` is the decomposition of the question (ids q1, q2, ...). Every one of them
     must be covered by cited evidence or by an unknown. This checks that nothing asked was
@@ -228,7 +236,7 @@ def validate_submission(arguments: dict[str, Any], observations: list[dict[str, 
         problems = getattr(exc, "errors", lambda: [])()
         out.errors.append("Invalid submit_answer arguments: " + ("; ".join(f"{'.'.join(map(str, e['loc']))}: {e['msg']}" for e in problems) or str(exc)))
         return out
-    registry = EvidenceRegistry(observations)
+    registry = EvidenceRegistry(observations, provenance)
     seen: set[str] = set()
     covered: dict[str, dict[str, list[str]]] = {}
 
