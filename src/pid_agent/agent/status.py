@@ -5,7 +5,7 @@ chooses that input. If such a message were shown as evidence, a model could put 
 into a lookup and have it printed in the answer. So a status shown to the user is written
 here, from fixed templates, and a value is inserted only when its provenance is established:
 
-* it occurs in the user's question, or
+* it occurs in the user's question as whole words, or
 * it is canonical graph data: an id, a name, a tag, an identifier, a type or a line number
   that exists in the graph, compared whole, or
 * it is one of the tool's own enumerated options (a direction, a relationship).
@@ -33,7 +33,15 @@ class Provenance:
         text = " ".join(str(value).split()) if isinstance(value, str) else ""
         if len(text) < 2:
             return False
-        return text.casefold() in self.graph_names or text.casefold() in " ".join(self.question.split()).casefold()
+        return text.casefold() in self.graph_names or self._in_question(text)
+
+    def _in_question(self, text: str) -> bool:
+        """Whether ``text`` is a run of whole words of the question.
+
+        Whole words, not characters: "safe to open" is not in "Is it unsafe to open?".
+        """
+        asked, wanted = _words(self.question), _words(text)
+        return bool(wanted) and any(asked[i : i + len(wanted)] == wanted for i in range(len(asked) - len(wanted) + 1))
 
     def quoted(self, value: Any) -> str:
         """`` '<value>'`` when it may be shown, otherwise nothing."""
@@ -41,6 +49,14 @@ class Provenance:
 
     def named(self, value: Any, otherwise: str) -> str:
         return " ".join(str(value).split()) if self.shows(value) else otherwise
+
+
+EDGE_PUNCTUATION = ".,;:!?\"'()[]{}"
+
+
+def _words(text: str) -> list[str]:
+    """Lower-cased words, without the punctuation around them ("T4750?" and "T4750" are one word)."""
+    return [word for word in (token.strip(EDGE_PUNCTUATION).casefold() for token in text.split()) if word]
 
 
 def _ids(items: list[Any], provenance: Provenance) -> list[str]:

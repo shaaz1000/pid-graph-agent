@@ -469,6 +469,13 @@ def test_a_harmless_name_that_is_neither_asked_nor_in_the_graph_is_left_out(tool
     assert "The requested type 'PressureReliefValve' is not present in the P&ID graph." in asked.answer  # the user's own word may be repeated
 
 
+def test_a_fragment_of_a_word_in_the_question_is_not_the_users_text(tools):
+    result = status_answer(tools, "Is it inadvisable today?", call("find_entities", query="advisable today"))
+    assert "No matching entity was found in the P&ID graph." in result.answer and "advisable today" not in result.answer
+    whole = status_answer(tools, "Is it inadvisable today?", call("find_entities", query="inadvisable today"))
+    assert "for 'inadvisable today'" in whole.answer
+
+
 def test_a_withheld_answer_does_not_show_model_supplied_text_either(tools):
     one = [call("decompose_request", requested_outputs=[{"description": "the item"}])]
     bad = [call("submit_answer", direct_facts=["E9.9"])]
@@ -486,6 +493,11 @@ def test_provenance_is_whole_value_membership_not_a_search(tools):
     assert provenance.shows("T4750") and provenance.shows("pi4712.01") and provenance.shows("Tank-1") and provenance.shows("SV 104.01") and provenance.shows("47126")
     assert not provenance.shows("T4750 must be drained first") and not provenance.shows("Tank-1 is safe") and not provenance.shows("") and not provenance.shows(None)
     assert provenance.shows("where is PI4712.01")  # the user's own words
+    # whole words of the question, never a fragment of one: a substring could reverse the meaning
+    wary = Provenance("Is it unsafe to open P-4712, or not recommended?", frozenset())
+    assert wary.shows("unsafe to open") and wary.shows("P-4712") and wary.shows("not recommended") and wary.shows("p-4712,")
+    for fragment in ("safe to open", "safe", "recommended? yes", "open P-47", "it unsafe to open P-4712 or"):
+        assert wary.shows(fragment) is (fragment == "it unsafe to open P-4712 or"), fragment
     source = (ROOT / "src" / "pid_agent" / "agent" / "status.py").read_text()
     assert "import re" not in source and "re." not in source.replace("pre.", "").replace("more.", "")  # templates and membership, no pattern matching
 
