@@ -44,6 +44,7 @@ CATEGORY_WORDS = {
     "piping_line": [("line",)],
 }
 MAX_NGRAM = 3
+MIN_ABBREVIATION = 4  # shortest token accepted as an abbreviation of a type word
 SUGGESTION_CUTOFF = 0.75
 MAX_SUGGESTIONS = 5
 
@@ -130,6 +131,7 @@ class EntityResolver:
                     for start in range(len(tokens) - size + 1):
                         phrase = tokens[start : start + size]
                         self._type_phrases.setdefault(phrase, set()).add(entity.id)
+        self._type_words = {word for phrase in self._type_phrases for word in phrase}
 
     def _add_identifier(self, entity_id: str, key: str, value: str) -> None:
         self._identifiers.setdefault(normalize_identifier(value), []).append(
@@ -139,8 +141,16 @@ class EntityResolver:
     # ------------------------------------------------------------- type API
     def entities_of_type(self, phrase: str) -> set[str] | None:
         """Entity ids matching a type phrase, or None if the phrase is not a known type."""
-        tokens = tuple(singular(t) for t in camel_tokens(phrase.replace("_", " ")))
+        tokens = tuple(self._expand(singular(t)) for t in camel_tokens(phrase.replace("_", " ")))
         return self._type_phrases.get(tokens)
+
+    def _expand(self, token: str) -> str:
+        """The type word a token abbreviates, when it is the start of exactly one type word
+        present in this plant ("recip" -> "reciprocating"); otherwise the token itself."""
+        if token in self._type_words or len(token) < MIN_ABBREVIATION:
+            return token
+        words = [word for word in self._type_words if word.startswith(token)]
+        return words[0] if len(words) == 1 else token
 
     def type_catalogue(self) -> dict[str, int]:
         counts: dict[str, int] = {}
@@ -289,7 +299,7 @@ class EntityResolver:
         self, tokens: list[str], consumed: set[int]
     ) -> list[tuple[tuple[str, ...], set[str]]]:
         """Longest-first, non-overlapping type phrases among unconsumed tokens."""
-        lowered = [singular(t.casefold()) for t in tokens]
+        lowered = [self._expand(singular(t.casefold())) for t in tokens]
         found: list[tuple[int, tuple[str, ...], set[str]]] = []
         for size in range(min(MAX_NGRAM, len(tokens)), 0, -1):
             for start in range(len(tokens) - size + 1):
@@ -308,9 +318,13 @@ class EntityResolver:
         if not phrases:
             return
         matches: dict[str, Match] = {}
+        # Several type words describe one kind of item when some item fits them all
+        # ("plate exchanger"); otherwise they name different kinds ("pumps and valves").
+        shared = set.intersection(*(ids for _, ids in phrases))
         for phrase, ids in phrases:
             for entity_id in ids:
-                matches.setdefault(entity_id, self._match(entity_id, "type", "type", " ".join(phrase)))
+                if not shared or entity_id in shared:
+                    matches.setdefault(entity_id, self._match(entity_id, "type", "type", " ".join(phrase)))
         resolution.matches = [matches[i] for i in self._entities if i in matches]
         lowered = [t.casefold() for t in tokens]
         is_set_query = bool(QUANTIFIERS.intersection(lowered)) or any(
@@ -319,7 +333,7 @@ class EntityResolver:
         resolution.ambiguous = len(resolution.matches) > 1 and not is_set_query
         unknown = [
             tokens[i] for i in range(len(tokens))
-            if i not in consumed and lowered[i] not in STOPWORDS
+            if i not in consumed and lowered[i] not in STOPWORDS and (singular(lowered[i]),) not in self._type_phrases
         ]
         if unknown:
             resolution.warnings.append(

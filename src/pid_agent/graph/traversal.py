@@ -57,6 +57,8 @@ class TraversalOutcome:
     frontier: set[str] = field(default_factory=set)
     stopped_at: list[str] = field(default_factory=list)
     chamber_skips: list[tuple[str, str, str, str]] = field(default_factory=list)
+    # Blocked entities the search ran into (and did not pass).
+    blocked_at: list[str] = field(default_factory=list)
 
     @property
     def visited_count(self) -> int:
@@ -103,7 +105,9 @@ class FlowGraph:
         direction: Direction,
         max_depth: int,
         stop_at: Callable[[str], bool] | None = None,
+        blocked: frozenset[str] = frozenset(),
     ) -> TraversalOutcome:
+        """``blocked`` entities are treated as closed: no path enters or passes them."""
         outcome = TraversalOutcome(start=start)
         start_state: State = (start, None)
         outcome.states.add(start_state)
@@ -126,6 +130,10 @@ class FlowGraph:
                     continue
                 neighbour = connection.target if with_flow else connection.source
                 assert neighbour is not None
+                if neighbour in blocked:
+                    if neighbour not in outcome.blocked_at:
+                        outcome.blocked_at.append(neighbour)
+                    continue
                 next_state: State = (neighbour, nozzle_chamber(connection, neighbour, not with_flow))
                 if next_state in outcome.states:
                     if direction != "both":
@@ -158,3 +166,35 @@ class FlowGraph:
             state, step = parents[state]
             steps.append(step)
         return tuple(reversed(steps))
+
+    def simple_paths(self, start: str, target: str, direction: Direction, max_length: int, limit: int, blocked: frozenset[str] = frozenset()) -> tuple[list[tuple[Step, ...]], bool]:
+        """Every route from ``start`` to ``target`` that visits no entity twice, shortest first.
+
+        The chamber rule applies as in ``bfs``; ``blocked`` entities are never entered. Returns
+        the routes and whether the search was cut short by ``limit``.
+        """
+        found: list[tuple[Step, ...]] = []
+        truncated = False
+
+        def walk(node: str, chamber: str | None, steps: tuple[Step, ...], visited: frozenset[str]) -> None:
+            nonlocal truncated
+            if len(found) >= limit:
+                truncated = True
+                return
+            if node == target:
+                found.append(steps)
+                return
+            if len(steps) >= max_length:
+                return
+            for connection, with_flow in self._moves(node, direction):
+                exit_chamber = nozzle_chamber(connection, node, as_source=with_flow)
+                if steps and chamber and exit_chamber and chamber != exit_chamber:
+                    continue
+                neighbour = connection.target if with_flow else connection.source
+                assert neighbour is not None
+                if neighbour in visited or neighbour in blocked:
+                    continue
+                walk(neighbour, nozzle_chamber(connection, neighbour, not with_flow), (*steps, Step(connection.id, node, neighbour, with_flow)), visited | {neighbour})
+
+        walk(start, None, (), frozenset({start}))
+        return sorted(found, key=len), truncated

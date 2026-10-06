@@ -1,4 +1,4 @@
-"""GraphService: the seven generic, LLM-independent graph operations.
+"""GraphService: the generic, LLM-independent graph operations.
 
 Every method returns a ToolResult whose ``evidence`` lists the graph facts it relied on.
 The service implements graph mechanics only; deciding which results answer a question is
@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from pid_agent.graph import analysis
 from pid_agent.graph.entity_resolver import EntityResolver, camel_tokens
 from pid_agent.graph.normalizer import PlantIndex, normalize
 from pid_agent.graph.traversal import DIRECTIONS, FlowGraph, Reach, TraversalOutcome
@@ -23,11 +24,32 @@ logger = logging.getLogger(__name__)
 RELATIONSHIPS = ("piping", "instrumentation", "all")
 PATH_DIRECTIONS = ("downstream", "upstream", "any")
 DEFAULT_MAX_DEPTH = 25
+MAX_PATHS = 12
 MIN_PARTIAL_PROPERTY_LENGTH = 4
 
 
 def _normalize_property(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.casefold())
+
+
+def _number_and_unit(text: str) -> tuple[float, str] | None:
+    """(84.0, "kw") for "84 kW" or "84.0kW"; None when the text does not start with a number."""
+    text = str(text).strip()
+    end = 0
+    while end < len(text) and (text[end].isdigit() or text[end] in ".-+"):
+        end += 1
+    try:
+        return float(text[:end]), "".join(text[end:].split()).casefold()
+    except ValueError:
+        return None
+
+
+def same_value(actual: Any, wanted: Any) -> bool:
+    """Equal ignoring case and spacing; numbers compare as numbers when the units agree."""
+    a, b = _number_and_unit(actual), _number_and_unit(wanted)
+    if a is not None and b is not None:
+        return a[0] == b[0] and (a[1] == b[1] or not b[1])
+    return "".join(str(actual).split()).casefold() == "".join(str(wanted).split()).casefold()
 
 
 class GraphService:
@@ -36,6 +58,7 @@ class GraphService:
         self._resolver = EntityResolver(index.entities)
         self._flow = FlowGraph(index.connections.values())
         self._max_depth_limit = max_depth_limit
+        self.piping = analysis.PipingIndex(index.connections)
 
     @classmethod
     def from_file(cls, xml_file: Path | str, max_depth_limit: int = DEFAULT_MAX_DEPTH) -> GraphService:
@@ -89,8 +112,8 @@ class GraphService:
             )
         return result
 
-    def list_entities(self, entity_type: str | None = None) -> ToolResult:
-        result = ToolResult(tool="list_entities", status="success", input={"entity_type": entity_type})
+    def list_entities(self, entity_type: str | None = None, properties: list[str] | None = None, property_filter: dict[str, Any] | None = None) -> ToolResult:
+        result = ToolResult(tool="list_entities", status="success", input={"entity_type": entity_type, "properties": properties, "property_filter": property_filter})
         if not entity_type:
             result.properties = {
                 "types": self._resolver.type_catalogue(),
@@ -105,11 +128,27 @@ class GraphService:
             result.message = f"'{entity_type}' is not a type present in the P&ID graph."
             result.properties = {"types": self._resolver.type_catalogue()}
             return result
+        wanted = [*(properties or []), *[n for n in (property_filter or {}) if n not in (properties or [])]]
         for entity in self._index.entities.values():
-            if entity.id in ids:
-                result.entities.append(entity.summary())
-                result.evidence.append(self._entity_evidence(entity))
+            if entity.id not in ids:
+                continue
+            row = entity.summary()
+            if wanted:
+                # Requested attributes, read from the item, its line context and its sub-objects.
+                found = self._property_report(self._property_sources(entity.id, result)[1], wanted)["found"]  # type: ignore[index]
+                if any(not any(_normalize_property(i["property"]) == _normalize_property(name) and same_value(i["value"], value) for i in found) for name, value in (property_filter or {}).items()):
+                    continue
+                # Each value with the object that carries it, when that is a sub-object or the line.
+                row["attributes"] = [{"property": i["property"], "value": i["value"], **({"on": i["source_object_id"]} if i["source_object_id"] != entity.id else {})} for i in found]
+                for item in found:
+                    result.evidence.append(Evidence(kind="property", id=f"{item['source_object_id']}.{item['property']}", source_graph="plant_graph", source_object_ids=[item["source_object_id"]],
+                                                    fact={"object_id": item["source_object_id"], "property": item["property"], "value": item["value"], "scope": item["scope"]}))  # fmt: skip
+            result.entities.append(row)
+            result.evidence.append(self._entity_evidence(entity))
         result.meta["count"] = len(result.entities)
+        if not result.entities:
+            result.status = "empty"
+            result.message = f"No '{entity_type}' has {property_filter}."
         return result
 
     def get_entity(self, entity_id: str, include_children: bool = False) -> ToolResult:
@@ -181,12 +220,15 @@ class GraphService:
         entity_types: list[str] | None = None,
         max_depth: int | None = None,
         stop_at_types: list[str] | None = None,
+        blocked_entity_ids: list[str] | None = None,
     ) -> ToolResult:
         result = ToolResult(
             tool="traverse",
             status="success",
             input={"start_entity_id": start_entity_id, "direction": direction, "entity_types": entity_types, "max_depth": max_depth, "stop_at_types": stop_at_types},
         )
+        if blocked_entity_ids:
+            result.input["blocked_entity_ids"] = blocked_entity_ids
         if not self._check_choice(result, "direction", direction, DIRECTIONS):
             return result
         start = self._require_topology_entity(start_entity_id, result)
@@ -195,8 +237,11 @@ class GraphService:
         depth = self._clamp_depth(max_depth, result)
         wanted = self._type_filter(entity_types, "entity_types", result)
         stops = self._type_filter(stop_at_types, "stop_at_types", result)
+        blocked = self._blocked(blocked_entity_ids, result, start.id)
+        if blocked is None:
+            return result
         outcome = self._flow.bfs(
-            start.id, direction, depth, stop_at=(lambda i: i in stops) if stops is not None else None  # type: ignore[arg-type]
+            start.id, direction, depth, stop_at=(lambda i: i in stops) if stops is not None else None, blocked=blocked  # type: ignore[arg-type]
         )
         used_connections: dict[str, Connection] = {}
         endpoints: list[str] = []
@@ -236,14 +281,22 @@ class GraphService:
         ]
         # Entities where the search stopped only because of max_depth (also unfiltered).
         result.meta["unexplored_beyond_max_depth"] = sorted(outcome.frontier - {start.id})
+        if blocked:
+            # A hypothetical: these items were treated as closed. Nothing is said about the process.
+            result.meta["blocked"] = sorted(blocked)
+            result.meta["blocked_reached"] = outcome.blocked_at
         if not result.entities:
             result.status = "empty"
             what = f" of type {entity_types}" if entity_types else ""
             result.message = f"No entities{what} found {direction} of {start.id} within depth {depth}."
         return result
 
-    def find_path(self, source_entity_id: str, target_entity_id: str, direction: str = "downstream") -> ToolResult:
+    def find_path(self, source_entity_id: str, target_entity_id: str, direction: str = "downstream", all_paths: bool = False, blocked_entity_ids: list[str] | None = None) -> ToolResult:
         result = ToolResult(tool="find_path", status="success", input={"source_entity_id": source_entity_id, "target_entity_id": target_entity_id, "direction": direction})
+        if all_paths:
+            result.input["all_paths"] = True
+        if blocked_entity_ids:
+            result.input["blocked_entity_ids"] = blocked_entity_ids
         if not self._check_choice(result, "direction", direction, PATH_DIRECTIONS):
             return result
         source = self._require_topology_entity(source_entity_id, result)
@@ -258,32 +311,61 @@ class GraphService:
             if entity.id not in self._flow:
                 result.warnings.append(f"{entity.id} ({entity.type}) has no piping connections, so it cannot be on a piping path. Use get_connections to see its instrumentation links.")
         travel = "both" if direction == "any" else direction
-        outcome = self._flow.bfs(source.id, travel, self._max_depth_limit)  # type: ignore[arg-type]
+        blocked = self._blocked(blocked_entity_ids, result, source.id, target.id)
+        if blocked is None:
+            return result
+        closed = f" with {', '.join(sorted(blocked))} treated as closed" if blocked else ""
+        outcome = self._flow.bfs(source.id, travel, self._max_depth_limit, blocked=blocked)  # type: ignore[arg-type]
         reach = outcome.reached.get(target.id)
+        if blocked:
+            result.meta["blocked"] = sorted(blocked)
         if reach is None:
             result.status = "empty"
-            result.message = f"No {direction} piping path from {source.id} to {target.id} exists in the P&ID graph."
-            result.meta["no_path"] = {"source": source.id, "target": target.id, "direction": direction}
-            if direction != "any":
+            result.message = f"No {direction} piping path from {source.id} to {target.id} exists in the P&ID graph{closed}."
+            result.meta["no_path"] = {"source": source.id, "target": target.id, "direction": direction, **({"blocked": sorted(blocked)} if blocked else {})}
+            if direction != "any" and not blocked:
                 opposite = "upstream" if direction == "downstream" else "downstream"
                 if target.id in self._flow.bfs(source.id, opposite, self._max_depth_limit).reached:  # type: ignore[arg-type]
                     result.warnings.append(f"A path does exist in the {opposite} direction.")
             self._chamber_boundaries(outcome, direction, result)
             return result
-        steps = []
-        for step in reach.steps:
-            connection = self._index.connections[step.connection_id]
-            steps.append({
-                "from": self._entity_ref(step.from_id),
-                "to": self._entity_ref(step.to_id),
-                "travelled": "with_flow" if step.with_flow else "against_flow",
-                "connection": self._connection_view(connection),
-            })
-            result.evidence.append(self._connection_evidence(connection))
-        result.paths.append({"length": reach.distance, "direction": direction, "entities": [self._entity_ref(i) for i in reach.entity_path], "steps": steps})
+        routes, cut_short = self._flow.simple_paths(source.id, target.id, travel, self._max_depth_limit, MAX_PATHS, blocked) if all_paths else ([reach.steps], False)  # type: ignore[arg-type]
+        for route in routes:
+            found = Reach(target.id, len(route), route)
+            steps = []
+            for step in route:
+                connection = self._index.connections[step.connection_id]
+                steps.append({
+                    "from": self._entity_ref(step.from_id),
+                    "to": self._entity_ref(step.to_id),
+                    "travelled": "with_flow" if step.with_flow else "against_flow",
+                    "connection": self._connection_view(connection),
+                })
+                result.evidence.append(self._connection_evidence(connection))
+            path = {"length": found.distance, "direction": direction, "entities": [self._entity_ref(i) for i in found.entity_path], "steps": steps}
+            # What lies on the route, by kind, so that routes can be told apart.
+            for role, name in (("isolation_valve", "shut_off_valves"), ("check_valve", "check_valves"), ("relief_device", "relief_devices"), ("equipment", "equipment")):
+                on_route = [i for i in found.entity_path[1:-1] if analysis.piping_role(self._index.entities[i]) == role]
+                if on_route:
+                    path[name] = on_route
+            if blocked:
+                path["blocked"] = sorted(blocked)
+            result.paths.append(path)
         result.evidence.insert(0, self._path_evidence(source.id, reach))
-        result.meta["shortest_path_only"] = True
+        result.meta["shortest_path_only"] = not all_paths
+        if all_paths:
+            result.meta["path_count"] = len(routes)
+            result.meta["more_paths_exist"] = cut_short
         return result
+
+    def isolation_boundary(self, entity_id: str) -> ToolResult:
+        return analysis.isolation_boundary(self, entity_id)
+
+    def trace_instrumentation(self, entity_id: str) -> ToolResult:
+        return analysis.trace_instrumentation(self, entity_id)
+
+    def trace_line(self, line: str) -> ToolResult:
+        return analysis.trace_line(self, line)
 
     def get_properties(self, ids: list[str] | str, requested_properties: list[str] | None = None) -> ToolResult:
         id_list = [ids] if isinstance(ids, str) else list(ids)
@@ -374,6 +456,20 @@ class GraphService:
             )
             return None
         return entity
+
+    def _blocked(self, ids: list[str] | None, result: ToolResult, *ends: str) -> frozenset[str] | None:
+        """Entity ids to treat as closed, or None (with the error set) if one is unusable."""
+        blocked: set[str] = set()
+        for item in ids or []:
+            entity = self._require_topology_entity(item, result)
+            if entity is None:
+                return None
+            if entity.id in ends:
+                result.status = "error"
+                result.message = f"{entity.id} is an end of the search and cannot also be blocked."
+                return None
+            blocked.add(entity.id)
+        return frozenset(blocked)
 
     def _clamp_depth(self, max_depth: int | None, result: ToolResult) -> int:
         if max_depth is None:

@@ -130,7 +130,7 @@ class Connection(BaseModel):
 class Evidence(BaseModel):
     """One graph fact, with enough provenance to trace it back to DEXPI objects."""
 
-    kind: Literal["entity", "connection", "property", "path", "open_end", "boundary"]
+    kind: Literal["entity", "connection", "property", "path", "open_end", "boundary", "derived"]
     id: str
     fact: dict[str, Any]
     source_graph: SourceGraph
@@ -151,6 +151,9 @@ class ToolResult(BaseModel):
     # an exchanger). Graph-derived facts; the matching text in ``warnings`` is only prose.
     boundaries: list[dict[str, Any]] = Field(default_factory=list)
     properties: dict[str, Any] = Field(default_factory=dict)
+    # Facts computed by a graph algorithm (a boundary, a chain, a run of a line): each row is a
+    # typed fact with the operation and the graph objects it was computed from.
+    derived: list[dict[str, Any]] = Field(default_factory=list)
     resolution: dict[str, Any] | None = None
     evidence: list[Evidence] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
