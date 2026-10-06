@@ -1,0 +1,2706 @@
+{
+  "suite": "complex",
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "87953f481aa3c1273cdb34f8ea200ed0ba41d50a",
+  "dirty": false,
+  "run_id": "20261007T012434",
+  "questions": 27,
+  "outcomes": {
+    "partial": 11,
+    "correct": 11,
+    "withheld": 2,
+    "incorrect": 3
+  },
+  "mean_score": 0.64,
+  "required_facts": {
+    "found": 82,
+    "of": 128
+  },
+  "required_unknowns": {
+    "named": 4,
+    "of": 8
+  },
+  "forbidden_facts_cited": 0,
+  "grounding": {
+    "structured_answers": 25,
+    "withheld": 2,
+    "provider_failures": 0,
+    "rejected_submissions": 11,
+    "final_repairs": {
+      "attempted": 3,
+      "succeeded": 3
+    },
+    "requested_outputs": {
+      "total": 69,
+      "covered_by_facts": 59,
+      "marked_unknown": 15,
+      "unaccounted": 0
+    },
+    "unsupported_facts_in_answers": 0,
+    "model_text_shown": 0,
+    "answers_with_log_only_summary": 5
+  },
+  "efficiency": {
+    "runs": 27,
+    "llm_calls": 211,
+    "tool_calls": 146,
+    "tokens": 1454399,
+    "median_latency_s": 43.9,
+    "mean_latency_s": 54.7
+  },
+  "rows": [
+    {
+      "id": "C1",
+      "source": "provided",
+      "type": "Isolation",
+      "question": "Which valves must be closed to isolate T4750 for maintenance? List them in the order you would close them, explain the order, and say which connections this drawing does not let you isolate.",
+      "outcome": "partial",
+      "score": 0.8,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "required": [
+        {
+          "item": "GlobeValve-2 bounds Tank-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "GlobeValve-1 bounds Tank-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ButterflyValve-1 bounds Tank-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the line from SV 104.01 has no isolation valve",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "unknown: operating_procedure",
+          "kind": "unknown",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 55,
+      "cause": "answer synthesis",
+      "answer": "Facts in the drawing\n- GlobeValve-2 (GlobeValve 47123/C1) -> Tank-1 (T4750) [pipe] (lineNumber 47123, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNb) [E4.2]\n- GlobeValve-1 (GlobeValve 47127/C1) -> Tank-1 (T4750) [pipe] (lineNumber 47127, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode MNc) [E4.4]\n- Tank-1 (T4750) -> ButterflyValve-1 (ButterflyValve 47124/C1) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc) [E4.5]\n- SpringLoadedGlobeSafetyValve-1 (SV 104.01) -> Tank-1 (T4750) [pipe] (lineNumber 47125, segmentNumber S2, nominalDiameterRepresentation DN 50, fluidCode MNc) [E4.3]\n\nDerived by graph analysis of the drawing\n- SV 104.01 (SpringLoadedGlobeSafetyValve-1) discharges into the piping around T4750 (Tank-1) with no valve in between (line 47125, DN 50); it does not relieve this region [E3.5, isolation_boundary]\n- GlobeValve 47123/C1 (GlobeValve-2) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47123, DN 80) [E3.2, isolation_boundary]\n- GlobeValve 47127/C1 (GlobeValve-1) is the nearest valve on the upstream side of T4750 (Tank-1) (line 47127, DN 50) [E3.3, isolation_boundary]\n- ButterflyValve 47124/C1 (ButterflyValve-1) is the nearest valve on the downstream side of T4750 (Tank-1) (line 47124, DN 80) [E3.4, isolation_boundary]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Valves that must be closed to isolate T4750 for maintenance",
+          "covered_by": {
+            "direct": [
+              "E4.2",
+              "E4.4",
+              "E4.5"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "ordering_or_procedure",
+          "description": "Order in which to close those valves",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E3.2",
+              "E3.3",
+              "E3.4"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "explanation",
+          "description": "Explanation of the closing order",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E3.2",
+              "E3.3",
+              "E3.4"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "items",
+          "description": "Connections that this drawing does not let you isolate",
+          "covered_by": {
+            "direct": [
+              "E4.3"
+            ],
+            "derived": [
+              "E3.5"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "isolation_boundary",
+        "get_connections",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 8,
+      "tool_calls": 4,
+      "latency_s": 114.6
+    },
+    {
+      "id": "C2",
+      "source": "provided",
+      "type": "Isolation",
+      "question": "How would you isolate H1007? If the drawing doesn't give you what you need, say what is missing.",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "GlobeValve-2 bounds PlateHeatExchanger-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "no valve between H1007 and P4711",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "line 47130 at PlateHeatExchanger-1 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "line 47131 at PlateHeatExchanger-1 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "H1007 cannot be fully isolated with the valves drawn",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 7,
+      "cause": null,
+      "answer": "Facts in the drawing\n- H1007 (PlateHeatExchanger-1), PlateHeatExchanger [E2.1]\n\nDerived by graph analysis of the drawing\n- GlobeValve 47123/C1 (GlobeValve-2) is the nearest valve on the downstream side of H1007 (PlateHeatExchanger-1) (line 47123, DN 80) [E3.2, isolation_boundary]\n- No valve between H1007 (PlateHeatExchanger-1) and P4711 (CentrifugalPump-1) (line 47122, DN 80) [E3.3, isolation_boundary]\n- No valve on the upstream side of H1007 (PlateHeatExchanger-1) before line 47130, DN 50 leaves the drawing: the other end of this pipe is not represented [E3.4, isolation_boundary]\n- No valve on the downstream side of H1007 (PlateHeatExchanger-1) before line 47131, DN 50 leaves the drawing: the other end of this pipe is not represented [E3.5, isolation_boundary]\n- H1007 (PlateHeatExchanger-1) cannot be fully isolated with the valves on this drawing: 3 connection(s) have no shut-off valve [E3.6, isolation_boundary]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "ordering_or_procedure",
+          "description": "Procedure to isolate H1007 (list of valves to close)",
+          "covered_by": {
+            "direct": [
+              "E2.1"
+            ],
+            "derived": [
+              "E3.2",
+              "E3.3",
+              "E3.4",
+              "E3.5",
+              "E3.6"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "isolation_boundary"
+      ],
+      "repair": null,
+      "llm_calls": 4,
+      "tool_calls": 2,
+      "latency_s": 14.5
+    },
+    {
+      "id": "C3",
+      "source": "provided",
+      "type": "Trip impact",
+      "question": "If P4712 trips, which equipment loses flow, and which instrument readings and control loops are affected?",
+      "outcome": "partial",
+      "score": 0.333,
+      "profile": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "H1008 is downstream of P4712",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "T4750 is downstream of P4712",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ProcessSignalGeneratingFunction-1 measures at BlindFlange-1",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ActuatingFunction-1 operates GlobeValve-1",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "unknown: process_behaviour / operating_state",
+          "kind": "unknown",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "not_represented"
+      ],
+      "cited_facts": 8,
+      "cause": "incomplete traversal",
+      "answer": "Facts in the drawing\n- ProcessSignalGeneratingFunction-3 (TT4750.03) -> Tank-1 (T4750) [sensing_location] [E9.2]\n\nDerived by graph analysis of the drawing\n- T4750 (Tank-1), Tank: downstream of ReciprocatingPump-1, 4 pipe(s) away [E5.1, traverse]\n- H1008 (TubularHeatExchanger-1), TubularHeatExchanger: downstream of ReciprocatingPump-1, 6 pipe(s) away [E5.2, traverse]\n\nNot established by the P&ID\n- The drawing does not contain an item or attribute that the question asks for. Asked about: ProcessInstrumentationFunction PI4712.01 (ProcessInstrumentationFunction-1), ProcessInstrumentationFunction PICSA4712.02 (ProcessInstrumentationFunction-2), ProcessInstrumentationFunction HS4750.01 (ProcessInstrumentationFunction-3), ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Equipment that loses flow if P4712 trips",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E5.1",
+              "E5.2"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "Instrument readings affected if P4712 trips",
+          "covered_by": {
+            "direct": [
+              "E9.2"
+            ],
+            "derived": [],
+            "unknown": [
+              "not_represented"
+            ]
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "items",
+          "description": "Control loops affected if P4712 trips",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "not_represented"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "get_connections",
+        "get_connections",
+        "traverse",
+        "get_connections",
+        "list_entities",
+        "list_entities",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 48.7
+    },
+    {
+      "id": "C4",
+      "source": "provided",
+      "type": "Fail positions",
+      "question": "If the actuated valves lose their actuating power, what position does each one go to, and what happens to flow into T4750? Answer strictly from the diagram.",
+      "outcome": "partial",
+      "score": 0.444,
+      "profile": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "required": [
+        {
+          "item": "fail action of ActuatingFunction-1: fail close",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "fail action of ActuatingFunction-2: fail close",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "fail action of ActuatingFunction-3: fail open",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ActuatingFunction-1 operates GlobeValve-1",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ActuatingFunction-2 operates GlobeValve-2",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ActuatingFunction-3 operates GlobeValve-3",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "what remains connected with GlobeValve-2 treated as closed",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "what remains connected with GlobeValve-1 treated as closed",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "unknown: process_behaviour / operating_state",
+          "kind": "unknown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "process_behaviour"
+      ],
+      "cited_facts": 9,
+      "cause": "incomplete traversal",
+      "answer": "Facts in the drawing\n- GlobeValve 47123/C1 (GlobeValve-2), GlobeValve [E2.1]\n- GlobeValve 47127/C1 (GlobeValve-1), GlobeValve [E2.10]\n- GlobeValve 47141/C1 (GlobeValve-3), GlobeValve [E2.11]\n- ControlledActuator-2: failAction = fail close [E8.9]\n- ControlledActuator-1: failAction = fail close [E8.3]\n- ControlledActuator-3: failAction = fail open [E8.15]\n\nNot established by the P&ID\n- A P&ID does not establish how pressure, flow, level or temperature would respond; that needs process data and calculation. Asked about: T4750 (Tank-1), GlobeValve 47127/C1 (GlobeValve-1), GlobeValve 47123/C1 (GlobeValve-2), GlobeValve 47141/C1 (GlobeValve-3).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "List of actuated valves in the P&ID",
+          "covered_by": {
+            "direct": [
+              "E2.1",
+              "E2.10",
+              "E2.11"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "property",
+          "description": "Fail position (position on loss of actuating power) for each actuated valve",
+          "covered_by": {
+            "direct": [
+              "E2.1",
+              "E2.10",
+              "E2.11",
+              "E8.9",
+              "E8.3",
+              "E8.15"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "consequence",
+          "description": "Effect on flow into T4750 when actuated valves lose power",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "process_behaviour"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "list_entities",
+        "get_connections",
+        "find_entities",
+        "get_entity",
+        "get_entity",
+        "find_entities",
+        "get_properties",
+        "find_entities"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 43.9
+    },
+    {
+      "id": "C5",
+      "source": "provided",
+      "type": "Fail positions / reasoning",
+      "question": "If the fail-closed valves shut, would PI4712.01's reading tend to rise or fall? How did you arrive at that answer?",
+      "outcome": "partial",
+      "score": 0.6,
+      "profile": [
+        true,
+        false,
+        true,
+        false,
+        true
+      ],
+      "required": [
+        {
+          "item": "fail action of ActuatingFunction-1: fail close",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "fail action of ActuatingFunction-2: fail close",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ProcessSignalGeneratingFunction-1 measures at BlindFlange-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "what remains connected with GlobeValve-1 treated as closed",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "unknown: process_behaviour",
+          "kind": "unknown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "process_behaviour"
+      ],
+      "cited_facts": 30,
+      "cause": "incomplete traversal",
+      "answer": "Facts in the drawing\n- PipingNetworkSegment-13: lineNumber = 47126 [E3.10]\n- PipingNetworkSegment-13: nominalDiameterRepresentation = DN 25 [E3.11]\n- BallValve-3 (BallValve 47126/C5) -> BlindFlange-1 (BlindFlange 47126/C6) [direct_piping_connection] (lineNumber 47126, segmentNumber S5, nominalDiameterRepresentation DN 25, fluidCode MNc) [E4.2]\n- PV4712.02 (ActuatingFunction-1), ActuatingFunction [E9.1]\n- GlobeValve 47127/C1 (GlobeValve-1), GlobeValve [E5.10]\n\nDerived by graph analysis of the drawing\n- The measurement used by ProcessInstrumentationFunction PI4712.01 (ProcessInstrumentationFunction-1) is taken at BlindFlange 47126/C6 (BlindFlange-1) [E3.13, trace_instrumentation]\n\nNot established by the P&ID\n- A P&ID does not establish how pressure, flow, level or temperature would respond; that needs process data and calculation. Asked about: ProcessInstrumentationFunction PI4712.01 (ProcessInstrumentationFunction-1), GlobeValve 47127/C1 (GlobeValve-1).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "consequence",
+          "description": "Whether PI4712.01's reading would tend to rise or fall if fail-closed valves shut",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "process_behaviour"
+            ]
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "explanation",
+          "description": "Explanation of how the answer was arrived at",
+          "covered_by": {
+            "direct": [
+              "E3.10",
+              "E3.11",
+              "E4.2",
+              "E9.1",
+              "E5.10"
+            ],
+            "derived": [
+              "E3.13"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "trace_instrumentation",
+        "get_connections",
+        "list_entities",
+        "find_entities",
+        "get_entity",
+        "get_entity",
+        "get_entity"
+      ],
+      "repair": {
+        "initial_problems": [
+          "Requested output q2 (Explanation of how the answer was arrived at) has not been addressed. Provide supported evidence or mark it unknown."
+        ],
+        "attempted": true,
+        "succeeded": true
+      },
+      "llm_calls": 11,
+      "tool_calls": 8,
+      "latency_s": 74.4
+    },
+    {
+      "id": "C6",
+      "source": "provided",
+      "type": "Blocked-in",
+      "question": "Can any equipment on this drawing become blocked in, isolated with no visible pressure relief? How did you arrive at this answer?",
+      "outcome": "partial",
+      "score": 0.714,
+      "profile": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "T4750 is fully bounded by valves",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "no relief device stays connected to T4750 inside that boundary",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "P4712 is fully bounded by valves",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "P4712 keeps a path to SV 104.01 inside its boundary",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "H1007 cannot be closed in by the valves drawn",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "H1008 cannot be closed in by the valves drawn",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "P4711 cannot be closed in by the valves drawn",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "other"
+      ],
+      "cited_facts": 8,
+      "cause": "planner/tool choice",
+      "answer": "Derived by graph analysis of the drawing\n- H1007 (PlateHeatExchanger-1) cannot be fully isolated with the valves on this drawing: 3 connection(s) have no shut-off valve [E3.6, isolation_boundary]\n- With the boundary valves treated as closed, H1007 (PlateHeatExchanger-1) has no drawn path to a relief device [E3.7, isolation_boundary]\n- H1008 (TubularHeatExchanger-1) cannot be fully isolated with the valves on this drawing: 2 connection(s) have no shut-off valve [E4.8, isolation_boundary]\n- With the boundary valves treated as closed, H1008 (TubularHeatExchanger-1) has no drawn path to a relief device [E4.9, isolation_boundary]\n- P4711 (CentrifugalPump-1) cannot be fully isolated with the valves on this drawing: 2 connection(s) have no shut-off valve [E5.4, isolation_boundary]\n- With the boundary valves treated as closed, P4711 (CentrifugalPump-1) has no drawn path to a relief device [E5.5, isolation_boundary]\n- Every connection of P4712 (ReciprocatingPump-1) ends at a shut-off valve, a relief device or a closed end (4 boundary valves: BallValve 47124/C4 (BallValve-1), BallValve 47126/C2 (BallValve-2), BallValve 47126/C5 (BallValve-3), BallValve 47126/C7 (BallValve-4)) [E6.7, isolation_boundary]\n- With the boundary valves treated as closed, P4712 (ReciprocatingPump-1) still has a drawn path to SV 104.01 (SpringLoadedGlobeSafetyValve-1) [E6.8, isolation_boundary]\n\nNot established by the P&ID\n- Part of the question is not established by the P&ID.",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "other",
+          "description": "Whether any equipment can become blocked in isolated with no visible pressure relief",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E3.6",
+              "E3.7",
+              "E4.8",
+              "E4.9",
+              "E5.4",
+              "E5.5",
+              "E6.7",
+              "E6.8"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "explanation",
+          "description": "Explanation of how the answer was arrived at",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "other"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "list_entities",
+        "isolation_boundary",
+        "isolation_boundary",
+        "isolation_boundary",
+        "isolation_boundary"
+      ],
+      "repair": null,
+      "llm_calls": 8,
+      "tool_calls": 5,
+      "latency_s": 50.5
+    },
+    {
+      "id": "C7",
+      "source": "provided",
+      "type": "Relief path",
+      "question": "Does H1008 have a path to a pressure relief device? What has to happen for that path to be open?",
+      "outcome": "partial",
+      "score": 0.333,
+      "profile": [
+        true,
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "a drawn route joins H1008 and SV 104.01",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the route to the inlet of SV 104.01 passes BallValve 47126/C7",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "unknown: operating_state / process_behaviour",
+          "kind": "unknown",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 128,
+      "cause": "planner/tool choice",
+      "answer": "Facts in the drawing\n- H1008 (TubularHeatExchanger-1), TubularHeatExchanger [E2.1]\n- SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve [E5.1]\n\nDerived by graph analysis of the drawing\n- Route: H1008 (TubularHeatExchanger-1) -> GlobeValve 47127/C1 (GlobeValve-1) -> T4750 (Tank-1) -> ButterflyValve 47124/C1 (ButterflyValve-1) -> SwingCheckValve 47124/C2 (SwingCheckValve-1) -> PipeReducer 47124/C3 (PipeReducer-1) -> BallValve 47124/C4 (BallValve-1) -> P4712 (ReciprocatingPump-1) -> PipeTee 47126/C1 (PipeTee-2) -> PipeTee 47126/C3 (PipeTee-1) -> SV 104.01 (SpringLoadedGlobeSafetyValve-1); 10 pipe(s), direction downstream [E6.1, find_path]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "connection_or_route",
+          "description": "Does H1008 have a path to a pressure relief device?",
+          "covered_by": {
+            "direct": [
+              "E2.1",
+              "E5.1"
+            ],
+            "derived": [
+              "E6.1"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "explanation",
+          "description": "What has to happen for that path to be open?",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E6.1"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "list_entities",
+        "find_entities",
+        "find_entities",
+        "find_path"
+      ],
+      "repair": null,
+      "llm_calls": 7,
+      "tool_calls": 5,
+      "latency_s": 29.2
+    },
+    {
+      "id": "C8",
+      "source": "provided",
+      "type": "Loop mapping",
+      "question": "Map all connections for PICSA4712.02: where its measurement is taken, every hop to the final element, the final element's fail position, and the piping context of that valve.",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "PT4712.02 feeds PICSA4712.02",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "PICSA4712.02 signals PV4712.02",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ActuatingFunction-1 operates GlobeValve-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "fail action of ActuatingFunction-1: fail close",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "GlobeValve-1 is on line 47127",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 13,
+      "cause": null,
+      "answer": "Facts in the drawing\n- ProcessSignalGeneratingFunction-2 (PT4712.02) -> BlindFlange-2 (BlindFlange 47126/C11) [sensing_location] [E3.4]\n- ProcessSignalGeneratingFunction-2 (PT4712.02) -> ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PICSA4712.02) [measuring_line] [E3.2]\n- ProcessInstrumentationFunction-2 (ProcessInstrumentationFunction PICSA4712.02) -> ActuatingFunction-1 (PV4712.02) [signal_line] [E3.5]\n- ActuatingFunction-1 (PV4712.02) -> GlobeValve-1 (GlobeValve 47127/C1) [operated_valve_reference] [E3.3]\n- ControlledActuator-1: failAction = fail close [E3.13]\n- PipingNetworkSegment-19: lineNumber = 47127 [E3.18]\n- PipingNetworkSegment-19: nominalDiameterRepresentation = DN 50 [E3.19]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Where the measurement of PICSA4712.02 is taken (the process connection point)",
+          "covered_by": {
+            "direct": [
+              "E3.4"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "connection_or_route",
+          "description": "Every hop from the measurement point to the final control element (the path of connections)",
+          "covered_by": {
+            "direct": [
+              "E3.2",
+              "E3.5",
+              "E3.3"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "property",
+          "description": "The fail position of the final control element",
+          "covered_by": {
+            "direct": [
+              "E3.13"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "property",
+          "description": "The piping context of the final control element (line number and nominal diameter)",
+          "covered_by": {
+            "direct": [
+              "E3.18",
+              "E3.19"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "trace_instrumentation"
+      ],
+      "repair": null,
+      "llm_calls": 4,
+      "tool_calls": 2,
+      "latency_s": 37.2
+    },
+    {
+      "id": "C9",
+      "source": "provided",
+      "type": "Signal tracing",
+      "question": "Where does the signal from HS4750.01 go, and which flow does it ultimately start or stop?",
+      "outcome": "partial",
+      "score": 0.75,
+      "profile": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "required": [
+        {
+          "item": "HS4750.01 signals HV4750.01",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ActuatingFunction-2 operates GlobeValve-2",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "GlobeValve-2 is on line 47123",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the operated valve sits between H1007 and T4750",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 9,
+      "cause": "planner/tool choice",
+      "answer": "Facts in the drawing\n- ProcessInstrumentationFunction-3 (ProcessInstrumentationFunction HS4750.01) -> ActuatingFunction-2 (HV4750.01) [signal_line] [E3.3]\n- ActuatingFunction-2 (HV4750.01) -> GlobeValve-2 (GlobeValve 47123/C1) [operated_valve_reference] [E3.2]\n- PipingNetworkSegment-3: lineNumber = 47123 [E3.15]\n\nDerived by graph analysis of the drawing\n- Signal chain: ProcessInstrumentationFunction HS4750.01 (ProcessInstrumentationFunction-3) -> HV4750.01 (ActuatingFunction-2) [encoded fail action: fail close] -> GlobeValve 47123/C1 (GlobeValve-2) [operated valve, line 47123] [E3.17, trace_instrumentation]\n- ProcessInstrumentationFunction HS4750.01 (ProcessInstrumentationFunction-3) acts on GlobeValve 47123/C1 (GlobeValve-2) on line 47123 through HV4750.01 (ActuatingFunction-2); encoded fail action of the actuator: fail close [E3.18, trace_instrumentation]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "connection_or_route",
+          "description": "Destination of the signal from HS4750.01",
+          "covered_by": {
+            "direct": [
+              "E3.3",
+              "E3.2"
+            ],
+            "derived": [
+              "E3.17",
+              "E3.18"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "other",
+          "description": "Which flow is ultimately started or stopped by the signal from HS4750.01",
+          "covered_by": {
+            "direct": [
+              "E3.15"
+            ],
+            "derived": [
+              "E3.18"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "trace_instrumentation"
+      ],
+      "repair": null,
+      "llm_calls": 4,
+      "tool_calls": 2,
+      "latency_s": 14.6
+    },
+    {
+      "id": "C10",
+      "source": "provided",
+      "type": "Inventory with attributes",
+      "question": "How many actuated valves are on this P&ID? For each, give the tag, what operates it, its fail position, and the line it is on.",
+      "outcome": "withheld",
+      "score": 0.0,
+      "profile": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "ActuatingFunction-1 operates GlobeValve-1",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ActuatingFunction-2 operates GlobeValve-2",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ActuatingFunction-3 operates GlobeValve-3",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "fail action of ActuatingFunction-1: fail close",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "fail action of ActuatingFunction-2: fail close",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "fail action of ActuatingFunction-3: fail open",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "GlobeValve-1 is on line 47127",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "GlobeValve-2 is on line 47123",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "GlobeValve-3 is on line 47141",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 0,
+      "cause": "grounding rejection",
+      "answer": "I could not determine that from the supplied P&ID graph. The model's answer was cut off at its output limit and was withheld; an incomplete answer is not shown.\n\nWhat the graph tools returned:\n- GlobeValve-2 (GlobeValve 47123/C1, GlobeValve)\n- ButterflyValve-1 (ButterflyValve 47124/C1, ButterflyValve)\n- SwingCheckValve-1 (SwingCheckValve 47124/C2, SwingCheckValve)\n- BallValve-1 (BallValve 47124/C4, BallValve)\n- SpringLoadedGlobeSafetyValve-1 (SV 104.01, SpringLoadedGlobeSafetyValve)\n- BallValve-2 (BallValve 47126/C2, BallValve)\n- BallValve-3 (BallValve 47126/C5, BallValve)\n- BallValve-4 (BallValve 47126/C7, BallValve)\n- BallValve-5 (BallValve 47126/C10, BallValve)\n- GlobeValve-1 (GlobeValve 47127/C1, GlobeValve)\n- GlobeValve-3 (GlobeValve 47141/C1, GlobeValve)\n- get_properties: The requested properties are not present in the P&ID graph for these objects.\n- GlobeValve-2: not present in the P&ID: operatedValveReference\n- ButterflyValve-1: not present in the P&ID: operatedValveReference\n- SwingCheckValve-1: not present in the P&ID: operatedValveReference\n- BallValve-1: not present in the P&ID: operatedValveReference\n- SpringLoadedGlobeSafetyValve-1: not present in the P&ID: operatedValveReference\n- BallValve-2: not present in the P&ID: operatedValveReference\n- BallValve-3: not present in the P&ID: operatedValveReference\n- BallValve-4: not present in the P&ID: operatedValveReference\n- BallValve-5: not present in the P&ID: operatedValveReference\n- GlobeValve-1: not present in the P&ID: operatedValveReference\n- GlobeValve-3: not present in the P&ID: operatedValveReference\n- find_entities: No entity in the P&ID graph matches 'OperatedValveReference'.\n- ActuatingFunction-2 (HV4750.01) -> GlobeValve-2 (GlobeValve 47123/C1) [operated_valve_reference]\n- ActuatingFunction-1 (PV4712.02) -> GlobeValve-1 (GlobeValve 47127/C1) [operated_valve_reference]\n- ActuatingFunction-3 (TV4750.03) -> GlobeValve-3 (GlobeValve 47141/C1) [operated_valve_reference]",
+      "requested_outputs": [],
+      "tools_used": [
+        "list_entities",
+        "get_entity",
+        "get_properties",
+        "find_entities",
+        "list_entities",
+        "get_connections",
+        "get_connections",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 78.4
+    },
+    {
+      "id": "C11",
+      "source": "provided",
+      "type": "Inventory with attributes",
+      "question": "How many check valves and relief valves are on this drawing? Where is each one, and what does each one protect against?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "SwingCheckValve-1 is a SwingCheckValve",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "SpringLoadedGlobeSafetyValve-1 is a SpringLoadedGlobeSafetyValve",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "SwingCheckValve-1 is on line 47124",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "SpringLoadedGlobeSafetyValve-1 is on line 47125",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "unknown: purpose_or_intent",
+          "kind": "unknown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "purpose_or_intent"
+      ],
+      "cited_facts": 84,
+      "cause": null,
+      "answer": "Facts in the drawing\n- 'None' is not a type present in the P&ID graph. [E2.0]\n- SwingCheckValve 47124/C2 (SwingCheckValve-1), SwingCheckValve [E4.1]\n- ButterflyValve-1 (ButterflyValve 47124/C1) -> SwingCheckValve-1 (SwingCheckValve 47124/C2) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc) [E5.2]\n- SwingCheckValve-1 (SwingCheckValve 47124/C2) -> PipeReducer-1 (PipeReducer 47124/C3) [pipe] (lineNumber 47124, segmentNumber S2, nominalDiameterRepresentation DN 80, fluidCode MNc) [E5.3]\n- SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve [E7.1]\n- SpringLoadedGlobeSafetyValve-1 (SV 104.01) -> Tank-1 (T4750) [pipe] (lineNumber 47125, segmentNumber S2, nominalDiameterRepresentation DN 50, fluidCode MNc) [E9.2]\n- PipeTee-1 (PipeTee 47126/C3) -> SpringLoadedGlobeSafetyValve-1 (SV 104.01) [pipe] (lineNumber 47125, segmentNumber S1, nominalDiameterRepresentation DN 25, fluidCode MNc) [E9.3]\n\nNot established by the P&ID\n- A P&ID does not state the purpose of an item or the intent of a design. Asked about: SwingCheckValve 47124/C2 (SwingCheckValve-1).\n- A P&ID does not state the purpose of an item or the intent of a design. Asked about: SV 104.01 (SpringLoadedGlobeSafetyValve-1).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "count",
+          "description": "Number of check valves",
+          "covered_by": {
+            "direct": [
+              "E2.0"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "count",
+          "description": "Number of relief valves",
+          "covered_by": {
+            "direct": [
+              "E2.0"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "items",
+          "description": "Location of each check valve",
+          "covered_by": {
+            "direct": [
+              "E4.1",
+              "E5.2",
+              "E5.3"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "property",
+          "description": "What each check valve protects against",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "purpose_or_intent"
+            ]
+          }
+        },
+        {
+          "id": "q5",
+          "kind": "items",
+          "description": "Location of each relief valve",
+          "covered_by": {
+            "direct": [
+              "E7.1",
+              "E9.2",
+              "E9.3"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q6",
+          "kind": "property",
+          "description": "What each relief valve protects against",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "purpose_or_intent"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "list_entities",
+        "find_entities",
+        "get_entity",
+        "get_connections",
+        "find_entities",
+        "get_entity",
+        "list_entities",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 38.6
+    },
+    {
+      "id": "C12",
+      "source": "provided",
+      "type": "Line tracing",
+      "question": "Trace line 47126 and all of its branches: where each branch starts and ends, and the size of each.",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "run ReciprocatingPump-1 -> PipeTee-2",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-2 -> BallValve-2",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-2 -> PipeTee-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-1 -> PipeTee-3",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-3 -> BlindFlange-1 through BallValve-3",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-3 -> PipeTee-4 through BallValve-4",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-4 -> TubularHeatExchanger-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-4 -> PipeTee-5",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-5 -> BlindFlange-2 through BallValve-5",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "run PipeTee-5 -> FlowOutPipeOffPageConnector-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the DN 25 branches are reported with their size",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 10,
+      "cause": null,
+      "answer": "Derived by graph analysis of the drawing\n- Line 47126: from PipeTee 47126/C1 (PipeTee-2) to BallValve 47126/C2 (BallValve-2); DN 25; the run ends at: end of the drawn piping [E2.14, trace_line]\n- Line 47126: from PipeTee 47126/C1 (PipeTee-2) to PipeTee 47126/C3 (PipeTee-1); DN 50; the run ends at: junction [E2.15, trace_line]\n- Line 47126: from PipeTee 47126/C3 (PipeTee-1) to PipeTee 47126/C4 (PipeTee-3); DN 50; the run ends at: junction [E2.16, trace_line]\n- Line 47126: from PipeTee 47126/C4 (PipeTee-3) to BlindFlange 47126/C6 (BlindFlange-1) through BallValve 47126/C5 (BallValve-3); DN 25; the run ends at: end of the drawn piping [E2.17, trace_line]\n- Line 47126: from PipeTee 47126/C4 (PipeTee-3) to PipeTee 47126/C8 (PipeTee-4) through BallValve 47126/C7 (BallValve-4); DN 50; the run ends at: junction [E2.18, trace_line]\n- Line 47126: from PipeTee 47126/C8 (PipeTee-4) to PipeTee 47126/C9 (PipeTee-5); DN 50; the run ends at: junction [E2.19, trace_line]\n- Line 47126: from PipeTee 47126/C8 (PipeTee-4) to H1008 (TubularHeatExchanger-1); DN 50; the run ends at: equipment [E2.20, trace_line]\n- Line 47126: from PipeTee 47126/C9 (PipeTee-5) to BlindFlange 47126/C11 (BlindFlange-2) through BallValve 47126/C10 (BallValve-5); DN 25; the run ends at: end of the drawn piping [E2.21, trace_line]\n- Line 47126: from PipeTee 47126/C9 (PipeTee-5) to FlowOutPipeOffPageConnector-1; DN 50; the run ends at: the piping leaves the drawing here [E2.22, trace_line]\n- Line 47126: from P4712 (ReciprocatingPump-1) to PipeTee 47126/C1 (PipeTee-2); DN 50; the run ends at: junction [E2.23, trace_line]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Start point of each branch of line 47126",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E2.14",
+              "E2.15",
+              "E2.16",
+              "E2.17",
+              "E2.18",
+              "E2.19",
+              "E2.20",
+              "E2.21",
+              "E2.22",
+              "E2.23"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "End point of each branch of line 47126",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E2.14",
+              "E2.15",
+              "E2.16",
+              "E2.17",
+              "E2.18",
+              "E2.19",
+              "E2.20",
+              "E2.21",
+              "E2.22",
+              "E2.23"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "property",
+          "description": "Size (diameter) of each branch of line 47126",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E2.14",
+              "E2.15",
+              "E2.16",
+              "E2.17",
+              "E2.18",
+              "E2.19",
+              "E2.20",
+              "E2.21",
+              "E2.22",
+              "E2.23"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "trace_line"
+      ],
+      "repair": null,
+      "llm_calls": 3,
+      "tool_calls": 1,
+      "latency_s": 35.7
+    },
+    {
+      "id": "C13",
+      "source": "provided",
+      "type": "Upstream with recycle",
+      "question": "What are all the major equipment upstream of H1008? Account for any recycle.",
+      "outcome": "partial",
+      "score": 0.8,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "required": [
+        {
+          "item": "P4712 is upstream of H1008",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "T4750 is upstream of H1008",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "H1007 is upstream of H1008",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "P4711 is upstream of H1008",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "recycle: T4750 is also downstream of H1008",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 12,
+      "cause": "planner/tool choice",
+      "answer": "Derived by graph analysis of the drawing\n- P4712 (ReciprocatingPump-1), ReciprocatingPump: upstream of TubularHeatExchanger-1, 6 pipe(s) away [E3.1, traverse]\n- T4750 (Tank-1), Tank: upstream of TubularHeatExchanger-1, 11 pipe(s) away, through ReciprocatingPump-1 [E3.2, traverse]\n- H1007 (PlateHeatExchanger-1), PlateHeatExchanger: upstream of TubularHeatExchanger-1, 13 pipe(s) away, through ReciprocatingPump-1, Tank-1 [E3.3, traverse]\n- P4711 (CentrifugalPump-1), CentrifugalPump: upstream of TubularHeatExchanger-1, 14 pipe(s) away, through ReciprocatingPump-1, Tank-1, PlateHeatExchanger-1 [E3.4, traverse]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "All major equipment upstream of H1008, accounting for recycle",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E3.1",
+              "E3.2",
+              "E3.3",
+              "E3.4"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "traverse"
+      ],
+      "repair": null,
+      "llm_calls": 4,
+      "tool_calls": 2,
+      "latency_s": 20.9
+    },
+    {
+      "id": "C14",
+      "source": "provided",
+      "type": "Parallel paths",
+      "question": "Are there parallel paths between P4712 and T4750? Describe each one and when it carries flow.",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "route through SV 104.01 (line 47125)",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "route through H1008 and GlobeValve 47127/C1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "unknown: operating_state / process_behaviour",
+          "kind": "unknown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "operating_state"
+      ],
+      "cited_facts": 188,
+      "cause": null,
+      "answer": "Facts in the drawing\n- P4712 (ReciprocatingPump-1), ReciprocatingPump [E2.1]\n- T4750 (Tank-1), Tank [E3.1]\n\nDerived by graph analysis of the drawing\n- Route: P4712 (ReciprocatingPump-1) -> PipeTee 47126/C1 (PipeTee-2) -> PipeTee 47126/C3 (PipeTee-1) -> SV 104.01 (SpringLoadedGlobeSafetyValve-1) -> T4750 (Tank-1); 4 pipe(s), direction any [E4.1, find_path]\n- Route: P4712 (ReciprocatingPump-1) -> BallValve 47124/C4 (BallValve-1) -> PipeReducer 47124/C3 (PipeReducer-1) -> SwingCheckValve 47124/C2 (SwingCheckValve-1) -> ButterflyValve 47124/C1 (ButterflyValve-1) -> T4750 (Tank-1); 5 pipe(s), direction any [E4.2, find_path]\n- Route: P4712 (ReciprocatingPump-1) -> PipeTee 47126/C1 (PipeTee-2) -> PipeTee 47126/C3 (PipeTee-1) -> PipeTee 47126/C4 (PipeTee-3) -> BallValve 47126/C7 (BallValve-4) -> PipeTee 47126/C8 (PipeTee-4) -> H1008 (TubularHeatExchanger-1) -> GlobeValve 47127/C1 (GlobeValve-1) -> T4750 (Tank-1); 8 pipe(s), direction any [E4.3, find_path]\n\nNot established by the P&ID\n- A P&ID does not show operating state: which valves are open or closed, or what is running or flowing. Asked about: P4712 (ReciprocatingPump-1), T4750 (Tank-1).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "other",
+          "description": "Determine if there are parallel paths between P4712 and T4750",
+          "covered_by": {
+            "direct": [
+              "E2.1",
+              "E3.1"
+            ],
+            "derived": [
+              "E4.1",
+              "E4.2",
+              "E4.3"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "connection_or_route",
+          "description": "Describe each parallel path (equipment, lines, diameters)",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E4.1",
+              "E4.2",
+              "E4.3"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "consequence",
+          "description": "State when each path carries flow (based on valve positions or operating conditions)",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "operating_state"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "find_entities",
+        "find_path"
+      ],
+      "repair": {
+        "initial_problems": [
+          "Requested output q2 (Describe each parallel path (equipment, lines, diameters)) has not been addressed. Provide supported evidence or mark it unknown."
+        ],
+        "attempted": true,
+        "succeeded": true
+      },
+      "llm_calls": 8,
+      "tool_calls": 3,
+      "latency_s": 71.8
+    },
+    {
+      "id": "C15",
+      "source": "provided",
+      "type": "Process description",
+      "question": "Describe the process on this drawing and its main control strategies, strictly from the diagram.",
+      "outcome": "partial",
+      "score": 0.333,
+      "profile": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "CentrifugalPump-1 is a CentrifugalPump",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "PlateHeatExchanger-1 is a PlateHeatExchanger",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "Tank-1 is a Tank",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ReciprocatingPump-1 is a ReciprocatingPump",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "TubularHeatExchanger-1 is a TubularHeatExchanger",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ActuatingFunction-1 operates GlobeValve-1",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ActuatingFunction-2 operates GlobeValve-2",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ActuatingFunction-3 operates GlobeValve-3",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "unknown: purpose_or_intent / process_behaviour / operating_state / other",
+          "kind": "unknown",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "not_represented"
+      ],
+      "cited_facts": 125,
+      "cause": "incomplete traversal",
+      "answer": "Facts in the drawing\n- T4750 (Tank-1), Tank [E4.1]\n- GlobeValve-2 (GlobeValve 47123/C1) -> Tank-1 (T4750) [pipe] (lineNumber 47123, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNb) [E5.2]\n- SpringLoadedGlobeSafetyValve-1 (SV 104.01) -> Tank-1 (T4750) [pipe] (lineNumber 47125, segmentNumber S2, nominalDiameterRepresentation DN 50, fluidCode MNc) [E5.3]\n- GlobeValve-1 (GlobeValve 47127/C1) -> Tank-1 (T4750) [pipe] (lineNumber 47127, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode MNc) [E5.4]\n- Tank-1 (T4750) -> ButterflyValve-1 (ButterflyValve 47124/C1) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc) [E5.5]\n- P4711 (CentrifugalPump-1), CentrifugalPump [E8.1]\n- FlowInPipeOffPageConnector-1 -> CentrifugalPump-1 (P4711) [pipe] (lineNumber 47121, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNb) [E9.2]\n- CentrifugalPump-1 (P4711) -> PlateHeatExchanger-1 (H1007) [pipe] (lineNumber 47122, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNb) [E9.3]\n\nNot established by the P&ID\n- The drawing does not contain an item or attribute that the question asks for.",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "explanation",
+          "description": "Overall process description: what units, streams, and major equipment are present and how they are connected.",
+          "covered_by": {
+            "direct": [
+              "E4.1",
+              "E5.2",
+              "E5.3",
+              "E5.4",
+              "E5.5",
+              "E8.1",
+              "E9.2",
+              "E9.3"
+            ],
+            "derived": [],
+            "unknown": [
+              "not_represented"
+            ]
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "explanation",
+          "description": "Main control strategies: instrumentation loops, sensors, controllers, final control elements (valves) and what they control.",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "not_represented"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "list_entities",
+        "find_entities",
+        "get_entity",
+        "get_connections",
+        "list_entities",
+        "find_entities",
+        "get_entity",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 45.1
+    },
+    {
+      "id": "X1",
+      "source": "own",
+      "type": "Line walk with size change",
+      "question": "Walk the suction of P4712 back to the tank: every component in order, and where the pipe size changes.",
+      "outcome": "partial",
+      "score": 0.667,
+      "profile": [
+        false,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "the route T4750 -> P4712 in order",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "pipe SwingCheckValve-1 -> PipeReducer-1: line 47124, DN 80",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "pipe PipeReducer-1 -> BallValve-1: line 47124, DN 50",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "off_drawing"
+      ],
+      "cited_facts": 100,
+      "cause": "entity resolution",
+      "answer": "Facts in the drawing\n- P4712 (ReciprocatingPump-1), ReciprocatingPump [E2.1]\n- BallValve-1 (BallValve 47124/C4) -> ReciprocatingPump-1 (P4712) [pipe] (lineNumber 47124, segmentNumber S3, nominalDiameterRepresentation DN 50, fluidCode MNc) [E3.2]\n- BallValve 47124/C4 (BallValve-1), BallValve [E4.1]\n- PipeReducer-1 (PipeReducer 47124/C3) -> BallValve-1 (BallValve 47124/C4) [pipe] (lineNumber 47124, segmentNumber S3, nominalDiameterRepresentation DN 50, fluidCode MNc) [E5.2]\n- PipeReducer 47124/C3 (PipeReducer-1), PipeReducer [E6.1]\n- SwingCheckValve-1 (SwingCheckValve 47124/C2) -> PipeReducer-1 (PipeReducer 47124/C3) [pipe] (lineNumber 47124, segmentNumber S2, nominalDiameterRepresentation DN 80, fluidCode MNc) [E7.2]\n- SwingCheckValve 47124/C2 (SwingCheckValve-1), SwingCheckValve [E8.1]\n- ButterflyValve-1 (ButterflyValve 47124/C1) -> SwingCheckValve-1 (SwingCheckValve 47124/C2) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc) [E9.2]\n\nNot established by the P&ID\n- What lies beyond an off-page connector or an open-ended pipe is not on this drawing. Asked about: ButterflyValve 47124/C1 (ButterflyValve-1).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "connection_or_route",
+          "description": "List of components in order from the suction of pump P4712 back to the tank",
+          "covered_by": {
+            "direct": [
+              "E2.1",
+              "E3.2",
+              "E4.1",
+              "E5.2",
+              "E6.1",
+              "E7.2",
+              "E8.1",
+              "E9.2"
+            ],
+            "derived": [],
+            "unknown": [
+              "off_drawing"
+            ]
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "property",
+          "description": "Locations where the pipe size changes along that suction line",
+          "covered_by": {
+            "direct": [
+              "E6.1"
+            ],
+            "derived": [],
+            "unknown": [
+              "off_drawing"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "get_connections",
+        "get_entity",
+        "get_connections",
+        "get_entity",
+        "get_connections",
+        "get_entity",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 45.9
+    },
+    {
+      "id": "X2",
+      "source": "own",
+      "type": "Reachability with one valve closed",
+      "question": "If the valve at 47126/C7 is closed, which equipment can P4712's discharge still reach, and which can it no longer reach?",
+      "outcome": "partial",
+      "score": 0.5,
+      "profile": [
+        true,
+        false
+      ],
+      "required": [
+        {
+          "item": "T4750 is still reachable with the valve closed",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "H1008 is no longer reachable with the valve closed",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 16,
+      "cause": "planner/tool choice",
+      "answer": "Derived by graph analysis of the drawing\n- T4750 (Tank-1), Tank: downstream of ReciprocatingPump-1, 4 pipe(s) away [E6.1, traverse]\n- H1008 (TubularHeatExchanger-1), TubularHeatExchanger: downstream of ReciprocatingPump-1, 6 pipe(s) away [E6.2, traverse]\n- Chamber boundary at TubularHeatExchanger-1: entered through Chamber-3, not continued into Chamber-4 [E6.11, traverse]\n- BallValve 47126/C2 (BallValve-2): end of drawn piping [E6.0, traverse]\n- T4750 (Tank-1), Tank: downstream of ReciprocatingPump-1, 4 pipe(s) away (with BallValve-4 treated as closed) [E7.1, traverse]\n- BallValve 47126/C2 (BallValve-2): end of drawn piping [E7.0, traverse]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Equipment that P4712's discharge can still reach when valve at 47126/C7 is closed",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E7.1",
+              "E7.0"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "Equipment that P4712's discharge can no longer reach when valve at 47126/C7 is closed",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E6.1",
+              "E6.2",
+              "E6.11",
+              "E6.0",
+              "E7.1",
+              "E7.0"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "find_entities",
+        "get_entity",
+        "get_connections",
+        "traverse",
+        "traverse",
+        "find_path"
+      ],
+      "repair": null,
+      "llm_calls": 9,
+      "tool_calls": 7,
+      "latency_s": 57.1
+    },
+    {
+      "id": "X4",
+      "source": "own",
+      "type": "Inventory of pipe ends",
+      "question": "List every place where piping ends on this sheet, and separate dead ends from connections that leave the drawing. Give the line for each.",
+      "outcome": "incorrect",
+      "score": 0.0,
+      "profile": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "BlindFlange-1 is an end of the drawn piping",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "BlindFlange-2 is an end of the drawn piping",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "BallValve-2 is an end of the drawn piping",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "the piping leaves the drawing at FlowOutPipeOffPageConnector-1",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "line 47130 at PlateHeatExchanger-1 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "line 47131 at PlateHeatExchanger-1 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "line 47140 at TubularHeatExchanger-1 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "line 47141 at GlobeValve-3 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "not_represented"
+      ],
+      "cited_facts": 62,
+      "cause": "incomplete traversal",
+      "answer": "Facts in the drawing\n- BlindFlange 47126/C6 (BlindFlange-1), BlindFlange [E3.1]\n- BlindFlange 47126/C11 (BlindFlange-2), BlindFlange [E8.1]\n- FlowInPipeOffPageConnector-1 (FlowInPipeOffPageConnector-1), FlowInPipeOffPageConnector [E5.1]\n- FlowOutPipeOffPageConnector-1 (FlowOutPipeOffPageConnector-1), FlowOutPipeOffPageConnector [E9.19]\n- BallValve-3 (BallValve 47126/C5) -> BlindFlange-1 (BlindFlange 47126/C6) [direct_piping_connection] (lineNumber 47126, segmentNumber S5, nominalDiameterRepresentation DN 25, fluidCode MNc) [E4.2]\n\nNot established by the P&ID\n- The drawing does not contain an item or attribute that the question asks for. Asked about: FlowOutPipeOffPageConnector-1.",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "List of all piping endpoints on the sheet, distinguishing dead ends from connections that leave the drawing, with line number for each.",
+          "covered_by": {
+            "direct": [
+              "E3.1",
+              "E8.1",
+              "E5.1",
+              "E9.19",
+              "E4.2"
+            ],
+            "derived": [],
+            "unknown": [
+              "not_represented"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "list_entities",
+        "get_entity",
+        "get_connections",
+        "get_entity",
+        "list_entities",
+        "get_entity",
+        "get_entity",
+        "list_entities"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 92.5
+    },
+    {
+      "id": "X5",
+      "source": "own",
+      "type": "Full route with lines",
+      "question": "Give the full route from the off-page inlet to T4750 with every component, line number and diameter.",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "the route in order",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "pipe FlowInPipeOffPageConnector-1 -> CentrifugalPump-1: line 47121, DN 80",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "pipe CentrifugalPump-1 -> PlateHeatExchanger-1: line 47122, DN 80",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "pipe PlateHeatExchanger-1 -> GlobeValve-2: line 47123, DN 80",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "pipe GlobeValve-2 -> Tank-1: line 47123, DN 80",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 50,
+      "cause": null,
+      "answer": "Derived by graph analysis of the drawing\n- Route: FlowInPipeOffPageConnector-1 (FlowInPipeOffPageConnector-1) -> P4711 (CentrifugalPump-1) -> H1007 (PlateHeatExchanger-1) -> GlobeValve 47123/C1 (GlobeValve-2) -> T4750 (Tank-1); 4 pipe(s), direction any [E6.1, find_path]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "connection_or_route",
+          "description": "Full route from off-page inlet to T4750",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E6.1"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "Every component along the route",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E6.1"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "property",
+          "description": "Line number for each segment",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E6.1"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "property",
+          "description": "Diameter for each segment",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E6.1"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "list_entities",
+        "find_entities",
+        "get_entity",
+        "find_path"
+      ],
+      "repair": null,
+      "llm_calls": 8,
+      "tool_calls": 5,
+      "latency_s": 49.8
+    },
+    {
+      "id": "X6",
+      "source": "own",
+      "type": "Instruments on a section of piping",
+      "question": "Which instruments take their measurement on the discharge piping of P4712, at which component, and what does each measurement feed?",
+      "outcome": "withheld",
+      "score": 0.0,
+      "profile": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "ProcessSignalGeneratingFunction-1 measures at BlindFlange-1",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "PT4712.01 feeds PI4712.01",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "PT4712.02 feeds PICSA4712.02",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 0,
+      "cause": "grounding rejection",
+      "answer": "I could not determine that from the supplied P&ID graph. The model's answer was cut off at its output limit and was withheld; an incomplete answer is not shown.\n\nWhat the graph tools returned:\n- ReciprocatingPump-1 (P4712, ReciprocatingPump)\n- ReciprocatingPump-1 (P4712) -> PipeTee-2 (PipeTee 47126/C1) [pipe] (lineNumber 47126, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- PipeTee-2 (PipeTee 47126/C1) -> BallValve-2 (BallValve 47126/C2) [pipe] (lineNumber 47126, segmentNumber S2, nominalDiameterRepresentation DN 25, fluidCode MNc)\n- PipeTee-2 (PipeTee 47126/C1) -> PipeTee-1 (PipeTee 47126/C3) [pipe] (lineNumber 47126, segmentNumber S3, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- PipeTee-1 (PipeTee 47126/C3) -> PipeTee-3 (PipeTee 47126/C4) [pipe] (lineNumber 47126, segmentNumber S4, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- PipeTee-1 (PipeTee 47126/C3) -> SpringLoadedGlobeSafetyValve-1 (SV 104.01) [pipe] (lineNumber 47125, segmentNumber S1, nominalDiameterRepresentation DN 25, fluidCode MNc)\n- PipeTee-3 (PipeTee 47126/C4) -> BallValve-3 (BallValve 47126/C5) [pipe] (lineNumber 47126, segmentNumber S5, nominalDiameterRepresentation DN 25, fluidCode MNc)\n- PipeTee-3 (PipeTee 47126/C4) -> BallValve-4 (BallValve 47126/C7) [pipe] (lineNumber 47126, segmentNumber S6, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- SpringLoadedGlobeSafetyValve-1 (SV 104.01) -> Tank-1 (T4750) [pipe] (lineNumber 47125, segmentNumber S2, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- BallValve-3 (BallValve 47126/C5) -> BlindFlange-1 (BlindFlange 47126/C6) [direct_piping_connection] (lineNumber 47126, segmentNumber S5, nominalDiameterRepresentation DN 25, fluidCode MNc)\n- Tank-1 (T4750) -> ButterflyValve-1 (ButterflyValve 47124/C1) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc)\n- BallValve-4 (BallValve 47126/C7) -> PipeTee-4 (PipeTee 47126/C8) [pipe] (lineNumber 47126, segmentNumber S6, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- PipeTee-4 (PipeTee 47126/C8) -> PipeTee-5 (PipeTee 47126/C9) [pipe] (lineNumber 47126, segmentNumber S8, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- ButterflyValve-1 (ButterflyValve 47124/C1) -> SwingCheckValve-1 (SwingCheckValve 47124/C2) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc)\n- PipeTee-4 (PipeTee 47126/C8) -> TubularHeatExchanger-1 (H1008) [pipe] (lineNumber 47126, segmentNumber S7, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- PipeTee-5 (PipeTee 47126/C9) -> BallValve-5 (BallValve 47126/C10) [pipe] (lineNumber 47126, segmentNumber S9, nominalDiameterRepresentation DN 25, fluidCode MNc)\n- PipeTee-5 (PipeTee 47126/C9) -> FlowOutPipeOffPageConnector-1 [pipe] (lineNumber 47126, segmentNumber S10, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- TubularHeatExchanger-1 (H1008) -> GlobeValve-1 (GlobeValve 47127/C1) [pipe] (lineNumber 47127, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- SwingCheckValve-1 (SwingCheckValve 47124/C2) -> PipeReducer-1 (PipeReducer 47124/C3) [pipe] (lineNumber 47124, segmentNumber S2, nominalDiameterRepresentation DN 80, fluidCode MNc)\n- PipeReducer-1 (PipeReducer 47124/C3) -> BallValve-1 (BallValve 47124/C4) [pipe] (lineNumber 47124, segmentNumber S3, nominalDiameterRepresentation DN 50, fluidCode MNc)\n- BallValve-5 (BallValve 47126/C10) -> BlindFlange-2 (BlindFlange 47126/C11) [direct_piping_connection] (lineNumber 47126, segmentNumber S9, nominalDiameterRepresentation DN 25, fluidCode MNc)\n- PipeTee-2 (PipeTee 47126/C1, PipeTee, distance 1)\n- BallValve-2 (BallValve 47126/C2, BallValve, distance 2)\n- PipeTee-1 (PipeTee 47126/C3, PipeTee, distance 2)\n- PipeTee-3 (PipeTee 47126/C4, PipeTee, distance 3)\n- SpringLoadedGlobeSafetyValve-1 (SV 104.01, SpringLoadedGlobeSafetyValve, distance 3)\n- BallValve-3 (BallValve 47126/C5, BallValve, distance 4)\n- BallValve-4 (BallValve 47126/C7, BallValve, distance 4)\n- Tank-1 (T4750, Tank, distance 4)\n- BlindFlange-1 (BlindFlange 47126/C6, BlindFlange, distance 5)\n- ButterflyValve-1 (ButterflyValve 47124/C1, ButterflyValve, distance 5)\n- PipeTee-4 (PipeTee 47126/C8, PipeTee, distance 5)\n- PipeTee-5 (PipeTee 47126/C9, PipeTee, distance 6)\n- SwingCheckValve-1 (SwingCheckValve 47124/C2, SwingCheckValve, distance 6)\n- TubularHeatExchanger-1 (H1008, TubularHeatExchanger, distance 6)\n- BallValve-5 (BallValve 47126/C10, BallValve, distance 7)\n- FlowOutPipeOffPageConnector-1 (FlowOutPipeOffPageConnector-1, FlowOutPipeOffPageConnector, distance 7)\n- GlobeValve-1 (GlobeValve 47127/C1, GlobeValve, distance 7)\n- PipeReducer-1 (PipeReducer 47124/C3, PipeReducer, distance 7)\n- BallValve-1 (BallValve 47124/C4, BallValve, distance 8)\n- ... and 40 more evidence items (see the tool trace)",
+      "requested_outputs": [],
+      "tools_used": [
+        "find_entities",
+        "get_connections",
+        "get_entity",
+        "traverse",
+        "list_entities",
+        "list_entities",
+        "trace_instrumentation",
+        "trace_instrumentation"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 84.8
+    },
+    {
+      "id": "X7",
+      "source": "own",
+      "type": "Recycle loop",
+      "question": "Is T4750 part of a recycle loop? Show the route out of the tank and the route back to it.",
+      "outcome": "incorrect",
+      "score": 0.0,
+      "profile": [
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "a route leads from T4750 to P4712",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "a route leads from P4712 back to T4750",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "other"
+      ],
+      "cited_facts": 61,
+      "cause": "incomplete traversal",
+      "answer": "Facts in the drawing\n- Tank-1 (T4750) -> ButterflyValve-1 (ButterflyValve 47124/C1) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc) [E3.5]\n- ButterflyValve-1 (ButterflyValve 47124/C1) -> SwingCheckValve-1 (SwingCheckValve 47124/C2) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc) [E5.2]\n- SwingCheckValve-1 (SwingCheckValve 47124/C2) -> PipeReducer-1 (PipeReducer 47124/C3) [pipe] (lineNumber 47124, segmentNumber S2, nominalDiameterRepresentation DN 80, fluidCode MNc) [E6.3]\n- PipeReducer-1 (PipeReducer 47124/C3) -> BallValve-1 (BallValve 47124/C4) [pipe] (lineNumber 47124, segmentNumber S3, nominalDiameterRepresentation DN 50, fluidCode MNc) [E7.3]\n- BallValve-1 (BallValve 47124/C4) -> ReciprocatingPump-1 (P4712) [pipe] (lineNumber 47124, segmentNumber S3, nominalDiameterRepresentation DN 50, fluidCode MNc) [E8.3]\n\nNot established by the P&ID\n- Part of the question is not established by the P&ID. Asked about: T4750 (Tank-1), P4712 (ReciprocatingPump-1).\n- Part of the question is not established by the P&ID. Asked about: P4712 (ReciprocatingPump-1), T4750 (Tank-1).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "other",
+          "description": "Determine if T4750 is part of a recycle loop",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "other"
+            ]
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "connection_or_route",
+          "description": "Show the route out of the tank (path from tank outlet to point where it returns)",
+          "covered_by": {
+            "direct": [
+              "E3.5",
+              "E5.2",
+              "E6.3",
+              "E7.3",
+              "E8.3"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "connection_or_route",
+          "description": "Show the route back to the tank (path from return point to tank inlet)",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "other"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "get_connections",
+        "find_entities",
+        "get_connections",
+        "get_connections",
+        "get_connections",
+        "get_connections",
+        "find_entities"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 38.4
+    },
+    {
+      "id": "X9",
+      "source": "own",
+      "type": "Loop mapping",
+      "question": "Map TICSA4750.03 end to end: where the temperature is measured, the valve it acts on, that valve's fail position, and where the valve's line goes.",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "ProcessSignalGeneratingFunction-3 measures at Tank-1",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "ActuatingFunction-3 operates GlobeValve-3",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "fail action of ActuatingFunction-3: fail open",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "GlobeValve-3 is on line 47141",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "line 47141 leaves the drawing after the valve",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 35,
+      "cause": null,
+      "answer": "Facts in the drawing\n- ProcessSignalGeneratingFunction-3 (TT4750.03) -> Tank-1 (T4750) [sensing_location] [E3.4]\n- ActuatingFunction-3 (TV4750.03) -> GlobeValve-3 (GlobeValve 47141/C1) [operated_valve_reference] [E3.3]\n- ControlledActuator-3: failAction = fail open [E3.13]\n- TubularHeatExchanger-1 (H1008) -> GlobeValve-3 (GlobeValve 47141/C1) [pipe] (lineNumber 47141, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode QSb) [E4.2]\n- open-ended pipe PipingNetworkSegment-23/connections/2 at GlobeValve-3 (GlobeValve 47141/C1) (lineNumber 47141, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode QSb); its destination is not represented on this drawing [E4.3]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "location where temperature is measured for TICSA4750.03",
+          "covered_by": {
+            "direct": [
+              "E3.4"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "the valve that TICSA4750.03 acts on",
+          "covered_by": {
+            "direct": [
+              "E3.3"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "property",
+          "description": "that valve's fail position",
+          "covered_by": {
+            "direct": [
+              "E3.13"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "connection_or_route",
+          "description": "where the valve's line goes",
+          "covered_by": {
+            "direct": [
+              "E4.2",
+              "E4.3"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "trace_instrumentation",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 5,
+      "tool_calls": 3,
+      "latency_s": 27.0
+    },
+    {
+      "id": "X10",
+      "source": "own",
+      "type": "Connections that leave the drawing",
+      "question": "Which equipment has a pipe whose other end is not on this drawing, and on which lines?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "line 47130 at PlateHeatExchanger-1 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "line 47131 at PlateHeatExchanger-1 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "line 47140 at TubularHeatExchanger-1 leaves the drawing (open end)",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 39,
+      "cause": null,
+      "answer": "Facts in the drawing\n- H1007 (PlateHeatExchanger-1), PlateHeatExchanger [E2.1]\n- open-ended pipe PipingNetworkSegment-20/connections/1 at PlateHeatExchanger-1 (H1007) (lineNumber 47130, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode WKa); its source is not represented on this drawing [E3.4]\n- open-ended pipe PipingNetworkSegment-21/connections/1 at PlateHeatExchanger-1 (H1007) (lineNumber 47131, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode WKb); its destination is not represented on this drawing [E3.5]\n- H1008 (TubularHeatExchanger-1), TubularHeatExchanger [E2.2]\n- open-ended pipe PipingNetworkSegment-22/connections/1 at TubularHeatExchanger-1 (H1008) (lineNumber 47140, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode QSa); its source is not represented on this drawing [E4.5]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Equipment that has a pipe whose other end is not on this drawing",
+          "covered_by": {
+            "direct": [
+              "E2.1",
+              "E3.4",
+              "E3.5",
+              "E2.2",
+              "E4.5"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "property",
+          "description": "Line numbers of those pipes",
+          "covered_by": {
+            "direct": [
+              "E3.4",
+              "E3.5",
+              "E4.5"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "list_entities",
+        "get_connections",
+        "get_connections",
+        "get_connections",
+        "get_connections",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 8,
+      "tool_calls": 6,
+      "latency_s": 35.7
+    },
+    {
+      "id": "X11",
+      "source": "own",
+      "type": "Comparison by property",
+      "question": "Compare the two pumps: design shaft power and design pressure head of each. Which is higher in each case?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "P4712 design shaft power",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "P4711 design shaft power",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "P4712 design pressure head",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "P4711 design pressure head",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 22,
+      "cause": null,
+      "answer": "Facts in the drawing\n- P4711 (CentrifugalPump-1), CentrifugalPump [E3.1]\n- P4712 (ReciprocatingPump-1), ReciprocatingPump [E4.1]\n- P4711 (CentrifugalPump-1), CentrifugalPump: designShaftPower = 60.0 kW, designPressureHead = 10.0 m [E5.1]\n- P4712 (ReciprocatingPump-1), ReciprocatingPump: designShaftPower = 84.0 kW, designPressureHead = 40.0 m [E5.2]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Identify the two pumps in the P&ID",
+          "covered_by": {
+            "direct": [
+              "E3.1",
+              "E4.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "property",
+          "description": "Design shaft power of pump 1",
+          "covered_by": {
+            "direct": [
+              "E3.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "property",
+          "description": "Design shaft power of pump 2",
+          "covered_by": {
+            "direct": [
+              "E4.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "property",
+          "description": "Design pressure head of pump 1",
+          "covered_by": {
+            "direct": [
+              "E3.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q5",
+          "kind": "property",
+          "description": "Design pressure head of pump 2",
+          "covered_by": {
+            "direct": [
+              "E4.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q6",
+          "kind": "other",
+          "description": "Which pump has higher design shaft power",
+          "covered_by": {
+            "direct": [
+              "E5.1",
+              "E5.2"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q7",
+          "kind": "other",
+          "description": "Which pump has higher design pressure head",
+          "covered_by": {
+            "direct": [
+              "E5.1",
+              "E5.2"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "list_entities",
+        "get_entity",
+        "get_entity",
+        "list_entities"
+      ],
+      "repair": {
+        "initial_problems": [
+          "Requested output q6 (Which pump has higher design shaft power) has not been addressed. Provide supported evidence or mark it unknown.",
+          "Requested output q7 (Which pump has higher design pressure head) has not been addressed. Provide supported evidence or mark it unknown."
+        ],
+        "attempted": true,
+        "succeeded": true
+      },
+      "llm_calls": 9,
+      "tool_calls": 4,
+      "latency_s": 217.5
+    },
+    {
+      "id": "X12",
+      "source": "own",
+      "type": "Chamber boundary",
+      "question": "Can flow pass from line 47126 through H1008 into line 47141? Explain from the drawing.",
+      "outcome": "incorrect",
+      "score": 0.0,
+      "profile": [
+        false
+      ],
+      "required": [
+        {
+          "item": "no route from the 47126 side to the valve on 47141",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 65,
+      "cause": "planner/tool choice",
+      "answer": "Facts in the drawing\n- PipeTee-4 (PipeTee 47126/C8) -> TubularHeatExchanger-1 (H1008) [pipe] (lineNumber 47126, segmentNumber S7, nominalDiameterRepresentation DN 50, fluidCode MNc) [E4.2]\n- TubularHeatExchanger-1 (H1008) -> GlobeValve-3 (GlobeValve 47141/C1) [pipe] (lineNumber 47141, segmentNumber S1, nominalDiameterRepresentation DN 50, fluidCode QSb) [E4.4]\n- H1008 (TubularHeatExchanger-1), TubularHeatExchanger [E3.1]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "consequence",
+          "description": "Whether flow can pass from line 47126 through H1008 into line 47141",
+          "covered_by": {
+            "direct": [
+              "E4.2",
+              "E4.4",
+              "E3.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "explanation",
+          "description": "Explanation from the drawing (P&ID) supporting the answer",
+          "covered_by": {
+            "direct": [
+              "E4.2",
+              "E4.4",
+              "E3.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "get_entity",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 5,
+      "tool_calls": 3,
+      "latency_s": 31.6
+    },
+    {
+      "id": "X13",
+      "source": "own",
+      "type": "Routes with one valve closed",
+      "question": "With the valve at 47127/C1 closed, is there still a route from P4712 to T4750? What lies on it?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true
+      ],
+      "required": [
+        {
+          "item": "one route remains, through SV 104.01",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 52,
+      "cause": null,
+      "answer": "Facts in the drawing\n- GlobeValve 47127/C1 (GlobeValve-1), GlobeValve [E3.1]\n\nDerived by graph analysis of the drawing\n- Route: P4712 (ReciprocatingPump-1) -> PipeTee 47126/C1 (PipeTee-2) -> PipeTee 47126/C3 (PipeTee-1) -> SV 104.01 (SpringLoadedGlobeSafetyValve-1) -> T4750 (Tank-1); 4 pipe(s), direction any (with GlobeValve-1 treated as closed) [E5.1, find_path]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "connection_or_route",
+          "description": "Whether a route exists from P4712 to T4750 when the valve at 47127/C1 is closed",
+          "covered_by": {
+            "direct": [
+              "E3.1"
+            ],
+            "derived": [
+              "E5.1"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "The entities that lie on the route from P4712 to T4750 with the valve at 47127/C1 closed",
+          "covered_by": {
+            "direct": [
+              "E3.1"
+            ],
+            "derived": [
+              "E5.1"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "find_entities",
+        "find_entities",
+        "find_path"
+      ],
+      "repair": null,
+      "llm_calls": 6,
+      "tool_calls": 4,
+      "latency_s": 43.1
+    },
+    {
+      "id": "X14",
+      "source": "own",
+      "type": "Inventory constrained by a property",
+      "question": "Which valves sit on DN 25 piping, and on which line is each?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "BallValve-2 is on DN 25 piping, line 47126",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "BallValve-3 is on DN 25 piping, line 47126",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "BallValve-5 is on DN 25 piping, line 47126",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "SpringLoadedGlobeSafetyValve-1 is on DN 25 piping, line 47125",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "SpringLoadedGlobeSafetyValve-1 is on line 47125",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "BallValve-3 is on line 47126",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 16,
+      "cause": null,
+      "answer": "Facts in the drawing\n- BallValve 47126/C2 (BallValve-2), BallValve: lineNumber = 47126 (on PipingNetworkSegment-10), nominalDiameterRepresentation = DN 25 (on PipingNetworkSegment-10) [E5.2]\n- BallValve 47126/C5 (BallValve-3), BallValve: lineNumber = 47126 (on PipingNetworkSegment-13), nominalDiameterRepresentation = DN 25 (on PipingNetworkSegment-13) [E5.3]\n- BallValve 47126/C10 (BallValve-5), BallValve: lineNumber = 47126 (on PipingNetworkSegment-17), nominalDiameterRepresentation = DN 25 (on PipingNetworkSegment-17) [E5.5]\n- SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve: lineNumber = 47125 (on PipingNetworkSegment-7), nominalDiameterRepresentation = DN 25 (on PipingNetworkSegment-7) [E9.1]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "List of valves that sit on DN 25 piping",
+          "covered_by": {
+            "direct": [
+              "E5.2",
+              "E5.3",
+              "E5.5",
+              "E9.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "property",
+          "description": "For each such valve, the line number it is on",
+          "covered_by": {
+            "direct": [
+              "E5.2",
+              "E5.3",
+              "E5.5",
+              "E9.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "list_entities",
+        "list_entities",
+        "find_entities",
+        "list_entities",
+        "list_entities",
+        "list_entities",
+        "list_entities",
+        "list_entities"
+      ],
+      "repair": null,
+      "llm_calls": 10,
+      "tool_calls": 8,
+      "latency_s": 35.8
+    }
+  ]
+}

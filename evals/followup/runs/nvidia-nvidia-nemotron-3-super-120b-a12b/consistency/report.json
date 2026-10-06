@@ -1,0 +1,6926 @@
+{
+  "suite": "consistency",
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "87953f481aa3c1273cdb34f8ea200ed0ba41d50a",
+  "dirty": false,
+  "run_id": "20261007T014945",
+  "repeats": 3,
+  "groups": 10,
+  "runs": 123,
+  "repeat_consistency": {
+    "consistent_phrasings": 22,
+    "of": 41
+  },
+  "cross_phrasing_consistency": {
+    "consistent_groups": 1,
+    "of": 10
+  },
+  "contradictions": 0,
+  "entity_resolution": {
+    "consistent_groups": 7,
+    "of": 10
+  },
+  "required_fact_recall": 0.698,
+  "jaccard_overlap_mean": 0.437,
+  "inconsistency_causes": {
+    "answer synthesis": 27,
+    "planner/tool choice": 18,
+    "incomplete traversal": 11,
+    "grounding rejection": 3,
+    "entity resolution": 5,
+    "provider/model variance": 1
+  },
+  "grounding": {
+    "structured_answers": 119,
+    "withheld": 3,
+    "provider_failures": 1,
+    "rejected_submissions": 7,
+    "final_repairs": {
+      "attempted": 3,
+      "succeeded": 3
+    },
+    "requested_outputs": {
+      "total": 231,
+      "covered_by_facts": 209,
+      "marked_unknown": 27,
+      "unaccounted": 0
+    },
+    "unsupported_facts_in_answers": 0,
+    "model_text_shown": 0,
+    "answers_with_log_only_summary": 8
+  },
+  "efficiency": {
+    "runs": 123,
+    "llm_calls": 802,
+    "tool_calls": 552,
+    "tokens": 4973747,
+    "median_latency_s": 24.5,
+    "mean_latency_s": 30.3
+  },
+  "group_rows": [
+    {
+      "group": "R1",
+      "title": "Isolating a pump",
+      "based_on_complex": true,
+      "runs": 15,
+      "repeat_consistent_phrasings": 1,
+      "phrasings": 5,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.433,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.867,
+      "jaccard_overlap": 0.636,
+      "phrasing_rows": [
+        {
+          "id": "R1a",
+          "question": "Which valves must be closed to isolate P4712 for maintenance?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            0.8,
+            0.8,
+            0.8
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R1b",
+          "question": "How would you isolate the reciprocating pump?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.8,
+            0.8,
+            0.8
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R1c",
+          "question": "I need to pull the 84 kW pump for repair. What do I shut, and is anything left open?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.8,
+            0.8,
+            1.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R1d",
+          "question": "P-4712 isolation: valve list + any gaps",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            1.0,
+            0.8,
+            1.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R1e",
+          "question": "Give me the isolation boundary for pump P4712.",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            1.0,
+            0.8,
+            1.0
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "R1a",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 8.7,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1a",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 19.7,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1a",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 11.4,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1b",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "ordering_or_procedure",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5",
+                  "E3.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 24.6,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1b",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [
+            "operating_procedure"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E2.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "ordering_or_procedure",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "operating_procedure"
+                ]
+              }
+            }
+          ],
+          "latency_s": 21.4,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1b",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "ordering_or_procedure",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 16.7,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1c",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "get_properties",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.24"
+                ],
+                "derived": [
+                  "E4.2",
+                  "E4.3",
+                  "E4.4",
+                  "E4.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.8"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 22.2,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "R1c",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 16,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_entity",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.1"
+                ],
+                "derived": [
+                  "E5.2",
+                  "E5.3",
+                  "E5.4",
+                  "E5.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.8"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 43.2,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "R1c",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 7,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_properties",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.24"
+                ],
+                "derived": [
+                  "E4.2",
+                  "E4.3",
+                  "E4.4",
+                  "E4.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [
+                  "E3.24"
+                ],
+                "derived": [
+                  "E4.6",
+                  "E4.8"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 28.1,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "R1d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.6",
+                  "E3.8"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 27.6,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "R1d",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 22.3,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1d",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.6",
+                  "E3.8"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 17.8,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1e",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 7,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5",
+                  "E3.6",
+                  "E3.7",
+                  "E3.8"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 30.6,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1e",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.8,
+          "question_outcome": "partial",
+          "question_score": 0.8,
+          "missing": [
+            "the relief line to SV 104.01 has no isolation valve"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 13.5,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R1e",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5",
+                  "E3.6",
+                  "E3.7",
+                  "E3.8"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 33.1,
+          "llm_calls": 4
+        }
+      ]
+    },
+    {
+      "group": "R2",
+      "title": "Fail-position impact",
+      "based_on_complex": true,
+      "runs": 12,
+      "repeat_consistent_phrasings": 1,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.111,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.389,
+      "jaccard_overlap": 0.301,
+      "phrasing_rows": [
+        {
+          "id": "R2a",
+          "question": "If HV4750.01 loses its actuating power, what happens to the flow from P4711 to the tank?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            0.667,
+            0.667,
+            0.667
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R2b",
+          "question": "what happens downstream of the plate exchanger if the hand-switched valve fails?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R2c",
+          "question": "HS4750.01 drops out. Does feed still reach T4750?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.667,
+            1.0,
+            0.667
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R2d",
+          "question": "Suppose the valve on line 47123 goes to its fail position. Which equipment is cut off from the tank, and is anything left without relief?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            0.0,
+            0.333
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "R2a",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 42,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "find_entities",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E3.6",
+                  "E3.2"
+                ],
+                "derived": [
+                  "E8.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 29.8,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "R2a",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 39,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_entity",
+            "trace_instrumentation",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E5.6"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E7.3",
+                  "E8.3",
+                  "E8.2"
+                ],
+                "derived": [
+                  "E5.17"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 52.5,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R2a",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 54,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_entity",
+            "trace_instrumentation",
+            "find_entities",
+            "find_entities",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E2.1",
+                  "E4.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E5.2",
+                  "E6.1",
+                  "E7.1"
+                ],
+                "derived": [
+                  "E8.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E5.2"
+                ],
+                "derived": [
+                  "E8.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 39.3,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "R2b",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "fail action of ActuatingFunction-2: fail close",
+            "ActuatingFunction-2 operates GlobeValve-2",
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [
+            "process_behaviour"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 25,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity",
+            "find_entities",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E3.2",
+                  "E6.2"
+                ],
+                "derived": [],
+                "unknown": [
+                  "process_behaviour"
+                ]
+              }
+            }
+          ],
+          "latency_s": 41.3,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "R2b",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "fail action of ActuatingFunction-2: fail close",
+            "ActuatingFunction-2 operates GlobeValve-2",
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [
+            "process_behaviour"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 38,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "find_entities",
+            "get_connections",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E2.1",
+                  "E3.2",
+                  "E4.1",
+                  "E5.2",
+                  "E3.5"
+                ],
+                "derived": [],
+                "unknown": [
+                  "process_behaviour"
+                ]
+              }
+            }
+          ],
+          "latency_s": 58.0,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "R2b",
+          "repeat": 3,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "fail action of ActuatingFunction-2: fail close",
+            "ActuatingFunction-2 operates GlobeValve-2",
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [
+            "not_represented",
+            "process_behaviour"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 32,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity",
+            "get_connections",
+            "find_entities",
+            "list_entities",
+            "get_connections",
+            "find_entities"
+          ],
+          "repair": {
+            "initial_problems": [
+              "unknowns.about: 'hand-switched valve downstream of plate exchanger' matches several items (GlobeValve-2, ButterflyValve-1, SwingCheckValve-1, BallValve-1, SpringLoadedGlobeSafetyValve-1, BallValve-2, BallValve-3, BallValve-4, BallValve-5, GlobeValve-1, GlobeValve-3, PlateHeatExchanger-1, TubularHeatExchanger-1). Use one entity id."
+            ],
+            "attempted": true,
+            "succeeded": true
+          },
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E2.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "process_behaviour"
+                ]
+              }
+            }
+          ],
+          "latency_s": 111.3,
+          "llm_calls": 11
+        },
+        {
+          "phrasing": "R2c",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 29,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "trace_instrumentation",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "get_entity",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E5.3",
+                  "E5.2",
+                  "E4.11",
+                  "E4.12"
+                ],
+                "derived": [
+                  "E4.17",
+                  "E4.18"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 118.3,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R2c",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 22,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "trace_instrumentation",
+            "get_connections",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E5.2",
+                  "E4.15",
+                  "E4.16"
+                ],
+                "derived": [
+                  "E6.1",
+                  "E6.2",
+                  "E4.18"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 73.4,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R2c",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 15,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "trace_instrumentation",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E4.11",
+                  "E5.2"
+                ],
+                "derived": [
+                  "E4.17"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 73.0,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "R2d",
+          "repeat": 1,
+          "outcome": "withheld",
+          "recall": 0.0,
+          "question_outcome": "withheld",
+          "question_score": 0.0,
+          "missing": [
+            "fail action of ActuatingFunction-2: fail close",
+            "ActuatingFunction-2 operates GlobeValve-2",
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 0,
+          "cause": "grounding rejection",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_properties",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [],
+          "latency_s": 60.0,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R2d",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "fail action of ActuatingFunction-2: fail close",
+            "ActuatingFunction-2 operates GlobeValve-2",
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 0,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity",
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "get_entity",
+            "get_properties"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            }
+          ],
+          "latency_s": 38.4,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R2d",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.333,
+          "question_outcome": "partial",
+          "question_score": 0.333,
+          "missing": [
+            "ActuatingFunction-2 operates GlobeValve-2",
+            "what remains connected with GlobeValve-2 treated as closed"
+          ],
+          "unknowns": [
+            "design_adequacy"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 53,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "get_entity",
+            "get_properties",
+            "find_entities",
+            "get_connections",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1",
+                  "E6.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E8.3",
+                  "E8.2",
+                  "E9.1",
+                  "E7.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "design_adequacy"
+                ]
+              }
+            }
+          ],
+          "latency_s": 34.1,
+          "llm_calls": 10
+        }
+      ]
+    },
+    {
+      "group": "R3",
+      "title": "Loop mapping, rephrased",
+      "based_on_complex": true,
+      "runs": 12,
+      "repeat_consistent_phrasings": 1,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.056,
+      "contradictions": [],
+      "entity_resolution_consistent": false,
+      "required_fact_recall": 0.458,
+      "jaccard_overlap": 0.155,
+      "phrasing_rows": [
+        {
+          "id": "R3a",
+          "question": "Map all connections for PICSA4712.02.",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R3b",
+          "question": "where does the pressure controller on the recip pump discharge get its measurement, and what does it move?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            1.0,
+            1.0,
+            0.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R3c",
+          "question": "PIC 4712.02: sensor, final element, fail position, which line?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            1.0,
+            0.75,
+            0.75
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R3d",
+          "question": "Which valve closes if the pressure loop on P4712's discharge loses actuator power, and where is that loop's transmitter?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "R3a",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E3.2",
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 13.5,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R3a",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E3.2",
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 15.7,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R3a",
+          "repeat": 3,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E3.2",
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 17.4,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R3b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 22,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "find_entities",
+            "find_entities",
+            "list_entities",
+            "list_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2",
+                  "E9.4"
+                ],
+                "derived": [
+                  "E9.23"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2",
+                  "E9.3"
+                ],
+                "derived": [
+                  "E9.24"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 23.6,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R3b",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "find_entities",
+            "find_entities",
+            "list_entities",
+            "list_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E9.4"
+                ],
+                "derived": [
+                  "E9.23"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E9.3"
+                ],
+                "derived": [
+                  "E9.24"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 24.8,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R3b",
+          "repeat": 3,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 0,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "find_entities",
+            "list_entities",
+            "find_entities",
+            "list_entities",
+            "get_entity",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            }
+          ],
+          "latency_s": 19.5,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R3c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 14,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation",
+            "get_properties"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.17",
+                  "E3.4",
+                  "E3.20",
+                  "E3.21"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.3",
+                  "E3.18",
+                  "E3.19",
+                  "E3.11"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.11",
+                  "E3.13"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            }
+          ],
+          "latency_s": 47.1,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "R3c",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation",
+            "get_entity",
+            "get_properties"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.13"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E5.1"
+                ],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            }
+          ],
+          "latency_s": 39.0,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "R3c",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.17"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.24"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.13",
+                  "E3.14"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.18"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 22.9,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "R3d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 26,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "list_entities",
+            "list_entities",
+            "trace_instrumentation",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.2",
+                  "E8.4",
+                  "E8.20",
+                  "E8.13",
+                  "E8.3",
+                  "E8.18",
+                  "E8.19"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E8.4",
+                  "E8.20",
+                  "E8.21",
+                  "E8.17"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 72.2,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "R3d",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [
+            "other"
+          ],
+          "entities_resolved": false,
+          "cited_facts": 5,
+          "cause": "entity resolution",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "list_entities",
+            "find_entities",
+            "list_entities",
+            "trace_instrumentation",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "other"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E8.3",
+                  "E8.5",
+                  "E8.6"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 47.5,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R3d",
+          "repeat": 3,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "ProcessSignalGeneratingFunction-2 measures at BlindFlange-2",
+            "ActuatingFunction-1 operates GlobeValve-1",
+            "fail action of ActuatingFunction-1: fail close",
+            "GlobeValve-1 is on line 47127"
+          ],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": false,
+          "cited_facts": 6,
+          "cause": "entity resolution",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "list_entities",
+            "get_entity",
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "list_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E9.1",
+                  "E9.2",
+                  "E7.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 41.9,
+          "llm_calls": 10
+        }
+      ]
+    },
+    {
+      "group": "R4",
+      "title": "Blocked-in, rephrased",
+      "based_on_complex": true,
+      "runs": 12,
+      "repeat_consistent_phrasings": 3,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.278,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.528,
+      "jaccard_overlap": 0.339,
+      "phrasing_rows": [
+        {
+          "id": "R4a",
+          "question": "Can any equipment on this drawing become blocked in with no visible pressure relief?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.333,
+            0.667,
+            0.333
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "R4b",
+          "question": "anything here that can get trapped between closed valves without a relief valve?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            0.667,
+            0.667,
+            0.667
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R4c",
+          "question": "Which vessels or exchangers could be shut in with nowhere to relieve, given the relief devices shown?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            0.667,
+            0.667,
+            0.667
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "R4d",
+          "question": "blocked-in check for this sheet: equipment + reason",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            0.333,
+            0.333,
+            0.333
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "R4a",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.333,
+          "question_outcome": "partial",
+          "question_score": 0.333,
+          "missing": [
+            "T4750 is fully bounded by valves",
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.7",
+                  "E4.9",
+                  "E5.5",
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "count",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.7",
+                  "E4.9",
+                  "E5.5",
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 95.9,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R4a",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 2,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.6",
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 46.2,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R4a",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.333,
+          "question_outcome": "partial",
+          "question_score": 0.333,
+          "missing": [
+            "T4750 is fully bounded by valves",
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.7",
+                  "E4.9",
+                  "E5.5",
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 41.6,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R4b",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 2,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.6",
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 32.4,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R4b",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E7.1"
+                ],
+                "derived": [
+                  "E7.6",
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 32.1,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R4b",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E7.1"
+                ],
+                "derived": [
+                  "E7.6",
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 33.2,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R4c",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "list_entities",
+            "find_entities",
+            "find_entities",
+            "isolation_boundary",
+            "find_entities",
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E5.1"
+                ],
+                "derived": [
+                  "E5.6",
+                  "E5.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 47.1,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "R4c",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "list_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.1",
+                  "E7.1"
+                ],
+                "derived": [
+                  "E7.6",
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 30.8,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "R4c",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 3,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "list_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "isolation_boundary",
+            "find_entities",
+            "list_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.6",
+                  "E6.7",
+                  "E6.5"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 35.7,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "R4d",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.333,
+          "question_outcome": "partial",
+          "question_score": 0.333,
+          "missing": [
+            "no relief device stays connected to T4750 inside that boundary",
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 2,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.7",
+                  "E7.6"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "explanation",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.7",
+                  "E7.6"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 29.0,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R4d",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.333,
+          "question_outcome": "partial",
+          "question_score": 0.333,
+          "missing": [
+            "no relief device stays connected to T4750 inside that boundary",
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.7",
+                  "E7.6"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "explanation",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5",
+                  "E7.2",
+                  "E7.3",
+                  "E7.4"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 36.7,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "R4d",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.333,
+          "question_outcome": "partial",
+          "question_score": 0.333,
+          "missing": [
+            "no relief device stays connected to T4750 inside that boundary",
+            "P4712 keeps a path to SV 104.01 inside its boundary"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E6.1",
+                  "E7.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "explanation",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.7",
+                  "E7.6"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 29.4,
+          "llm_calls": 8
+        }
+      ]
+    },
+    {
+      "group": "G1",
+      "title": "Isolating a heat exchanger",
+      "based_on_complex": true,
+      "runs": 12,
+      "repeat_consistent_phrasings": 2,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.389,
+      "contradictions": [],
+      "entity_resolution_consistent": false,
+      "required_fact_recall": 0.736,
+      "jaccard_overlap": 0.375,
+      "phrasing_rows": [
+        {
+          "id": "G1a",
+          "question": "Which valves isolate H1008, and which of its connections cannot be isolated on this drawing?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G1b",
+          "question": "isolation boundary for the tubular heat exchanger",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G1c",
+          "question": "H-1008 maintenance: what do I close, any open ends?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            1.0,
+            1.0,
+            0.833
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "G1d",
+          "question": "I need to take the exchanger fed from line 47126 out of service. Valve list and gaps, please.",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "G1a",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.6",
+                  "E3.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 17.1,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G1a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.6",
+                  "E3.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 22.1,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G1a",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.6",
+                  "E3.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 17.5,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G1b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 8,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5",
+                  "E3.6",
+                  "E3.7",
+                  "E3.8",
+                  "E3.9"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 22.3,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G1b",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 10,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "boundary",
+              "covered_by": {
+                "direct": [
+                  "E2.1"
+                ],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5",
+                  "E3.6",
+                  "E3.7",
+                  "E3.8",
+                  "E3.9"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 13.1,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G1b",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 10,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "boundary",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5",
+                  "E3.6",
+                  "E3.7",
+                  "E3.8",
+                  "E3.9"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 16.6,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G1c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.4",
+                  "E3.5",
+                  "E3.3",
+                  "E3.2"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.6",
+                  "E3.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 60.9,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G1c",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 8,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.4",
+                  "E3.5",
+                  "E3.3",
+                  "E3.2"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [
+                  "E2.1"
+                ],
+                "derived": [
+                  "E3.6",
+                  "E3.7"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 15.8,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G1c",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.833,
+          "question_outcome": "partial",
+          "question_score": 0.833,
+          "missing": [
+            "no valve before the piping leaves the drawing at the off-page connector"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 19,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.4",
+                  "E3.5",
+                  "E3.2",
+                  "E3.3"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.5"
+                ],
+                "derived": [
+                  "E3.6"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 18.7,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G1d",
+          "repeat": 1,
+          "outcome": "withheld",
+          "recall": 0.0,
+          "question_outcome": "withheld",
+          "question_score": 0.0,
+          "missing": [
+            "BallValve-4 bounds TubularHeatExchanger-1",
+            "BallValve-5 bounds TubularHeatExchanger-1",
+            "GlobeValve-1 bounds TubularHeatExchanger-1",
+            "GlobeValve-3 bounds TubularHeatExchanger-1",
+            "no valve before the piping leaves the drawing at the off-page connector",
+            "line 47140 at TubularHeatExchanger-1 leaves the drawing (open end)"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 0,
+          "cause": "grounding rejection",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "list_entities",
+            "get_entity",
+            "list_entities",
+            "find_entities",
+            "trace_line",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [],
+          "latency_s": 48.1,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "G1d",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "BallValve-4 bounds TubularHeatExchanger-1",
+            "BallValve-5 bounds TubularHeatExchanger-1",
+            "GlobeValve-1 bounds TubularHeatExchanger-1",
+            "GlobeValve-3 bounds TubularHeatExchanger-1",
+            "no valve before the piping leaves the drawing at the off-page connector",
+            "line 47140 at TubularHeatExchanger-1 leaves the drawing (open end)"
+          ],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 0,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "list_entities",
+            "get_entity",
+            "list_entities",
+            "get_connections",
+            "get_entity",
+            "get_connections"
+          ],
+          "repair": {
+            "initial_problems": [
+              "unknowns.about: 'valves for isolation' matches several items (GlobeValve-2, ButterflyValve-1, SwingCheckValve-1, BallValve-1, SpringLoadedGlobeSafetyValve-1, BallValve-2, BallValve-3, BallValve-4, BallValve-5, GlobeValve-1, GlobeValve-3). Use one entity id."
+            ],
+            "attempted": true,
+            "succeeded": true
+          },
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            }
+          ],
+          "latency_s": 38.1,
+          "llm_calls": 11
+        },
+        {
+          "phrasing": "G1d",
+          "repeat": 3,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "BallValve-4 bounds TubularHeatExchanger-1",
+            "BallValve-5 bounds TubularHeatExchanger-1",
+            "GlobeValve-1 bounds TubularHeatExchanger-1",
+            "GlobeValve-3 bounds TubularHeatExchanger-1",
+            "no valve before the piping leaves the drawing at the off-page connector",
+            "line 47140 at TubularHeatExchanger-1 leaves the drawing (open end)"
+          ],
+          "unknowns": [
+            "not_represented",
+            "other"
+          ],
+          "entities_resolved": false,
+          "cited_facts": 0,
+          "cause": "entity resolution",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "get_entity",
+            "get_connections",
+            "get_entity",
+            "get_connections",
+            "get_entity"
+          ],
+          "repair": {
+            "initial_problems": [
+              "Invalid submit_answer arguments: derived_facts: Input should be a valid list"
+            ],
+            "attempted": true,
+            "succeeded": true
+          },
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "other"
+                ]
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "other"
+                ]
+              }
+            }
+          ],
+          "latency_s": 49.4,
+          "llm_calls": 11
+        }
+      ]
+    },
+    {
+      "group": "G2",
+      "title": "Reach with one valve closed",
+      "based_on_complex": true,
+      "runs": 12,
+      "repeat_consistent_phrasings": 0,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.148,
+      "contradictions": [],
+      "entity_resolution_consistent": false,
+      "required_fact_recall": 0.227,
+      "jaccard_overlap": 0.092,
+      "phrasing_rows": [
+        {
+          "id": "G2a",
+          "question": "If the valve at 47126/C7 is shut, can P4712 still reach T4750, and can it still reach H1008?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            0.0,
+            0.5
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "G2b",
+          "question": "recip pump discharge with C7 on line 47126 closed: does it still get to the tank? to the tubular exchanger?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.5,
+            null,
+            0.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "G2c",
+          "question": "Close the ball valve between P4712 and H1008. Which of T4750 and H1008 can the 84 kW pump still reach?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "G2d",
+          "question": "47126/C7 shut: P-4712 to T-4750 still connected? P-4712 to H-1008?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            0.5,
+            1.0
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "G2a",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "T4750 is still reachable from P4712 with the valve closed",
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 72,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.1",
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5",
+                  "E6.6",
+                  "E6.7",
+                  "E6.8",
+                  "E6.9",
+                  "E6.10",
+                  "E6.11",
+                  "E6.12",
+                  "E6.13",
+                  "E6.14",
+                  "E6.15",
+                  "E6.16",
+                  "E6.17",
+                  "E6.18",
+                  "E6.19",
+                  "E6.20",
+                  "E6.21",
+                  "E6.22",
+                  "E6.23",
+                  "E6.47"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.1",
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5",
+                  "E6.6",
+                  "E6.7",
+                  "E6.8",
+                  "E6.9",
+                  "E6.10",
+                  "E6.11",
+                  "E6.12",
+                  "E6.13",
+                  "E6.14",
+                  "E6.15",
+                  "E6.16",
+                  "E6.17",
+                  "E6.18",
+                  "E6.19",
+                  "E6.20",
+                  "E6.21",
+                  "E6.22",
+                  "E6.23",
+                  "E6.47"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 33.5,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "G2a",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "T4750 is still reachable from P4712 with the valve closed",
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 10,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E4.1",
+                  "E2.1",
+                  "E3.1",
+                  "E5.1"
+                ],
+                "derived": [
+                  "E6.11"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E4.1",
+                  "E2.1",
+                  "E3.1",
+                  "E5.1"
+                ],
+                "derived": [
+                  "E6.16"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 21.7,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "G2a",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.5,
+          "question_outcome": "partial",
+          "question_score": 0.5,
+          "missing": [
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 84,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_path",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E2.1",
+                  "E3.1",
+                  "E4.1"
+                ],
+                "derived": [
+                  "E6.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [
+                  "E2.1",
+                  "E5.1",
+                  "E4.1"
+                ],
+                "derived": [
+                  "E7.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 34.5,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "G2b",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.5,
+          "question_outcome": "partial",
+          "question_score": 0.5,
+          "missing": [
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 38,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "traverse",
+            "get_entity",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.7"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.1",
+                  "E7.2",
+                  "E7.3",
+                  "E7.4",
+                  "E7.5",
+                  "E7.6",
+                  "E7.8",
+                  "E7.9",
+                  "E7.10",
+                  "E7.11",
+                  "E7.12",
+                  "E7.0"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 85.4,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "G2b",
+          "repeat": 2,
+          "outcome": "provider_failure",
+          "recall": null,
+          "question_outcome": "provider_failure",
+          "question_score": null,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": false,
+          "cited_facts": 0,
+          "cause": "provider/model variance",
+          "tools_used": [],
+          "repair": null,
+          "requested_outputs": [],
+          "latency_s": 18.7,
+          "llm_calls": 0
+        },
+        {
+          "phrasing": "G2b",
+          "repeat": 3,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "T4750 is still reachable from P4712 with the valve closed",
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 0,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            }
+          ],
+          "latency_s": 53.3,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "G2c",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "T4750 is still reachable from P4712 with the valve closed",
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [
+            "not_represented",
+            "other"
+          ],
+          "entities_resolved": false,
+          "cited_facts": 0,
+          "cause": "entity resolution",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "list_entities",
+            "get_properties"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "consequence",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "other"
+                ]
+              }
+            }
+          ],
+          "latency_s": 41.7,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "G2c",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "T4750 is still reachable from P4712 with the valve closed",
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [
+            "ambiguous_request"
+          ],
+          "entities_resolved": false,
+          "cited_facts": 0,
+          "cause": "entity resolution",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "list_entities",
+            "get_connections",
+            "get_connections",
+            "find_entities",
+            "find_path",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "ambiguous_request"
+                ]
+              }
+            }
+          ],
+          "latency_s": 100.3,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "G2c",
+          "repeat": 3,
+          "outcome": "withheld",
+          "recall": 0.0,
+          "question_outcome": "withheld",
+          "question_score": 0.0,
+          "missing": [
+            "T4750 is still reachable from P4712 with the valve closed",
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 0,
+          "cause": "grounding rejection",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "trace_line",
+            "get_entity",
+            "find_entities",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [],
+          "latency_s": 66.1,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "G2d",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "T4750 is still reachable from P4712 with the valve closed",
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 74,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "traverse",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E2.1",
+                  "E3.1",
+                  "E4.1"
+                ],
+                "derived": [
+                  "E6.1",
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5",
+                  "E6.6",
+                  "E6.7",
+                  "E6.8",
+                  "E6.9",
+                  "E6.10",
+                  "E6.11",
+                  "E6.12",
+                  "E6.13",
+                  "E6.14",
+                  "E6.15",
+                  "E6.16",
+                  "E6.17",
+                  "E6.18",
+                  "E6.19",
+                  "E6.20",
+                  "E6.21",
+                  "E6.22",
+                  "E6.23",
+                  "E6.47"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E2.1",
+                  "E5.1",
+                  "E4.1"
+                ],
+                "derived": [
+                  "E6.1",
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5",
+                  "E6.6",
+                  "E6.7",
+                  "E6.8",
+                  "E6.9",
+                  "E6.10",
+                  "E6.11",
+                  "E6.12",
+                  "E6.13",
+                  "E6.14",
+                  "E6.15",
+                  "E6.16",
+                  "E6.17",
+                  "E6.18",
+                  "E6.19",
+                  "E6.20",
+                  "E6.21",
+                  "E6.22",
+                  "E6.23",
+                  "E6.47"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 37.7,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "G2d",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.5,
+          "question_outcome": "partial",
+          "question_score": 0.5,
+          "missing": [
+            "H1008 is no longer reachable from P4712 with the valve closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 79,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_path",
+            "find_path",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E8.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 44.0,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "G2d",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 51,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_path",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.0"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 31.2,
+          "llm_calls": 8
+        }
+      ]
+    },
+    {
+      "group": "G3",
+      "title": "Temperature loop",
+      "based_on_complex": true,
+      "runs": 12,
+      "repeat_consistent_phrasings": 3,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.667,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.958,
+      "jaccard_overlap": 0.511,
+      "phrasing_rows": [
+        {
+          "id": "G3a",
+          "question": "Map TICSA4750.03: where it measures, the valve it acts on, the fail position and the line.",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G3b",
+          "question": "where does the temperature controller on the tank take its measurement, and what does it move?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G3c",
+          "question": "TIC 4750.03: sensor, final element, fail position, which line?",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            0.75,
+            0.75,
+            1.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "G3d",
+          "question": "Which valve opens if the temperature loop on T4750 loses actuator power, on which line is it, and where is that loop's sensor?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "G3a",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.13"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.18"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 9.8,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G3a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.13"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.18"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 27.9,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G3a",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E3.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.13"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.18"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 12.5,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G3b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 8,
+          "cause": null,
+          "tools_used": [
+            "list_entities",
+            "find_entities",
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E7.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [
+                  "E7.3"
+                ],
+                "derived": [
+                  "E7.22"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 37.1,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "G3b",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 8,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E8.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [
+                  "E9.3"
+                ],
+                "derived": [
+                  "E9.22"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 17.1,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "G3b",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": null,
+          "tools_used": [
+            "list_entities",
+            "find_entities",
+            "list_entities",
+            "list_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E6.4"
+                ],
+                "derived": [
+                  "E6.21"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E6.3"
+                ],
+                "derived": [
+                  "E6.22"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 33.1,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "G3c",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "ProcessSignalGeneratingFunction-3 measures at Tank-1"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.1",
+                  "E3.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [
+                  "E3.22"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.13"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.18"
+                ],
+                "derived": [
+                  "E3.22"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 16.2,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G3c",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "ProcessSignalGeneratingFunction-3 measures at Tank-1"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.13"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.18"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 17.0,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G3c",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.13"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.18"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 8.1,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G3d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "trace_instrumentation",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.22"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.22"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 54.3,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "G3d",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 26,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "trace_instrumentation",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.14",
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E5.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 44.9,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "G3d",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.20"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E5.18"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E5.4"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 52.5,
+          "llm_calls": 6
+        }
+      ]
+    },
+    {
+      "group": "G4",
+      "title": "An item by tag, type, context and shorthand",
+      "based_on_complex": false,
+      "runs": 12,
+      "repeat_consistent_phrasings": 4,
+      "phrasings": 4,
+      "cross_phrasing_consistent": true,
+      "cross_phrasing_pair_agreement": 1.0,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 1.0,
+      "jaccard_overlap": 0.485,
+      "phrasing_rows": [
+        {
+          "id": "G4a",
+          "question": "What is P4711's design shaft power?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G4b",
+          "question": "design shaft power of the centrifugal pump?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G4c",
+          "question": "The pump that feeds the plate heat exchanger: what is its design shaft power?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G4d",
+          "question": "centrif pump shaft power, kW",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "G4a",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 5.0,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G4a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 11.1,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G4a",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 1,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_properties"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 14.8,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G4b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 13.4,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G4b",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 6.3,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G4b",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 6.3,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G4c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 10.6,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G4c",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 23,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.2",
+                  "E4.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 23.9,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G4c",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 23,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 11.6,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G4d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 3,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_properties"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E2.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.8"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 10.7,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G4d",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 1,
+          "cause": null,
+          "tools_used": [
+            "list_entities",
+            "get_properties"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 5.2,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "G4d",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 5.4,
+          "llm_calls": 4
+        }
+      ]
+    },
+    {
+      "group": "G5",
+      "title": "A route with line numbers and sizes",
+      "based_on_complex": false,
+      "runs": 12,
+      "repeat_consistent_phrasings": 3,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.389,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.896,
+      "jaccard_overlap": 0.819,
+      "phrasing_rows": [
+        {
+          "id": "G5a",
+          "question": "Give the route from P4711 to T4750 with line numbers and sizes.",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G5b",
+          "question": "how does the centrifugal pump's discharge get to the tank? lines and DN please",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            0.75,
+            0.75,
+            0.75
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "G5c",
+          "question": "P4711 -> T4750: components, lines, DN",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G5d",
+          "question": "Feed route from the pump on line 47121 to the tank: every item and the size of every pipe.",
+          "repeats": 3,
+          "repeat_consistent": false,
+          "recall": [
+            1.0,
+            1.0,
+            0.5
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "G5a",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 38,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 10.3,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G5a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 38,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 8.2,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G5a",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 38,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 11.1,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G5b",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "the route P4711 -> T4750 in order"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 37,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "find_entities",
+            "get_connections",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.2",
+                  "E5.2",
+                  "E6.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.2",
+                  "E5.2",
+                  "E6.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 13.1,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "G5b",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "the route P4711 -> T4750 in order"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 37,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E5.3",
+                  "E6.2",
+                  "E7.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 15.6,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "G5b",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "the route P4711 -> T4750 in order"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 37,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2",
+                  "E5.2",
+                  "E6.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.2",
+                  "E5.2",
+                  "E6.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 26.1,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "G5c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 38,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 13.3,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G5c",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 38,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 13.6,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G5c",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 38,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 24.3,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G5d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 53,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "find_entities",
+            "get_connections",
+            "find_path",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.1",
+                  "E9.1",
+                  "E5.1",
+                  "E4.2"
+                ],
+                "derived": [
+                  "E7.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 65.8,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "G5d",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 50,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "find_entities",
+            "get_connections",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E8.1"
+                ],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E8.1"
+                ],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 36.6,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "G5d",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.5,
+          "question_outcome": "partial",
+          "question_score": 0.5,
+          "missing": [
+            "the route P4711 -> T4750 in order",
+            "pipe PlateHeatExchanger-1 -> GlobeValve-2: line 47123, DN 80"
+          ],
+          "unknowns": [
+            "not_represented"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 49,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.1",
+                  "E5.2",
+                  "E5.3",
+                  "E6.1",
+                  "E9.2"
+                ],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E5.3",
+                  "E9.2"
+                ],
+                "derived": [],
+                "unknown": [
+                  "not_represented"
+                ]
+              }
+            }
+          ],
+          "latency_s": 49.0,
+          "llm_calls": 10
+        }
+      ]
+    },
+    {
+      "group": "G6",
+      "title": "A relief device by tag, type and context",
+      "based_on_complex": false,
+      "runs": 12,
+      "repeat_consistent_phrasings": 4,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.5,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.917,
+      "jaccard_overlap": 0.66,
+      "phrasing_rows": [
+        {
+          "id": "G6a",
+          "question": "What is the set pressure of SV 104.01, and what is it connected between?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G6b",
+          "question": "safety valve: set pressure, where its inlet comes from, where it discharges",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "G6c",
+          "question": "the relief valve on line 47125: at what pressure is it set and where does it relieve to?",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            0.667,
+            0.667,
+            0.667
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "G6d",
+          "question": "SV104.01 set pressure + inlet + outlet",
+          "repeats": 3,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "G6a",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 26,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_properties",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2",
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 5.9,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G6a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 26,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_properties",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2",
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 5.4,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G6a",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 42,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2",
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 6.5,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G6b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 26,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_properties",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 15.5,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G6b",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 42,
+          "cause": null,
+          "tools_used": [
+            "list_entities",
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "get_connections",
+            "get_entity",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E5.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E8.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 25.8,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "G6b",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 26,
+          "cause": null,
+          "tools_used": [
+            "list_entities",
+            "find_entities",
+            "find_entities",
+            "get_properties",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E5.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E6.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E6.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 9.9,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "G6c",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "its inlet comes from the tee on P4712's discharge"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 14,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "list_entities",
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_properties",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E7.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E6.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 11.4,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "G6c",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "its inlet comes from the tee on P4712's discharge"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 30,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "list_entities",
+            "find_entities",
+            "list_entities",
+            "get_entity",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E6.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E7.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 12.6,
+          "llm_calls": 8
+        },
+        {
+          "phrasing": "G6c",
+          "repeat": 3,
+          "outcome": "partial",
+          "recall": 0.667,
+          "question_outcome": "partial",
+          "question_score": 0.667,
+          "missing": [
+            "its inlet comes from the tee on P4712's discharge"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 30,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_entity",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E5.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 9.1,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "G6d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 26,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_properties",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 7.7,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G6d",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 42,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 7.0,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "G6d",
+          "repeat": 3,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 26,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_properties",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.1"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "connection_or_route",
+              "covered_by": {
+                "direct": [
+                  "E4.2"
+                ],
+                "derived": [],
+                "unknown": []
+              }
+            }
+          ],
+          "latency_s": 7.0,
+          "llm_calls": 5
+        }
+      ]
+    }
+  ]
+}
