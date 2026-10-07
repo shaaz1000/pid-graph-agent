@@ -1,0 +1,2299 @@
+{
+  "suite": "consistency",
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "1abcc01dda344c0416d139bfe68a8ad8132e0aa9",
+  "dirty": false,
+  "run_id": "20261007T145002",
+  "repeats": 2,
+  "groups": 4,
+  "runs": 32,
+  "repeat_consistency": {
+    "consistent_phrasings": 11,
+    "of": 16
+  },
+  "cross_phrasing_consistency": {
+    "consistent_groups": 0,
+    "of": 4
+  },
+  "contradictions": 0,
+  "entity_resolution": {
+    "consistent_groups": 4,
+    "of": 4
+  },
+  "required_fact_recall": 0.719,
+  "jaccard_overlap_mean": 0.365,
+  "inconsistency_causes": {
+    "planner/tool choice": 6,
+    "incomplete traversal": 3,
+    "answer synthesis": 3
+  },
+  "grounding": {
+    "structured_answers": 32,
+    "withheld": 0,
+    "provider_failures": 0,
+    "rejected_submissions": 1,
+    "final_repairs": {
+      "attempted": 0,
+      "succeeded": 0
+    },
+    "requested_outputs": {
+      "total": 67,
+      "covered_by_facts": 62,
+      "marked_unknown": 5,
+      "unaccounted": 0
+    },
+    "unsupported_facts_in_answers": 0,
+    "model_text_shown": 0,
+    "answers_with_log_only_summary": 4
+  },
+  "efficiency": {
+    "runs": 32,
+    "llm_calls": 215,
+    "tool_calls": 150,
+    "tokens": 1399321,
+    "median_latency_s": 26.6,
+    "mean_latency_s": 29.6
+  },
+  "group_rows": [
+    {
+      "group": "KG1",
+      "title": "Boundary of a fitting",
+      "based_on_complex": true,
+      "runs": 8,
+      "repeat_consistent_phrasings": 3,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.75,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.875,
+      "jaccard_overlap": 0.327,
+      "phrasing_rows": [
+        {
+          "id": "KG1a",
+          "question": "PipeTee 47126/C9: bounding shut-off valves, and any connection to equipment or to the drawing edge that has no valve?",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "KG1b",
+          "question": "Take the tee immediately upstream of the outgoing off-page connector. What would have to be shut to box it in, and what around it cannot be shut off?",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "KG1c",
+          "question": "On line 47126 there is a DN 50 tee whose DN 25 branch leads to valve C10. Which valves close it in, and which of its connections have none?",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "KG1d",
+          "question": "47126/C9 tee: isolation valves + unvalved connections",
+          "repeats": 2,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            1.0
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "KG1a",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "boundary",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.4",
+                  "E3.5",
+                  "E3.6",
+                  "E3.7"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": [
+                  "E3.6",
+                  "E3.7"
+                ]
+              }
+            }
+          ],
+          "latency_s": 22.3,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "KG1a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 6,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "boundary",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3",
+                  "E3.4",
+                  "E3.5",
+                  "E3.6",
+                  "E3.7"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": [
+                  "E3.6",
+                  "E3.7"
+                ]
+              }
+            }
+          ],
+          "latency_s": 16.8,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "KG1b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 19,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.2"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "get_connections"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "boundary",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.2",
+                  "E4.3",
+                  "E4.6",
+                  "E4.7"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": [
+                  "E4.6",
+                  "E4.7"
+                ]
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.4",
+                  "E4.5"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 18.2,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "KG1b",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 20,
+          "cause": null,
+          "tools_used": [
+            "list_entities",
+            "get_connections",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.1",
+                  "E3.2"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "get_connections",
+                  "isolation_boundary"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "boundary",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.2",
+                  "E4.3",
+                  "E4.6",
+                  "E4.7"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": [
+                  "E4.6",
+                  "E4.7"
+                ]
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "boundary",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.4",
+                  "E4.5"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 16.3,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "KG1c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.2",
+                  "E5.3"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.4",
+                  "E5.5"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 34.7,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "KG1c",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 36,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "get_entity",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "boundary",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E9.2",
+                  "E9.3",
+                  "E9.4",
+                  "E9.5",
+                  "E9.6",
+                  "E9.7"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": [
+                  "E9.6",
+                  "E9.7"
+                ]
+              }
+            }
+          ],
+          "latency_s": 57.9,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "KG1d",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "BallValve-4 bounds PipeTee-5",
+            "BallValve-5 bounds PipeTee-5",
+            "no valve between PipeTee-5 and FlowOutPipeOffPageConnector-1",
+            "no valve between PipeTee-5 and TubularHeatExchanger-1"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 54,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "adjacency",
+              "covered_by": {
+                "direct": [
+                  "E4.1",
+                  "E3.3"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "get_connections",
+                  "get_entity"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "adjacency",
+              "covered_by": {
+                "direct": [
+                  "E3.3",
+                  "E3.2",
+                  "E3.4"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "get_connections"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 38.1,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "KG1d",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 4,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "isolation_boundary"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.2",
+                  "E3.3"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.4",
+                  "E3.5"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "isolation_boundary"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 19.6,
+          "llm_calls": 4
+        }
+      ]
+    },
+    {
+      "group": "KG2",
+      "title": "Flow route versus piping link",
+      "based_on_complex": true,
+      "runs": 8,
+      "repeat_consistent_phrasings": 3,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.167,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.562,
+      "jaccard_overlap": 0.474,
+      "phrasing_rows": [
+        {
+          "id": "KG2a",
+          "question": "H1008 to P4711: does a flow-wise route exist, and are they joined by piping if direction is left aside?",
+          "repeats": 2,
+          "repeat_consistent": false,
+          "recall": [
+            0.5,
+            1.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "KG2b",
+          "question": "Following the flow arrows, can anything leaving the tubular heat exchanger arrive at the centrifugal pump? And is there any pipe connection between those two regardless of direction?",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            0.5,
+            0.5
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "KG2c",
+          "question": "Take the exchanger that line 47127 comes out of and the pump that line 47121 runs into. Is the pump downstream of the exchanger? Are the two linked by pipework at all?",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            0.0,
+            0.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "KG2d",
+          "question": "H-1008 -> P-4711: flow path yes/no; any piping link yes/no",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "KG2a",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.5,
+          "question_outcome": "partial",
+          "question_score": 0.5,
+          "missing": [
+            "no route in the drawn flow direction from H1008 to P4711"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 133,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "traverse",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1",
+                  "E4.2",
+                  "E4.3",
+                  "E4.4",
+                  "E4.5",
+                  "E4.6",
+                  "E4.7",
+                  "E4.8",
+                  "E4.9",
+                  "E4.10",
+                  "E4.11",
+                  "E4.12",
+                  "E4.13",
+                  "E4.14",
+                  "E4.15",
+                  "E4.16",
+                  "E4.17",
+                  "E4.18",
+                  "E4.19",
+                  "E4.20",
+                  "E4.21",
+                  "E4.44",
+                  "E4.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connectivity",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.1"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 25.5,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "KG2a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 68,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_path",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1",
+                  "E4.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connectivity",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.1"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 43.2,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "KG2b",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.5,
+          "question_outcome": "partial",
+          "question_score": 0.5,
+          "missing": [
+            "no route in the drawn flow direction from H1008 to P4711"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 133,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "traverse",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.1",
+                  "E5.2",
+                  "E5.3",
+                  "E5.4",
+                  "E5.5",
+                  "E5.6",
+                  "E5.7",
+                  "E5.8",
+                  "E5.9",
+                  "E5.10",
+                  "E5.11",
+                  "E5.12",
+                  "E5.13",
+                  "E5.14",
+                  "E5.15",
+                  "E5.16",
+                  "E5.17",
+                  "E5.18",
+                  "E5.19",
+                  "E5.20",
+                  "E5.21",
+                  "E5.44",
+                  "E5.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connectivity",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.1"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 25.6,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "KG2b",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.5,
+          "question_outcome": "partial",
+          "question_score": 0.5,
+          "missing": [
+            "no route in the drawn flow direction from H1008 to P4711"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 133,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "traverse",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1",
+                  "E4.2",
+                  "E4.3",
+                  "E4.4",
+                  "E4.5",
+                  "E4.6",
+                  "E4.7",
+                  "E4.8",
+                  "E4.9",
+                  "E4.10",
+                  "E4.11",
+                  "E4.12",
+                  "E4.13",
+                  "E4.14",
+                  "E4.15",
+                  "E4.16",
+                  "E4.17",
+                  "E4.18",
+                  "E4.19",
+                  "E4.20",
+                  "E4.21",
+                  "E4.44",
+                  "E4.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connectivity",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.1"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 27.0,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "KG2c",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "no route in the drawn flow direction from H1008 to P4711",
+            "the two are joined by piping when flow direction is ignored"
+          ],
+          "unknowns": [
+            "other"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 28,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity",
+            "trace_line",
+            "trace_line",
+            "find_entities",
+            "get_connections",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E5.2",
+                  "E6.1"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_line"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "other"
+                ],
+                "answered_by": [],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "connectivity",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "other"
+                ],
+                "answered_by": [],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 52.2,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "KG2c",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "no route in the drawn flow direction from H1008 to P4711",
+            "the two are joined by piping when flow direction is ignored"
+          ],
+          "unknowns": [
+            "other"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 30,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_entity",
+            "get_connections",
+            "get_entity",
+            "trace_line",
+            "trace_line",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E7.2"
+                ],
+                "derived": [
+                  "E7.3"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_line"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E8.1"
+                ],
+                "derived": [
+                  "E8.2"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_line"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "other"
+                ],
+                "answered_by": [],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "connectivity",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "other"
+                ],
+                "answered_by": [],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 40.4,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "KG2d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 68,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "traverse",
+            "find_path",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.1",
+                  "E6.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connectivity",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.1"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 40.1,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "KG2d",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 68,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_path",
+            "find_path"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.1",
+                  "E4.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "connectivity",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.1"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "find_path"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 13.3,
+          "llm_calls": 6
+        }
+      ]
+    },
+    {
+      "group": "KG3",
+      "title": "A loop entered from its valve",
+      "based_on_complex": true,
+      "runs": 8,
+      "repeat_consistent_phrasings": 4,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.5,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.938,
+      "jaccard_overlap": 0.459,
+      "phrasing_rows": [
+        {
+          "id": "KG3a",
+          "question": "GlobeValve 47141/C1: operating function, the function that signals it, the measurement point of the loop, and the encoded fail action?",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "KG3b",
+          "question": "The globe valve on the line that leaves H1008 toward the drawing edge: give its whole control chain from where the measurement is taken to the valve, with the fail action.",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "KG3c",
+          "question": "One actuator on this sheet is encoded to fail open. Which valve does it operate, what sends it its signal, and where does that loop measure?",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            0.75,
+            0.75
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "KG3d",
+          "question": "47141/C1: loop members, tap point, fail action",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "KG3a",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 3,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "get_connections",
+            "get_entity",
+            "get_properties",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.20",
+                  "E7.22"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.20",
+                  "E7.22"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "other",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.20",
+                  "E7.21"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E7.20",
+                  "E7.22"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 26.5,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "KG3a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 14,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_properties",
+            "get_connections",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.2"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "get_connections"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "signal_chain",
+              "covered_by": {
+                "direct": [
+                  "E5.5",
+                  "E5.2",
+                  "E5.3",
+                  "E5.4"
+                ],
+                "derived": [
+                  "E5.20",
+                  "E5.22"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": [
+                  "E5.2",
+                  "E5.3",
+                  "E5.4",
+                  "E5.20",
+                  "E5.22"
+                ]
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E5.21"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q4",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E5.8"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 24.3,
+          "llm_calls": 6
+        },
+        {
+          "phrasing": "KG3b",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 13,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "signal_chain",
+              "covered_by": {
+                "direct": [
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5"
+                ],
+                "derived": [
+                  "E6.20",
+                  "E6.21",
+                  "E6.22"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": [
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5",
+                  "E6.21",
+                  "E6.22"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.20"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 30.5,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "KG3b",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 14,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "signal_chain",
+              "covered_by": {
+                "direct": [
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5"
+                ],
+                "derived": [
+                  "E6.20",
+                  "E6.21",
+                  "E6.22"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": [
+                  "E6.2",
+                  "E6.3",
+                  "E6.4",
+                  "E6.5",
+                  "E6.21",
+                  "E6.22"
+                ]
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E6.10"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 28.2,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "KG3c",
+          "repeat": 1,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "encoded fail action: fail open"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "list_entities",
+            "get_properties",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.3"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.5"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.4"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 22.9,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "KG3c",
+          "repeat": 2,
+          "outcome": "partial",
+          "recall": 0.75,
+          "question_outcome": "partial",
+          "question_score": 0.75,
+          "missing": [
+            "encoded fail action: fail open"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 9,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "list_entities",
+            "list_entities",
+            "get_properties",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E6.3"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E6.5"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E6.4"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 26.2,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "KG3d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E3.20"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E3.4"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E3.10"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 14.3,
+          "llm_calls": 4
+        },
+        {
+          "phrasing": "KG3d",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 5,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "get_connections",
+            "trace_instrumentation"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "items",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.20"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q2",
+              "kind": "items",
+              "covered_by": {
+                "direct": [
+                  "E4.4"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            },
+            {
+              "id": "q3",
+              "kind": "property",
+              "covered_by": {
+                "direct": [
+                  "E4.8"
+                ],
+                "derived": [],
+                "unknown": [],
+                "answered_by": [
+                  "trace_instrumentation"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 16.0,
+          "llm_calls": 5
+        }
+      ]
+    },
+    {
+      "group": "KG4",
+      "title": "What remains downstream with a valve closed",
+      "based_on_complex": true,
+      "runs": 8,
+      "repeat_consistent_phrasings": 1,
+      "phrasings": 4,
+      "cross_phrasing_consistent": false,
+      "cross_phrasing_pair_agreement": 0.333,
+      "contradictions": [],
+      "entity_resolution_consistent": true,
+      "required_fact_recall": 0.5,
+      "jaccard_overlap": 0.2,
+      "phrasing_rows": [
+        {
+          "id": "KG4a",
+          "question": "Treat BallValve 47124/C4 as closed. Which equipment is still downstream of T4750?",
+          "repeats": 2,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            1.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "KG4b",
+          "question": "Shut the ball valve on the suction side of the reciprocating pump. Which equipment can the tank still reach in the flow direction?",
+          "repeats": 2,
+          "repeat_consistent": false,
+          "recall": [
+            0.0,
+            0.0
+          ],
+          "matches_group": false
+        },
+        {
+          "id": "KG4c",
+          "question": "Suppose the DN 50 valve between the reducer and P4712 is closed: is any equipment left downstream of the tank?",
+          "repeats": 2,
+          "repeat_consistent": true,
+          "recall": [
+            1.0,
+            1.0
+          ],
+          "matches_group": true
+        },
+        {
+          "id": "KG4d",
+          "question": "47124/C4 shut: any equipment downstream of T-4750?",
+          "repeats": 2,
+          "repeat_consistent": false,
+          "recall": [
+            1.0,
+            0.0
+          ],
+          "matches_group": false
+        }
+      ],
+      "run_rows": [
+        {
+          "phrasing": "KG4a",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "no equipment is downstream of T4750 with the valve treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 13,
+          "cause": "answer synthesis",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "traverse",
+            "get_connections",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.1",
+                  "E6.2",
+                  "E6.3"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 26.7,
+          "llm_calls": 7
+        },
+        {
+          "phrasing": "KG4a",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 1,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 11.8,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "KG4b",
+          "repeat": 1,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "no equipment is downstream of T4750 with the valve treated as closed"
+          ],
+          "unknowns": [
+            "off_drawing"
+          ],
+          "entities_resolved": true,
+          "cited_facts": 27,
+          "cause": "incomplete traversal",
+          "tools_used": [
+            "find_entities",
+            "get_entity",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "trace_line",
+            "find_entities",
+            "find_entities"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [],
+                "unknown": [
+                  "off_drawing"
+                ],
+                "answered_by": [],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 65.9,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "KG4b",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "no equipment is downstream of T4750 with the valve treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 36,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E8.1",
+                  "E8.2",
+                  "E8.3"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 42.4,
+          "llm_calls": 9
+        },
+        {
+          "phrasing": "KG4c",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 62,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E9.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 41.1,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "KG4c",
+          "repeat": 2,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 28,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "get_connections",
+            "find_entities",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E9.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 33.9,
+          "llm_calls": 10
+        },
+        {
+          "phrasing": "KG4d",
+          "repeat": 1,
+          "outcome": "correct",
+          "recall": 1.0,
+          "question_outcome": "correct",
+          "question_score": 1.0,
+          "missing": [],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 1,
+          "cause": null,
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "traverse"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E4.0"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 16.5,
+          "llm_calls": 5
+        },
+        {
+          "phrasing": "KG4d",
+          "repeat": 2,
+          "outcome": "incorrect",
+          "recall": 0.0,
+          "question_outcome": "incorrect",
+          "question_score": 0.0,
+          "missing": [
+            "no equipment is downstream of T4750 with the valve treated as closed"
+          ],
+          "unknowns": [],
+          "entities_resolved": true,
+          "cited_facts": 11,
+          "cause": "planner/tool choice",
+          "tools_used": [
+            "find_entities",
+            "find_entities",
+            "get_connections",
+            "get_connections",
+            "traverse",
+            "get_connections"
+          ],
+          "repair": null,
+          "requested_outputs": [
+            {
+              "id": "q1",
+              "kind": "flow_reachability",
+              "covered_by": {
+                "direct": [],
+                "derived": [
+                  "E6.1",
+                  "E6.2",
+                  "E6.3"
+                ],
+                "unknown": [],
+                "answered_by": [
+                  "traverse"
+                ],
+                "completed_by_application": []
+              }
+            }
+          ],
+          "latency_s": 30.6,
+          "llm_calls": 8
+        }
+      ]
+    }
+  ]
+}

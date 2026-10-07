@@ -1,0 +1,583 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1abcc01   Repeat: 1
+
+QUESTION [KG3a]
+GlobeValve 47141/C1: operating function, the function that signals it, the measurement point of the loop, and the encoded fail action?
+
+STEP 1
+Tool:   decompose_request   (what the question asks for)
+Input:  {"requested_outputs": [{"description": "operating function of GlobeValve 47141/C1", "kind": "property"}, {"description": "the function that signals GlobeValve 47141/C1", "kind": "other"}, {"description": "the measurement point of the loop for GlobeValve 47141/C1", "kind": "other"}, {"description": "encoded fail action of GlobeValve 47141/C1", "kind": "property"}]}
+Status: accepted
+Result: {
+  "status": "accepted",
+  "requested_outputs": [
+    {
+      "id": "q1",
+      "description": "operating function of GlobeValve 47141/C1",
+      "kind": "property",
+      "how_to_answer": "Any graph operation can answer it."
+    },
+    {
+      "id": "q2",
+      "description": "the function that signals GlobeValve 47141/C1",
+      "kind": "other",
+      "how_to_answer": "Any graph operation can answer it."
+    },
+    {
+      "id": "q3",
+      "description": "the measurement point of the loop for GlobeValve 47141/C1",
+      "kind": "other",
+      "how_to_answer": "Any graph operation can answer it."
+    },
+    {
+      "id": "q4",
+      "description": "encoded fail action of GlobeValve 47141/C1",
+      "kind": "property",
+      "how_to_answer": "Any graph operation can answer it."
+    }
+  ],
+  "message": "Now use the graph tools. Each requested output says how it can be answered: use one of those operations for it. In submit_answer, every one of these ids must be covered by evidence of such an operation or by an unknown."
+}
+
+STEP 2
+Tool:   find_entities
+Input:  {"query": "47141/C1", "entity_type": "GlobeValve"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "entities": [
+    {
+      "id": "GlobeValve-3",
+      "name": "GlobeValve 47141/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47141/C1",
+        "operatedValveReference": "TV4750.03_YV"
+      },
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-3, which links ActuatingFunction-3 to this valve"
+      },
+      "match_tier": "identifier",
+      "match_reason": "derived identifier lineComponent = '47141/C1' (composed from lineNumber of the owning line PipingNetworkSystem-11 and this item's pipingComponentNumber); not a literal field in the DEXPI file",
+      "identifier_kind": "derived_identifier",
+      "links": {
+        "piping_upstream": 1,
+        "open_ended_pipes": 1,
+        "instrumentation": 1
+      },
+      "ref": "E2.1"
+    }
+  ]
+}
+
+STEP 3
+Tool:   get_entity
+Input:  {"entity_id": "GlobeValve-3", "include_children": false}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R3",
+  "status_ref": "E3.0",
+  "entities": [
+    {
+      "id": "GlobeValve-3",
+      "type": "GlobeValve",
+      "type_hierarchy": [
+        "GlobeValve",
+        "OperatedValve",
+        "PipingComponent",
+        "SensingLocation"
+      ],
+      "category": "piping_component",
+      "name": "GlobeValve 47141/C1",
+      "identifiers": {
+        "pipingComponentNumber": "C1",
+        "lineComponent": "47141/C1",
+        "operatedValveReference": "TV4750.03_YV"
+      },
+      "properties": {
+        "fluidCode": "QSb",
+        "insulationThickness": "80.0 mm",
+        "insulationType": "Q",
+        "pipingClassCode": "75HB13",
+        "pipingComponentNumber": "C1"
+      },
+      "piping_context": {
+        "segment_id": "PipingNetworkSegment-23",
+        "line_id": "PipingNetworkSystem-11",
+        "fluidCode": "QSb",
+        "insulationThickness": "80.0 mm",
+        "insulationType": "Q",
+        "lineNumber": "47141",
+        "nominalDiameterNumericalValueRepresentation": "50",
+        "nominalDiameterRepresentation": "DN 50",
+        "nominalDiameterStandard": "DN 50 (DIN 2448)",
+        "nominalDiameterTypeRepresentation": "DN",
+        "pipingClassCode": "75HB13",
+        "primarySecondaryPipingNetworkSegment": "secondary segment",
+        "segmentNumber": "S1"
+      },
+      "children_available": [],
+      "links": {
+        "piping_upstream": 1,
+        "open_ended_pipes": 1,
+        "instrumentation": 1
+      },
+      "ref": "E3.1",
+      "identifier_notes": {
+        "operatedValveReference": "alias: subTagName of the instrumentation connection OperatedValveReference-3, which links ActuatingFunction-3 to this valve"
+      }
+    }
+  ]
+}
+
+STEP 4
+Tool:   get_connections
+Input:  {"entity_id": "GlobeValve-3", "relationship": "instrumentation"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R4",
+  "status_ref": "E4.0",
+  "connections": [
+    {
+      "id": "OperatedValveReference-3",
+      "from": "ActuatingFunction-3 (TV4750.03)",
+      "to": "GlobeValve-3 (GlobeValve 47141/C1)",
+      "type": "operated_valve_reference",
+      "relationship": "instrumentation",
+      "ref": "E4.2",
+      "neighbor_category": "instrumentation",
+      "meaning": "'from' is the actuating function that operates the valve 'to'",
+      "other_entity": "ActuatingFunction-3 (TV4750.03) [ActuatingFunction]",
+      "subTagName": "TV4750.03_YV"
+    }
+  ]
+}
+
+STEP 5
+Tool:   get_entity
+Input:  {"entity_id": "ActuatingFunction-3"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R5",
+  "status_ref": "E5.0",
+  "entities": [
+    {
+      "id": "ActuatingFunction-3",
+      "type": "ActuatingFunction",
+      "type_hierarchy": [
+        "ActuatingFunction",
+        "SignalConveyingFunctionSource",
+        "SignalConveyingFunctionTarget"
+      ],
+      "category": "instrumentation",
+      "name": "TV4750.03",
+      "identifiers": {
+        "actuatingFunctionNumber": "TV4750.03",
+        "ControlledActuator.subTagName": "TV4750.03_YC",
+        "ActuatingSystem.actuatingSystemNumber": "TV4750.03"
+      },
+      "properties": {
+        "actuatingFunctionNumber": "TV4750.03"
+      },
+      "children_available": [
+        {
+          "id": "ControlledActuator-3",
+          "type": "ControlledActuator"
+        },
+        {
+          "id": "ActuatingSystem-3",
+          "type": "ActuatingSystem"
+        }
+      ],
+      "links": {
+        "instrumentation": 2
+      },
+      "ref": "E5.1",
+      "identifier_notes": {
+        "ControlledActuator.subTagName": "alias: attribute subTagName of the associated ControlledActuator ControlledActuator-3",
+        "ActuatingSystem.actuatingSystemNumber": "alias: attribute actuatingSystemNumber of the associated ActuatingSystem ActuatingSystem-3"
+      }
+    }
+  ]
+}
+
+STEP 6
+Tool:   get_properties
+Input:  {"ids": ["ActuatingFunction-3", "ControlledActuator-3", "ActuatingSystem-3"]}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R6",
+  "status_ref": "E6.0",
+  "properties": {
+    "ActuatingFunction-3": {
+      "found": [
+        {
+          "ref": "E6.1",
+          "property": "actuatingFunctionNumber",
+          "value": "TV4750.03"
+        },
+        {
+          "ref": "E6.2",
+          "property": "deviceTypeName",
+          "value": "general",
+          "on": "ControlledActuator-3",
+          "scope": "child:ControlledActuator"
+        },
+        {
+          "ref": "E6.3",
+          "property": "failAction",
+          "value": "fail open",
+          "on": "ControlledActuator-3",
+          "scope": "child:ControlledActuator"
+        },
+        {
+          "ref": "E6.4",
+          "property": "failActionRepresentation",
+          "value": "F.O.",
+          "on": "ControlledActuator-3",
+          "scope": "child:ControlledActuator"
+        },
+        {
+          "ref": "E6.5",
+          "property": "subTagName",
+          "value": "TV4750.03_YC",
+          "on": "ControlledActuator-3",
+          "scope": "child:ControlledActuator"
+        },
+        {
+          "ref": "E6.6",
+          "property": "actuatingSystemNumber",
+          "value": "TV4750.03",
+          "on": "ActuatingSystem-3",
+          "scope": "child:ActuatingSystem"
+        }
+      ],
+      "missing": []
+    },
+    "ControlledActuator-3": {
+      "found": [
+        {
+          "ref": "E6.7",
+          "property": "deviceTypeName",
+          "value": "general"
+        },
+        {
+          "ref": "E6.8",
+          "property": "failAction",
+          "value": "fail open"
+        },
+        {
+          "ref": "E6.9",
+          "property": "failActionRepresentation",
+          "value": "F.O."
+        },
+        {
+          "ref": "E6.10",
+          "property": "subTagName",
+          "value": "TV4750.03_YC"
+        }
+      ],
+      "missing": []
+    },
+    "ActuatingSystem-3": {
+      "found": [
+        {
+          "ref": "E6.11",
+          "property": "actuatingSystemNumber",
+          "value": "TV4750.03"
+        }
+      ],
+      "missing": []
+    }
+  }
+}
+
+STEP 7
+Tool:   trace_instrumentation
+Input:  {"entity_id": "ActuatingFunction-3"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R7",
+  "status_ref": "E7.0",
+  "entities": [
+    {
+      "id": "ActuatingFunction-3",
+      "name": "TV4750.03",
+      "type": "ActuatingFunction",
+      "category": "instrumentation",
+      "identifiers": {
+        "actuatingFunctionNumber": "TV4750.03",
+        "ControlledActuator.subTagName": "TV4750.03_YC",
+        "ActuatingSystem.actuatingSystemNumber": "TV4750.03"
+      },
+      "identifier_notes": {
+        "ControlledActuator.subTagName": "alias: attribute subTagName of the associated ControlledActuator ControlledActuator-3",
+        "ActuatingSystem.actuatingSystemNumber": "alias: attribute actuatingSystemNumber of the associated ActuatingSystem ActuatingSystem-3"
+      },
+      "ref": "E7.1"
+    }
+  ],
+  "connections": [
+    {
+      "id": "MeasuringLineFunction-3",
+      "from": "ProcessSignalGeneratingFunction-3 (TT4750.03)",
+      "to": "ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction TICSA4750.03)",
+      "type": "measuring_line",
+      "relationship": "instrumentation",
+      "ref": "E7.2",
+      "meaning": "the measurement taken by 'from' is the input of 'to'"
+    },
+    {
+      "id": "OperatedValveReference-3",
+      "from": "ActuatingFunction-3 (TV4750.03)",
+      "to": "GlobeValve-3 (GlobeValve 47141/C1)",
+      "type": "operated_valve_reference",
+      "relationship": "instrumentation",
+      "ref": "E7.3",
+      "meaning": "'from' is the actuating function that operates the valve 'to'",
+      "subTagName": "TV4750.03_YV"
+    },
+    {
+      "id": "ProcessSignalGeneratingFunction-3/sensingLocation",
+      "from": "ProcessSignalGeneratingFunction-3 (TT4750.03)",
+      "to": "Tank-1 (T4750)",
+      "type": "sensing_location",
+      "relationship": "instrumentation",
+      "ref": "E7.4",
+      "meaning": "'from' measures at 'to'",
+      "to_nozzle": "N7"
+    },
+    {
+      "id": "SignalConveyingFunction-3",
+      "from": "ProcessInstrumentationFunction-4 (ProcessInstrumentationFunction TICSA4750.03)",
+      "to": "ActuatingFunction-3 (TV4750.03)",
+      "type": "signal_line",
+      "relationship": "instrumentation",
+      "ref": "E7.5",
+      "meaning": "'from' sends its control signal to 'to'"
+    }
+  ],
+  "properties": {
+    "ActuatingFunction-3": {
+      "found": [
+        {
+          "ref": "E7.6",
+          "property": "actuatingFunctionNumber",
+          "value": "TV4750.03"
+        },
+        {
+          "ref": "E7.7",
+          "property": "deviceTypeName",
+          "value": "general",
+          "on": "ControlledActuator-3",
+          "scope": "child:ControlledActuator"
+        },
+        {
+          "ref": "E7.8",
+          "property": "failAction",
+          "value": "fail open",
+          "on": "ControlledActuator-3",
+          "scope": "child:ControlledActuator"
+        },
+        {
+          "ref": "E7.9",
+          "property": "failActionRepresentation",
+          "value": "F.O.",
+          "on": "ControlledActuator-3",
+          "scope": "child:ControlledActuator"
+        },
+        {
+          "ref": "E7.10",
+          "property": "subTagName",
+          "value": "TV4750.03_YC",
+          "on": "ControlledActuator-3",
+          "scope": "child:ControlledActuator"
+        },
+        {
+          "ref": "E7.11",
+          "property": "actuatingSystemNumber",
+          "value": "TV4750.03",
+          "on": "ActuatingSystem-3",
+          "scope": "child:ActuatingSystem"
+        }
+      ],
+      "missing": []
+    },
+    "ProcessInstrumentationFunction-4": {
+      "found": [
+        {
+          "ref": "E7.12",
+          "property": "location",
+          "value": "central"
+        },
+        {
+          "ref": "E7.13",
+          "property": "processInstrumentationFunctionCategory",
+          "value": "T"
+        },
+        {
+          "ref": "E7.14",
+          "property": "processInstrumentationFunctionNumber",
+          "value": "4750.03"
+        },
+        {
+          "ref": "E7.15",
+          "property": "processInstrumentationFunctions",
+          "value": "ICSA"
+        },
+        {
+          "ref": "E7.16",
+          "property": "instrumentationLoopFunctionNumber",
+          "value": "4750.03",
+          "on": "InstrumentationLoopFunction-4",
+          "scope": "child:InstrumentationLoopFunction"
+        }
+      ],
+      "missing": []
+    },
+    "GlobeValve-3": {
+      "found": [
+        {
+          "ref": "E7.17",
+          "property": "lineNumber",
+          "value": "47141",
+          "on": "PipingNetworkSegment-23",
+          "scope": "owning_segment"
+        },
+        {
+          "ref": "E7.18",
+          "property": "nominalDiameterRepresentation",
+          "value": "DN 50",
+          "on": "PipingNetworkSegment-23",
+          "scope": "owning_segment"
+        }
+      ],
+      "missing": []
+    },
+    "ProcessSignalGeneratingFunction-3": {
+      "found": [
+        {
+          "ref": "E7.19",
+          "property": "processSignalGeneratingFunctionNumber",
+          "value": "TT4750.03"
+        }
+      ],
+      "missing": []
+    }
+  },
+  "derived": [
+    {
+      "ref": "E7.20",
+      "predicate": "signal_chain",
+      "subject": "Tank-1",
+      "object": "GlobeValve-3",
+      "qualifiers": {
+        "elements": [
+          "Tank-1",
+          "ProcessSignalGeneratingFunction-3",
+          "ProcessInstrumentationFunction-4",
+          "ActuatingFunction-3",
+          "GlobeValve-3"
+        ],
+        "fail_action": "fail open"
+      },
+      "statement": "Signal chain: T4750 (Tank-1) [measurement point] -> TT4750.03 (ProcessSignalGeneratingFunction-3) -> ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) -> TV4750.03 (ActuatingFunction-3) [encoded fail action: fail open] -> GlobeValve 47141/C1 (GlobeValve-3) [operated valve, line 47141]"
+    },
+    {
+      "ref": "E7.21",
+      "predicate": "loop_measured_at",
+      "subject": "ProcessInstrumentationFunction-4",
+      "object": "Tank-1",
+      "statement": "The measurement used by ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) is taken at T4750 (Tank-1)"
+    },
+    {
+      "ref": "E7.22",
+      "predicate": "loop_acts_on",
+      "subject": "ProcessInstrumentationFunction-4",
+      "object": "GlobeValve-3",
+      "qualifiers": {
+        "fail_action": "fail open",
+        "via": "ActuatingFunction-3",
+        "line": "47141"
+      },
+      "statement": "ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) acts on GlobeValve 47141/C1 (GlobeValve-3) on line 47141 through TV4750.03 (ActuatingFunction-3); encoded fail action of the actuator: fail open"
+    }
+  ],
+  "meta": {
+    "chains": 1
+  }
+}
+
+STEP 8
+Tool:   submit_answer   (final answer, checked by the application)
+Input:  {"direct_facts": "[{\"ref\": \"E7.20\", \"covers\": [\"q1\", \"q2\", \"q3\", \"q4\"]}, {\"ref\": \"E7.21\", \"covers\": [\"q3\"]}, {\"ref\": \"E7.22\", \"covers\": [\"q1\", q2, q4]}]", "derived_facts": [], "unknowns": []}
+Status: rejected
+Result: {
+  "status": "rejected",
+  "problems": [
+    "Invalid submit_answer arguments: direct_facts: Input should be a valid list"
+  ],
+  "message": "Correct these and call submit_answer again."
+}
+
+STEP 9
+Tool:   submit_answer   (final answer, checked by the application)
+Input:  {"direct_facts": [{"ref": "E7.20", "covers": ["q1", "q2", "q3", "q4"]}, {"ref": "E7.21", "covers": ["q3"]}, {"ref": "E7.22", "covers": ["q1", "q2", "q4"]}], "derived_facts": [], "unknowns": []}
+Status: accepted
+Result: {
+  "status": "accepted"
+}
+
+FINAL ANSWER
+Derived by graph analysis of the drawing
+- Signal chain: T4750 (Tank-1) [measurement point] -> TT4750.03 (ProcessSignalGeneratingFunction-3) -> ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) -> TV4750.03 (ActuatingFunction-3) [encoded fail action: fail open] -> GlobeValve 47141/C1 (GlobeValve-3) [operated valve, line 47141] [E7.20, trace_instrumentation]
+- The measurement used by ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) is taken at T4750 (Tank-1) [E7.21, trace_instrumentation]
+- ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) acts on GlobeValve 47141/C1 (GlobeValve-3) on line 47141 through TV4750.03 (ActuatingFunction-3); encoded fail action of the actuator: fail open [E7.22, trace_instrumentation]
+
+GROUNDING: grounded (3 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  grounded statement: Signal chain: T4750 (Tank-1) [measurement point] -> TT4750.03 (ProcessSignalGeneratingFunction-3) -> ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) -> TV4750.03 (ActuatingFunction-3) [encoded fail action: fail open] -> GlobeValve 47141/C1 (GlobeValve-3) [operated valve, line 47141] [E7.20]
+      <- signal_chain(Tank-1, GlobeValve-3)
+  grounded statement: The measurement used by ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) is taken at T4750 (Tank-1) [E7.21]
+      <- loop_measured_at(ProcessInstrumentationFunction-4, Tank-1)
+  grounded statement: ProcessInstrumentationFunction TICSA4750.03 (ProcessInstrumentationFunction-4) acts on GlobeValve 47141/C1 (GlobeValve-3) on line 47141 through TV4750.03 (ActuatingFunction-3); encoded fail action of the actuator: fail open [E7.22]
+      <- loop_acts_on(ProcessInstrumentationFunction-4, GlobeValve-3)
+  requested output q1 [property]: facts E7.20, E7.22
+  requested output q2 [other]: facts E7.20, E7.22
+  requested output q3 [other]: facts E7.20, E7.21
+  requested output q4 [property]: facts E7.20, E7.22
+
+EVIDENCE (23 graph facts)
+  [entity] GlobeValve-3  <- plant_graph: GlobeValve-3
+  [connection] OperatedValveReference-3  <- conceptual_graph: OperatedValveReference-3, ActuatingFunction-3, GlobeValve-3
+  [entity] ActuatingFunction-3  <- plant_graph: ActuatingFunction-3
+  [property] ActuatingFunction-3.actuatingFunctionNumber  <- plant_graph: ActuatingFunction-3
+  [property] ControlledActuator-3.deviceTypeName  <- plant_graph: ControlledActuator-3
+  [property] ControlledActuator-3.failAction  <- plant_graph: ControlledActuator-3
+  [property] ControlledActuator-3.failActionRepresentation  <- plant_graph: ControlledActuator-3
+  [property] ControlledActuator-3.subTagName  <- plant_graph: ControlledActuator-3
+  [property] ActuatingSystem-3.actuatingSystemNumber  <- plant_graph: ActuatingSystem-3
+  [connection] MeasuringLineFunction-3  <- conceptual_graph: MeasuringLineFunction-3, ProcessSignalGeneratingFunction-3, ProcessInstrumentationFunction-4
+  [connection] ProcessSignalGeneratingFunction-3/sensingLocation  <- conceptual_graph: ProcessSignalGeneratingFunction-3, Tank-1, Nozzle-17
+  [connection] SignalConveyingFunction-3  <- conceptual_graph: SignalConveyingFunction-3, ProcessInstrumentationFunction-4, ActuatingFunction-3
+  [property] ProcessInstrumentationFunction-4.location  <- plant_graph: ProcessInstrumentationFunction-4
+  [property] ProcessInstrumentationFunction-4.processInstrumentationFunctionCategory  <- plant_graph: ProcessInstrumentationFunction-4
+  [property] ProcessInstrumentationFunction-4.processInstrumentationFunctionNumber  <- plant_graph: ProcessInstrumentationFunction-4
+  [property] ProcessInstrumentationFunction-4.processInstrumentationFunctions  <- plant_graph: ProcessInstrumentationFunction-4
+  [property] InstrumentationLoopFunction-4.instrumentationLoopFunctionNumber  <- plant_graph: InstrumentationLoopFunction-4
+  [property] PipingNetworkSegment-23.lineNumber  <- plant_graph: PipingNetworkSegment-23
+  [property] PipingNetworkSegment-23.nominalDiameterRepresentation  <- plant_graph: PipingNetworkSegment-23
+  [property] ProcessSignalGeneratingFunction-3.processSignalGeneratingFunctionNumber  <- plant_graph: ProcessSignalGeneratingFunction-3
+  [derived] trace_instrumentation:signal_chain:Tank-1:GlobeValve-3  <- conceptual_graph: Tank-1, ProcessSignalGeneratingFunction-3, ProcessInstrumentationFunction-4, ActuatingFunction-3, GlobeValve-3, ProcessSignalGeneratingFunction-3/sensingLocation, MeasuringLineFunction-3, SignalConveyingFunction-3, OperatedValveReference-3
+  [derived] trace_instrumentation:loop_measured_at:ProcessInstrumentationFunction-4:Tank-1  <- conceptual_graph: Tank-1, ProcessSignalGeneratingFunction-3, ProcessInstrumentationFunction-4, ActuatingFunction-3, GlobeValve-3, ProcessSignalGeneratingFunction-3/sensingLocation, MeasuringLineFunction-3, SignalConveyingFunction-3, OperatedValveReference-3
+  [derived] trace_instrumentation:loop_acts_on:ProcessInstrumentationFunction-4:GlobeValve-3  <- conceptual_graph: Tank-1, ProcessSignalGeneratingFunction-3, ProcessInstrumentationFunction-4, ActuatingFunction-3, GlobeValve-3, ProcessSignalGeneratingFunction-3/sensingLocation, MeasuringLineFunction-3, SignalConveyingFunction-3, OperatedValveReference-3
+
+USAGE: 9 model calls, 63815 tokens, 26472 ms

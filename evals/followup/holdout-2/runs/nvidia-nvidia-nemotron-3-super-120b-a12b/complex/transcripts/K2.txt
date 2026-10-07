@@ -1,0 +1,954 @@
+Provider: nvidia   Model: nvidia/nemotron-3-super-120b-a12b   Commit: 1abcc01   Repeat: 1
+
+QUESTION [K2]
+Following the way the piping is drawn to flow, can anything get from H1008 to P4711? Separately, leaving flow direction aside, are the two joined by piping at all?
+
+STEP 1
+Tool:   decompose_request   (what the question asks for)
+Input:  {"requested_outputs": [{"description": "Whether anything can get from H1008 to P4711 following the drawn flow direction", "kind": "flow_reachability"}, {"description": "Whether H1008 and P4711 are joined by piping at all, ignoring flow direction", "kind": "connectivity"}]}
+Status: accepted
+Result: {
+  "status": "accepted",
+  "requested_outputs": [
+    {
+      "id": "q1",
+      "description": "Whether anything can get from H1008 to P4711 following the drawn flow direction",
+      "kind": "flow_reachability",
+      "how_to_answer": "Answered by a result of: traverse (along the drawn flow direction (direction downstream or upstream)), find_path (along the drawn flow direction (direction downstream or upstream))."
+    },
+    {
+      "id": "q2",
+      "description": "Whether H1008 and P4711 are joined by piping at all, ignoring flow direction",
+      "kind": "connectivity",
+      "how_to_answer": "Answered by a result of: find_path, traverse, get_connections, trace_line, isolation_boundary."
+    }
+  ],
+  "message": "Now use the graph tools. Each requested output says how it can be answered: use one of those operations for it. In submit_answer, every one of these ids must be covered by evidence of such an operation or by an unknown."
+}
+
+STEP 2
+Tool:   find_entities
+Input:  {"query": "H1008"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R2",
+  "status_ref": "E2.0",
+  "entities": [
+    {
+      "id": "TubularHeatExchanger-1",
+      "name": "H1008",
+      "type": "TubularHeatExchanger",
+      "category": "equipment",
+      "tag": "H1008",
+      "identifiers": {
+        "tagName": "H1008"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'H1008'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 2,
+        "open_ended_pipes": 1
+      },
+      "ref": "E2.1"
+    }
+  ]
+}
+
+STEP 3
+Tool:   find_entities
+Input:  {"query": "P4711"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R3",
+  "status_ref": "E3.0",
+  "entities": [
+    {
+      "id": "CentrifugalPump-1",
+      "name": "P4711",
+      "type": "CentrifugalPump",
+      "category": "equipment",
+      "tag": "P4711",
+      "identifiers": {
+        "tagName": "P4711"
+      },
+      "match_tier": "exact_tag",
+      "match_reason": "tagName = 'P4711'",
+      "links": {
+        "piping_upstream": 1,
+        "piping_downstream": 1
+      },
+      "ref": "E3.1"
+    }
+  ]
+}
+
+STEP 4
+Tool:   traverse
+Input:  {"start_entity_id": "TubularHeatExchanger-1", "direction": "downstream"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R4",
+  "status_ref": "E4.0",
+  "entities": [
+    {
+      "ref": "E4.1",
+      "id": "GlobeValve-1",
+      "name": "GlobeValve 47127/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "distance": 1,
+      "via": "TubularHeatExchanger-1",
+      "through_equipment": []
+    },
+    {
+      "ref": "E4.2",
+      "id": "GlobeValve-3",
+      "name": "GlobeValve 47141/C1",
+      "type": "GlobeValve",
+      "category": "piping_component",
+      "distance": 1,
+      "via": "TubularHeatExchanger-1",
+      "through_equipment": [],
+      "terminal": true
+    },
+    {
+      "ref": "E4.3",
+      "id": "Tank-1",
+      "name": "T4750",
+      "type": "Tank",
+      "category": "equipment",
+      "distance": 2,
+      "via": "GlobeValve-1",
+      "through_equipment": []
+    },
+    {
+      "ref": "E4.4",
+      "id": "ButterflyValve-1",
+      "name": "ButterflyValve 47124/C1",
+      "type": "ButterflyValve",
+      "category": "piping_component",
+      "distance": 3,
+      "via": "Tank-1",
+      "through_equipment": [
+        "Tank-1"
+      ]
+    },
+    {
+      "ref": "E4.5",
+      "id": "SwingCheckValve-1",
+      "name": "SwingCheckValve 47124/C2",
+      "type": "SwingCheckValve",
+      "category": "piping_component",
+      "distance": 4,
+      "via": "ButterflyValve-1",
+      "through_equipment": [
+        "Tank-1"
+      ]
+    },
+    {
+      "ref": "E4.6",
+      "id": "PipeReducer-1",
+      "name": "PipeReducer 47124/C3",
+      "type": "PipeReducer",
+      "category": "piping_component",
+      "distance": 5,
+      "via": "SwingCheckValve-1",
+      "through_equipment": [
+        "Tank-1"
+      ]
+    },
+    {
+      "ref": "E4.7",
+      "id": "BallValve-1",
+      "name": "BallValve 47124/C4",
+      "type": "BallValve",
+      "category": "piping_component",
+      "distance": 6,
+      "via": "PipeReducer-1",
+      "through_equipment": [
+        "Tank-1"
+      ]
+    },
+    {
+      "ref": "E4.8",
+      "id": "ReciprocatingPump-1",
+      "name": "P4712",
+      "type": "ReciprocatingPump",
+      "category": "equipment",
+      "distance": 7,
+      "via": "BallValve-1",
+      "through_equipment": [
+        "Tank-1"
+      ]
+    },
+    {
+      "ref": "E4.9",
+      "id": "PipeTee-2",
+      "name": "PipeTee 47126/C1",
+      "type": "PipeTee",
+      "category": "piping_component",
+      "distance": 8,
+      "via": "ReciprocatingPump-1",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.10",
+      "id": "BallValve-2",
+      "name": "BallValve 47126/C2",
+      "type": "BallValve",
+      "category": "piping_component",
+      "distance": 9,
+      "via": "PipeTee-2",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ],
+      "terminal": true
+    },
+    {
+      "ref": "E4.11",
+      "id": "PipeTee-1",
+      "name": "PipeTee 47126/C3",
+      "type": "PipeTee",
+      "category": "piping_component",
+      "distance": 9,
+      "via": "PipeTee-2",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.12",
+      "id": "PipeTee-3",
+      "name": "PipeTee 47126/C4",
+      "type": "PipeTee",
+      "category": "piping_component",
+      "distance": 10,
+      "via": "PipeTee-1",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.13",
+      "id": "SpringLoadedGlobeSafetyValve-1",
+      "name": "SV 104.01",
+      "type": "SpringLoadedGlobeSafetyValve",
+      "category": "piping_component",
+      "distance": 10,
+      "via": "PipeTee-1",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.14",
+      "id": "BallValve-3",
+      "name": "BallValve 47126/C5",
+      "type": "BallValve",
+      "category": "piping_component",
+      "distance": 11,
+      "via": "PipeTee-3",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.15",
+      "id": "BallValve-4",
+      "name": "BallValve 47126/C7",
+      "type": "BallValve",
+      "category": "piping_component",
+      "distance": 11,
+      "via": "PipeTee-3",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.16",
+      "id": "BlindFlange-1",
+      "name": "BlindFlange 47126/C6",
+      "type": "BlindFlange",
+      "category": "piping_component",
+      "distance": 12,
+      "via": "BallValve-3",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ],
+      "terminal": true
+    },
+    {
+      "ref": "E4.17",
+      "id": "PipeTee-4",
+      "name": "PipeTee 47126/C8",
+      "type": "PipeTee",
+      "category": "piping_component",
+      "distance": 12,
+      "via": "BallValve-4",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.18",
+      "id": "PipeTee-5",
+      "name": "PipeTee 47126/C9",
+      "type": "PipeTee",
+      "category": "piping_component",
+      "distance": 13,
+      "via": "PipeTee-4",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.19",
+      "id": "BallValve-5",
+      "name": "BallValve 47126/C10",
+      "type": "BallValve",
+      "category": "piping_component",
+      "distance": 14,
+      "via": "PipeTee-5",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ]
+    },
+    {
+      "ref": "E4.20",
+      "id": "FlowOutPipeOffPageConnector-1",
+      "name": "FlowOutPipeOffPageConnector-1",
+      "type": "FlowOutPipeOffPageConnector",
+      "category": "piping_component",
+      "distance": 14,
+      "via": "PipeTee-5",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ],
+      "terminal": true
+    },
+    {
+      "ref": "E4.21",
+      "id": "BlindFlange-2",
+      "name": "BlindFlange 47126/C11",
+      "type": "BlindFlange",
+      "category": "piping_component",
+      "distance": 15,
+      "via": "BallValve-5",
+      "through_equipment": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+      ],
+      "terminal": true
+    }
+  ],
+  "connections": [
+    {
+      "ref": "E4.22",
+      "from": "TubularHeatExchanger-1 (H1008)",
+      "to": "GlobeValve-1 (GlobeValve 47127/C1)",
+      "lineNumber": "47127",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.23",
+      "from": "TubularHeatExchanger-1 (H1008)",
+      "to": "GlobeValve-3 (GlobeValve 47141/C1)",
+      "lineNumber": "47141",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.24",
+      "from": "GlobeValve-1 (GlobeValve 47127/C1)",
+      "to": "Tank-1 (T4750)",
+      "lineNumber": "47127",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.25",
+      "from": "Tank-1 (T4750)",
+      "to": "ButterflyValve-1 (ButterflyValve 47124/C1)",
+      "lineNumber": "47124",
+      "nominalDiameterRepresentation": "DN 80"
+    },
+    {
+      "ref": "E4.26",
+      "from": "ButterflyValve-1 (ButterflyValve 47124/C1)",
+      "to": "SwingCheckValve-1 (SwingCheckValve 47124/C2)",
+      "lineNumber": "47124",
+      "nominalDiameterRepresentation": "DN 80"
+    },
+    {
+      "ref": "E4.27",
+      "from": "SwingCheckValve-1 (SwingCheckValve 47124/C2)",
+      "to": "PipeReducer-1 (PipeReducer 47124/C3)",
+      "lineNumber": "47124",
+      "nominalDiameterRepresentation": "DN 80"
+    },
+    {
+      "ref": "E4.28",
+      "from": "PipeReducer-1 (PipeReducer 47124/C3)",
+      "to": "BallValve-1 (BallValve 47124/C4)",
+      "lineNumber": "47124",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.29",
+      "from": "BallValve-1 (BallValve 47124/C4)",
+      "to": "ReciprocatingPump-1 (P4712)",
+      "lineNumber": "47124",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.30",
+      "from": "ReciprocatingPump-1 (P4712)",
+      "to": "PipeTee-2 (PipeTee 47126/C1)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.31",
+      "from": "PipeTee-2 (PipeTee 47126/C1)",
+      "to": "BallValve-2 (BallValve 47126/C2)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 25"
+    },
+    {
+      "ref": "E4.32",
+      "from": "PipeTee-2 (PipeTee 47126/C1)",
+      "to": "PipeTee-1 (PipeTee 47126/C3)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.33",
+      "from": "PipeTee-1 (PipeTee 47126/C3)",
+      "to": "PipeTee-3 (PipeTee 47126/C4)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.34",
+      "from": "PipeTee-1 (PipeTee 47126/C3)",
+      "to": "SpringLoadedGlobeSafetyValve-1 (SV 104.01)",
+      "lineNumber": "47125",
+      "nominalDiameterRepresentation": "DN 25"
+    },
+    {
+      "ref": "E4.35",
+      "from": "PipeTee-3 (PipeTee 47126/C4)",
+      "to": "BallValve-3 (BallValve 47126/C5)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 25"
+    },
+    {
+      "ref": "E4.36",
+      "from": "PipeTee-3 (PipeTee 47126/C4)",
+      "to": "BallValve-4 (BallValve 47126/C7)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.37",
+      "from": "BallValve-3 (BallValve 47126/C5)",
+      "to": "BlindFlange-1 (BlindFlange 47126/C6)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 25"
+    },
+    {
+      "ref": "E4.38",
+      "from": "BallValve-4 (BallValve 47126/C7)",
+      "to": "PipeTee-4 (PipeTee 47126/C8)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.39",
+      "from": "PipeTee-4 (PipeTee 47126/C8)",
+      "to": "PipeTee-5 (PipeTee 47126/C9)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.40",
+      "from": "PipeTee-5 (PipeTee 47126/C9)",
+      "to": "BallValve-5 (BallValve 47126/C10)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 25"
+    },
+    {
+      "ref": "E4.41",
+      "from": "PipeTee-5 (PipeTee 47126/C9)",
+      "to": "FlowOutPipeOffPageConnector-1",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 50"
+    },
+    {
+      "ref": "E4.42",
+      "from": "BallValve-5 (BallValve 47126/C10)",
+      "to": "BlindFlange-2 (BlindFlange 47126/C11)",
+      "lineNumber": "47126",
+      "nominalDiameterRepresentation": "DN 25"
+    },
+    {
+      "ref": "E4.43",
+      "from": "GlobeValve-3 (GlobeValve 47141/C1)",
+      "to": null,
+      "lineNumber": "47141",
+      "nominalDiameterRepresentation": "DN 50",
+      "open_end": "target",
+      "note": "This pipe exists in the DEXPI model but has no target item on this drawing, so pyDEXPI's conceptual graph omits it. Where it leads is not represented."
+    }
+  ],
+  "boundaries": [
+    {
+      "type": "chamber_boundary",
+      "equipment": "TubularHeatExchanger-1",
+      "entered_chamber": "Chamber-3",
+      "blocked_chamber": "Chamber-4",
+      "blocked_connection": "PipingNetworkSegment-23/connections/1",
+      "direction": "downstream",
+      "ref": "E4.44"
+    }
+  ],
+  "warnings": [
+    "1 connection(s) are open-ended: the pipe exists in the DEXPI model but its other end is not represented on this drawing, so no neighbour can be stated.",
+    "The traversal met a recycle loop; each entity is reported once, at its shortest distance.",
+    "Did not continue through TubularHeatExchanger-1 from Chamber-3 to Chamber-4 via PipingNetworkSegment-23/connections/1: these are separate chambers (sides) of the equipment."
+  ],
+  "meta": {
+    "max_depth": 25,
+    "cycle_detected": true,
+    "start_is_in_cycle": true,
+    "endpoints": [
+      "GlobeValve-3",
+      "BallValve-2",
+      "BlindFlange-1",
+      "FlowOutPipeOffPageConnector-1",
+      "BlindFlange-2"
+    ],
+    "endpoint_details": [
+      {
+        "id": "GlobeValve-3",
+        "name": "GlobeValve 47141/C1",
+        "type": "GlobeValve",
+        "category": "piping_component",
+        "kind": "end_of_drawn_piping"
+      },
+      {
+        "id": "BallValve-2",
+        "name": "BallValve 47126/C2",
+        "type": "BallValve",
+        "category": "piping_component",
+        "kind": "end_of_drawn_piping"
+      },
+      {
+        "id": "BlindFlange-1",
+        "name": "BlindFlange 47126/C6",
+        "type": "BlindFlange",
+        "category": "piping_component",
+        "kind": "end_of_drawn_piping"
+      },
+      {
+        "id": "FlowOutPipeOffPageConnector-1",
+        "name": "FlowOutPipeOffPageConnector-1",
+        "type": "FlowOutPipeOffPageConnector",
+        "category": "piping_component",
+        "kind": "drawing_end"
+      },
+      {
+        "id": "BlindFlange-2",
+        "name": "BlindFlange 47126/C11",
+        "type": "BlindFlange",
+        "category": "piping_component",
+        "kind": "end_of_drawn_piping"
+      }
+    ]
+  }
+}
+
+STEP 5
+Tool:   find_path
+Input:  {"source_entity_id": "TubularHeatExchanger-1", "target_entity_id": "CentrifugalPump-1", "direction": "any"}
+Status: success
+Result: {
+  "status": "success",
+  "result_ref": "R5",
+  "status_ref": "E5.0",
+  "paths": [
+    {
+      "ref": "E5.1",
+      "length": 5,
+      "direction": "any",
+      "entities": [
+        "TubularHeatExchanger-1 (H1008)",
+        "GlobeValve-1 (GlobeValve 47127/C1)",
+        "Tank-1 (T4750)",
+        "GlobeValve-2 (GlobeValve 47123/C1)",
+        "PlateHeatExchanger-1 (H1007)",
+        "CentrifugalPump-1 (P4711)"
+      ],
+      "route_semantics": "topological",
+      "pipes_against_flow": 3,
+      "shut_off_valves": [
+        "GlobeValve-1",
+        "GlobeValve-2"
+      ],
+      "equipment": [
+        "Tank-1",
+        "PlateHeatExchanger-1"
+      ],
+      "steps": [
+        {
+          "travelled": "with_flow",
+          "from": "TubularHeatExchanger-1 (H1008)",
+          "to": "GlobeValve-1 (GlobeValve 47127/C1)",
+          "lineNumber": "47127",
+          "segmentNumber": "S1",
+          "nominalDiameterRepresentation": "DN 50",
+          "fluidCode": "MNc",
+          "insulationType": "Q",
+          "insulationThickness": "80.0 mm",
+          "from_nozzle": "N2 [Chamber-3]"
+        },
+        {
+          "travelled": "with_flow",
+          "from": "GlobeValve-1 (GlobeValve 47127/C1)",
+          "to": "Tank-1 (T4750)",
+          "lineNumber": "47127",
+          "segmentNumber": "S1",
+          "nominalDiameterRepresentation": "DN 50",
+          "fluidCode": "MNc",
+          "insulationType": "Q",
+          "insulationThickness": "80.0 mm",
+          "to_nozzle": "N6"
+        },
+        {
+          "travelled": "against_flow",
+          "from": "GlobeValve-2 (GlobeValve 47123/C1)",
+          "to": "Tank-1 (T4750)",
+          "lineNumber": "47123",
+          "segmentNumber": "S1",
+          "nominalDiameterRepresentation": "DN 80",
+          "fluidCode": "MNb",
+          "to_nozzle": "N1"
+        },
+        {
+          "travelled": "against_flow",
+          "from": "PlateHeatExchanger-1 (H1007)",
+          "to": "GlobeValve-2 (GlobeValve 47123/C1)",
+          "lineNumber": "47123",
+          "segmentNumber": "S1",
+          "nominalDiameterRepresentation": "DN 80",
+          "fluidCode": "MNb",
+          "from_nozzle": "N2 [Chamber-1]"
+        },
+        {
+          "travelled": "against_flow",
+          "from": "CentrifugalPump-1 (P4711)",
+          "to": "PlateHeatExchanger-1 (H1007)",
+          "lineNumber": "47122",
+          "segmentNumber": "S1",
+          "nominalDiameterRepresentation": "DN 80",
+          "fluidCode": "MNb",
+          "from_nozzle": "N2",
+          "to_nozzle": "N1 [Chamber-1]"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "shortest_path_only": true,
+    "route_semantics": "topological"
+  }
+}
+
+STEP 6
+Tool:   submit_answer   (final answer, checked by the application)
+Input:  {"direct_facts": [{"ref": "E2.1", "covers": ["q1", "q2"]}, {"ref": "E3.1", "covers": ["q1", "q2"]}], "derived_facts": [{"ref": "R4", "covers": ["q1"]}, {"ref": "R5", "covers": ["q2"]}], "unknowns": []}
+Status: accepted
+Result: {
+  "status": "accepted"
+}
+
+FINAL ANSWER
+Facts in the drawing
+- H1008 (TubularHeatExchanger-1), TubularHeatExchanger [E2.1]
+- P4711 (CentrifugalPump-1), CentrifugalPump [E3.1]
+
+Derived by graph analysis of the drawing
+- GlobeValve 47127/C1 (GlobeValve-1), GlobeValve: downstream of TubularHeatExchanger-1, 1 pipe(s) away [E4.1, traverse]
+- GlobeValve 47141/C1 (GlobeValve-3), GlobeValve: downstream of TubularHeatExchanger-1, 1 pipe(s) away, end of drawn piping [E4.2, traverse]
+- T4750 (Tank-1), Tank: downstream of TubularHeatExchanger-1, 2 pipe(s) away [E4.3, traverse]
+- ButterflyValve 47124/C1 (ButterflyValve-1), ButterflyValve: downstream of TubularHeatExchanger-1, 3 pipe(s) away, through Tank-1 [E4.4, traverse]
+- SwingCheckValve 47124/C2 (SwingCheckValve-1), SwingCheckValve: downstream of TubularHeatExchanger-1, 4 pipe(s) away, through Tank-1 [E4.5, traverse]
+- PipeReducer 47124/C3 (PipeReducer-1), PipeReducer: downstream of TubularHeatExchanger-1, 5 pipe(s) away, through Tank-1 [E4.6, traverse]
+- BallValve 47124/C4 (BallValve-1), BallValve: downstream of TubularHeatExchanger-1, 6 pipe(s) away, through Tank-1 [E4.7, traverse]
+- P4712 (ReciprocatingPump-1), ReciprocatingPump: downstream of TubularHeatExchanger-1, 7 pipe(s) away, through Tank-1 [E4.8, traverse]
+- PipeTee 47126/C1 (PipeTee-2), PipeTee: downstream of TubularHeatExchanger-1, 8 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.9, traverse]
+- BallValve 47126/C2 (BallValve-2), BallValve: downstream of TubularHeatExchanger-1, 9 pipe(s) away, through Tank-1, ReciprocatingPump-1, end of drawn piping [E4.10, traverse]
+- PipeTee 47126/C3 (PipeTee-1), PipeTee: downstream of TubularHeatExchanger-1, 9 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.11, traverse]
+- PipeTee 47126/C4 (PipeTee-3), PipeTee: downstream of TubularHeatExchanger-1, 10 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.12, traverse]
+- SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve: downstream of TubularHeatExchanger-1, 10 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.13, traverse]
+- BallValve 47126/C5 (BallValve-3), BallValve: downstream of TubularHeatExchanger-1, 11 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.14, traverse]
+- BallValve 47126/C7 (BallValve-4), BallValve: downstream of TubularHeatExchanger-1, 11 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.15, traverse]
+- BlindFlange 47126/C6 (BlindFlange-1), BlindFlange: downstream of TubularHeatExchanger-1, 12 pipe(s) away, through Tank-1, ReciprocatingPump-1, end of drawn piping [E4.16, traverse]
+- PipeTee 47126/C8 (PipeTee-4), PipeTee: downstream of TubularHeatExchanger-1, 12 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.17, traverse]
+- PipeTee 47126/C9 (PipeTee-5), PipeTee: downstream of TubularHeatExchanger-1, 13 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.18, traverse]
+- BallValve 47126/C10 (BallValve-5), BallValve: downstream of TubularHeatExchanger-1, 14 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.19, traverse]
+- FlowOutPipeOffPageConnector-1 (FlowOutPipeOffPageConnector-1), FlowOutPipeOffPageConnector: downstream of TubularHeatExchanger-1, 14 pipe(s) away, through Tank-1, ReciprocatingPump-1, end of drawn piping [E4.20, traverse]
+- BlindFlange 47126/C11 (BlindFlange-2), BlindFlange: downstream of TubularHeatExchanger-1, 15 pipe(s) away, through Tank-1, ReciprocatingPump-1, end of drawn piping [E4.21, traverse]
+- Chamber boundary at TubularHeatExchanger-1: entered through Chamber-3, not continued into Chamber-4 [E4.44, traverse]
+- GlobeValve 47141/C1 (GlobeValve-3): end of drawn piping [E4.0, traverse]
+- Connected by piping when flow direction is ignored (not a route in the drawn flow direction): H1008 (TubularHeatExchanger-1) - GlobeValve 47127/C1 (GlobeValve-1) - T4750 (Tank-1) - GlobeValve 47123/C1 (GlobeValve-2) - H1007 (PlateHeatExchanger-1) - P4711 (CentrifugalPump-1); 5 pipe(s), 3 of them against the drawn flow [E5.1, find_path]
+
+GROUNDING: grounded (26 plant-specific claims checked, 0 unsupported)
+GROUNDING LEVEL: grounded
+  grounded statement: H1008 (TubularHeatExchanger-1), TubularHeatExchanger [E2.1]
+      <- is_a(TubularHeatExchanger-1, TubularHeatExchanger)
+      <- is_a(TubularHeatExchanger-1, equipment)
+  grounded statement: P4711 (CentrifugalPump-1), CentrifugalPump [E3.1]
+      <- is_a(CentrifugalPump-1, CentrifugalPump)
+      <- is_a(CentrifugalPump-1, equipment)
+  grounded statement: GlobeValve 47127/C1 (GlobeValve-1), GlobeValve: downstream of TubularHeatExchanger-1, 1 pipe(s) away [E4.1]
+      <- is_a(GlobeValve-1, GlobeValve)
+      <- is_a(GlobeValve-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, GlobeValve-1)
+  grounded statement: GlobeValve 47141/C1 (GlobeValve-3), GlobeValve: downstream of TubularHeatExchanger-1, 1 pipe(s) away, end of drawn piping [E4.2]
+      <- is_a(GlobeValve-3, GlobeValve)
+      <- is_a(GlobeValve-3, piping_component)
+      <- reaches(TubularHeatExchanger-1, GlobeValve-3)
+      <- terminal(GlobeValve-3)
+  grounded statement: T4750 (Tank-1), Tank: downstream of TubularHeatExchanger-1, 2 pipe(s) away [E4.3]
+      <- is_a(Tank-1, Tank)
+      <- is_a(Tank-1, equipment)
+      <- reaches(TubularHeatExchanger-1, Tank-1)
+  grounded statement: ButterflyValve 47124/C1 (ButterflyValve-1), ButterflyValve: downstream of TubularHeatExchanger-1, 3 pipe(s) away, through Tank-1 [E4.4]
+      <- is_a(ButterflyValve-1, ButterflyValve)
+      <- is_a(ButterflyValve-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, ButterflyValve-1)
+  grounded statement: SwingCheckValve 47124/C2 (SwingCheckValve-1), SwingCheckValve: downstream of TubularHeatExchanger-1, 4 pipe(s) away, through Tank-1 [E4.5]
+      <- is_a(SwingCheckValve-1, SwingCheckValve)
+      <- is_a(SwingCheckValve-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, SwingCheckValve-1)
+  grounded statement: PipeReducer 47124/C3 (PipeReducer-1), PipeReducer: downstream of TubularHeatExchanger-1, 5 pipe(s) away, through Tank-1 [E4.6]
+      <- is_a(PipeReducer-1, PipeReducer)
+      <- is_a(PipeReducer-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, PipeReducer-1)
+  grounded statement: BallValve 47124/C4 (BallValve-1), BallValve: downstream of TubularHeatExchanger-1, 6 pipe(s) away, through Tank-1 [E4.7]
+      <- is_a(BallValve-1, BallValve)
+      <- is_a(BallValve-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, BallValve-1)
+  grounded statement: P4712 (ReciprocatingPump-1), ReciprocatingPump: downstream of TubularHeatExchanger-1, 7 pipe(s) away, through Tank-1 [E4.8]
+      <- is_a(ReciprocatingPump-1, ReciprocatingPump)
+      <- is_a(ReciprocatingPump-1, equipment)
+      <- reaches(TubularHeatExchanger-1, ReciprocatingPump-1)
+  grounded statement: PipeTee 47126/C1 (PipeTee-2), PipeTee: downstream of TubularHeatExchanger-1, 8 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.9]
+      <- is_a(PipeTee-2, PipeTee)
+      <- is_a(PipeTee-2, piping_component)
+      <- reaches(TubularHeatExchanger-1, PipeTee-2)
+  grounded statement: BallValve 47126/C2 (BallValve-2), BallValve: downstream of TubularHeatExchanger-1, 9 pipe(s) away, through Tank-1, ReciprocatingPump-1, end of drawn piping [E4.10]
+      <- is_a(BallValve-2, BallValve)
+      <- is_a(BallValve-2, piping_component)
+      <- reaches(TubularHeatExchanger-1, BallValve-2)
+      <- terminal(BallValve-2)
+  grounded statement: PipeTee 47126/C3 (PipeTee-1), PipeTee: downstream of TubularHeatExchanger-1, 9 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.11]
+      <- is_a(PipeTee-1, PipeTee)
+      <- is_a(PipeTee-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, PipeTee-1)
+  grounded statement: PipeTee 47126/C4 (PipeTee-3), PipeTee: downstream of TubularHeatExchanger-1, 10 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.12]
+      <- is_a(PipeTee-3, PipeTee)
+      <- is_a(PipeTee-3, piping_component)
+      <- reaches(TubularHeatExchanger-1, PipeTee-3)
+  grounded statement: SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve: downstream of TubularHeatExchanger-1, 10 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.13]
+      <- is_a(SpringLoadedGlobeSafetyValve-1, SpringLoadedGlobeSafetyValve)
+      <- is_a(SpringLoadedGlobeSafetyValve-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, SpringLoadedGlobeSafetyValve-1)
+  grounded statement: BallValve 47126/C5 (BallValve-3), BallValve: downstream of TubularHeatExchanger-1, 11 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.14]
+      <- is_a(BallValve-3, BallValve)
+      <- is_a(BallValve-3, piping_component)
+      <- reaches(TubularHeatExchanger-1, BallValve-3)
+  grounded statement: BallValve 47126/C7 (BallValve-4), BallValve: downstream of TubularHeatExchanger-1, 11 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.15]
+      <- is_a(BallValve-4, BallValve)
+      <- is_a(BallValve-4, piping_component)
+      <- reaches(TubularHeatExchanger-1, BallValve-4)
+  grounded statement: BlindFlange 47126/C6 (BlindFlange-1), BlindFlange: downstream of TubularHeatExchanger-1, 12 pipe(s) away, through Tank-1, ReciprocatingPump-1, end of drawn piping [E4.16]
+      <- is_a(BlindFlange-1, BlindFlange)
+      <- is_a(BlindFlange-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, BlindFlange-1)
+      <- terminal(BlindFlange-1)
+  grounded statement: PipeTee 47126/C8 (PipeTee-4), PipeTee: downstream of TubularHeatExchanger-1, 12 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.17]
+      <- is_a(PipeTee-4, PipeTee)
+      <- is_a(PipeTee-4, piping_component)
+      <- reaches(TubularHeatExchanger-1, PipeTee-4)
+  grounded statement: PipeTee 47126/C9 (PipeTee-5), PipeTee: downstream of TubularHeatExchanger-1, 13 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.18]
+      <- is_a(PipeTee-5, PipeTee)
+      <- is_a(PipeTee-5, piping_component)
+      <- reaches(TubularHeatExchanger-1, PipeTee-5)
+  grounded statement: BallValve 47126/C10 (BallValve-5), BallValve: downstream of TubularHeatExchanger-1, 14 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E4.19]
+      <- is_a(BallValve-5, BallValve)
+      <- is_a(BallValve-5, piping_component)
+      <- reaches(TubularHeatExchanger-1, BallValve-5)
+  grounded statement: FlowOutPipeOffPageConnector-1 (FlowOutPipeOffPageConnector-1), FlowOutPipeOffPageConnector: downstream of TubularHeatExchanger-1, 14 pipe(s) away, through Tank-1, ReciprocatingPump-1, end of drawn piping [E4.20]
+      <- is_a(FlowOutPipeOffPageConnector-1, FlowOutPipeOffPageConnector)
+      <- is_a(FlowOutPipeOffPageConnector-1, piping_component)
+      <- reaches(TubularHeatExchanger-1, FlowOutPipeOffPageConnector-1)
+      <- terminal(FlowOutPipeOffPageConnector-1)
+  grounded statement: BlindFlange 47126/C11 (BlindFlange-2), BlindFlange: downstream of TubularHeatExchanger-1, 15 pipe(s) away, through Tank-1, ReciprocatingPump-1, end of drawn piping [E4.21]
+      <- is_a(BlindFlange-2, BlindFlange)
+      <- is_a(BlindFlange-2, piping_component)
+      <- reaches(TubularHeatExchanger-1, BlindFlange-2)
+      <- terminal(BlindFlange-2)
+  grounded statement: Chamber boundary at TubularHeatExchanger-1: entered through Chamber-3, not continued into Chamber-4 [E4.44]
+      <- chamber_boundary(TubularHeatExchanger-1)
+  grounded statement: GlobeValve 47141/C1 (GlobeValve-3): end of drawn piping [E4.0]
+      <- is_a(GlobeValve-3, GlobeValve)
+      <- is_a(BallValve-2, BallValve)
+      <- is_a(BlindFlange-1, BlindFlange)
+      <- is_a(FlowOutPipeOffPageConnector-1, FlowOutPipeOffPageConnector)
+      <- is_a(BlindFlange-2, BlindFlange)
+      <- terminal(GlobeValve-3)
+      <- terminal(BallValve-2)
+      <- terminal(BlindFlange-1)
+      <- terminal(FlowOutPipeOffPageConnector-1)
+      <- terminal(BlindFlange-2)
+  grounded statement: Connected by piping when flow direction is ignored (not a route in the drawn flow direction): H1008 (TubularHeatExchanger-1) - GlobeValve 47127/C1 (GlobeValve-1) - T4750 (Tank-1) - GlobeValve 47123/C1 (GlobeValve-2) - H1007 (PlateHeatExchanger-1) - P4711 (CentrifugalPump-1); 5 pipe(s), 3 of them against the drawn flow [E5.1]
+      <- is_a(TubularHeatExchanger-1, TubularHeatExchanger)
+      <- is_a(CentrifugalPump-1, CentrifugalPump)
+      <- is_a(GlobeValve-1, GlobeValve)
+      <- is_a(Tank-1, Tank)
+      <- has_property(PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19)
+      <- has_property(PipingNetworkSegment-19/connections/1, MNc)
+      <- has_property(PipingNetworkSegment-19/connections/1, 80.0 mm)
+      <- has_property(PipingNetworkSegment-19/connections/1, Q)
+      <- has_property(PipingNetworkSegment-19/connections/1, 50)
+      <- has_property(PipingNetworkSegment-19/connections/1, DN 50)
+      <- has_property(PipingNetworkSegment-19/connections/1, DN 50 (DIN 2448))
+      <- has_property(PipingNetworkSegment-19/connections/1, DN)
+      <- has_property(PipingNetworkSegment-19/connections/1, 75HB13)
+      <- has_property(PipingNetworkSegment-19/connections/1, secondary segment)
+      <- has_property(PipingNetworkSegment-19/connections/1, S1)
+      <- has_property(PipingNetworkSegment-19/connections/1, 47127)
+      <- flows_to(TubularHeatExchanger-1, GlobeValve-1)
+      <- has_property(PipingNetworkSegment-19/connections/2, PipingNetworkSegment-19)
+      <- has_property(PipingNetworkSegment-19/connections/2, MNc)
+      <- has_property(PipingNetworkSegment-19/connections/2, 80.0 mm)
+      <- has_property(PipingNetworkSegment-19/connections/2, Q)
+      <- has_property(PipingNetworkSegment-19/connections/2, 50)
+      <- has_property(PipingNetworkSegment-19/connections/2, DN 50)
+      <- has_property(PipingNetworkSegment-19/connections/2, DN 50 (DIN 2448))
+      <- has_property(PipingNetworkSegment-19/connections/2, DN)
+      <- has_property(PipingNetworkSegment-19/connections/2, 75HB13)
+      <- has_property(PipingNetworkSegment-19/connections/2, secondary segment)
+      <- has_property(PipingNetworkSegment-19/connections/2, S1)
+      <- has_property(PipingNetworkSegment-19/connections/2, 47127)
+      <- flows_to(GlobeValve-1, Tank-1)
+      <- is_a(GlobeValve-2, GlobeValve)
+      <- is_a(PlateHeatExchanger-1, PlateHeatExchanger)
+      <- has_property(PipingNetworkSegment-3/connections/2, PipingNetworkSegment-3)
+      <- has_property(PipingNetworkSegment-3/connections/2, MNb)
+      <- has_property(PipingNetworkSegment-3/connections/2, 80)
+      <- has_property(PipingNetworkSegment-3/connections/2, DN 80)
+      <- has_property(PipingNetworkSegment-3/connections/2, DN 80 (DIN 2448))
+      <- has_property(PipingNetworkSegment-3/connections/2, DN)
+      <- has_property(PipingNetworkSegment-3/connections/2, 75HB13)
+      <- has_property(PipingNetworkSegment-3/connections/2, primary segment)
+      <- has_property(PipingNetworkSegment-3/connections/2, S1)
+      <- has_property(PipingNetworkSegment-3/connections/2, 47123)
+      <- flows_to(GlobeValve-2, Tank-1)
+      <- has_property(PipingNetworkSegment-3/connections/1, PipingNetworkSegment-3)
+      <- has_property(PipingNetworkSegment-3/connections/1, MNb)
+      <- has_property(PipingNetworkSegment-3/connections/1, 80)
+      <- has_property(PipingNetworkSegment-3/connections/1, DN 80)
+      <- has_property(PipingNetworkSegment-3/connections/1, DN 80 (DIN 2448))
+      <- has_property(PipingNetworkSegment-3/connections/1, DN)
+      <- has_property(PipingNetworkSegment-3/connections/1, 75HB13)
+      <- has_property(PipingNetworkSegment-3/connections/1, primary segment)
+      <- has_property(PipingNetworkSegment-3/connections/1, S1)
+      <- has_property(PipingNetworkSegment-3/connections/1, 47123)
+      <- flows_to(PlateHeatExchanger-1, GlobeValve-2)
+      <- has_property(PipingNetworkSegment-2/connections/1, PipingNetworkSegment-2)
+      <- has_property(PipingNetworkSegment-2/connections/1, MNb)
+      <- has_property(PipingNetworkSegment-2/connections/1, 80)
+      <- has_property(PipingNetworkSegment-2/connections/1, DN 80)
+      <- has_property(PipingNetworkSegment-2/connections/1, DN 80 (DIN 2448))
+      <- has_property(PipingNetworkSegment-2/connections/1, DN)
+      <- has_property(PipingNetworkSegment-2/connections/1, 75HB13)
+      <- has_property(PipingNetworkSegment-2/connections/1, primary segment)
+      <- has_property(PipingNetworkSegment-2/connections/1, S1)
+      <- has_property(PipingNetworkSegment-2/connections/1, 47122)
+      <- flows_to(CentrifugalPump-1, PlateHeatExchanger-1)
+      <- path(TubularHeatExchanger-1, CentrifugalPump-1)
+  requested output q1 [flow_reachability]: facts E4.1, E4.2, E4.3, E4.4, E4.5, E4.6, E4.7, E4.8, E4.9, E4.10, E4.11, E4.12, E4.13, E4.14, E4.15, E4.16, E4.17, E4.18, E4.19, E4.20, E4.21, E4.44, E4.0
+  requested output q2 [connectivity]: facts E5.1
+
+EVIDENCE (50 graph facts)
+  [entity] TubularHeatExchanger-1  <- plant_graph: TubularHeatExchanger-1
+  [entity] CentrifugalPump-1  <- plant_graph: CentrifugalPump-1
+  [path] TubularHeatExchanger-1->GlobeValve-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1
+  [path] TubularHeatExchanger-1->GlobeValve-3  <- conceptual_graph: PipingNetworkSegment-23/connections/1
+  [path] TubularHeatExchanger-1->Tank-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2
+  [path] TubularHeatExchanger-1->ButterflyValve-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1
+  [path] TubularHeatExchanger-1->SwingCheckValve-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2
+  [path] TubularHeatExchanger-1->PipeReducer-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1
+  [path] TubularHeatExchanger-1->BallValve-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1
+  [path] TubularHeatExchanger-1->ReciprocatingPump-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2
+  [path] TubularHeatExchanger-1->PipeTee-2  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1
+  [path] TubularHeatExchanger-1->BallValve-2  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-10/connections/1
+  [path] TubularHeatExchanger-1->PipeTee-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1
+  [path] TubularHeatExchanger-1->PipeTee-3  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1
+  [path] TubularHeatExchanger-1->SpringLoadedGlobeSafetyValve-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-7/connections/1
+  [path] TubularHeatExchanger-1->BallValve-3  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1, PipingNetworkSegment-13/connections/1
+  [path] TubularHeatExchanger-1->BallValve-4  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1, PipingNetworkSegment-14/connections/1
+  [path] TubularHeatExchanger-1->BlindFlange-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1, PipingNetworkSegment-13/connections/1, PipingNetworkSegment-13/connections/2
+  [path] TubularHeatExchanger-1->PipeTee-4  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1, PipingNetworkSegment-14/connections/1, PipingNetworkSegment-14/connections/2
+  [path] TubularHeatExchanger-1->PipeTee-5  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1, PipingNetworkSegment-14/connections/1, PipingNetworkSegment-14/connections/2, PipingNetworkSegment-16/connections/1
+  [path] TubularHeatExchanger-1->BallValve-5  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1, PipingNetworkSegment-14/connections/1, PipingNetworkSegment-14/connections/2, PipingNetworkSegment-16/connections/1, PipingNetworkSegment-17/connections/1
+  [path] TubularHeatExchanger-1->FlowOutPipeOffPageConnector-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1, PipingNetworkSegment-14/connections/1, PipingNetworkSegment-14/connections/2, PipingNetworkSegment-16/connections/1, PipingNetworkSegment-18/connections/1
+  [path] TubularHeatExchanger-1->BlindFlange-2  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4/connections/2, PipingNetworkSegment-5/connections/1, PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6/connections/2, PipingNetworkSegment-9/connections/1, PipingNetworkSegment-11/connections/1, PipingNetworkSegment-12/connections/1, PipingNetworkSegment-14/connections/1, PipingNetworkSegment-14/connections/2, PipingNetworkSegment-16/connections/1, PipingNetworkSegment-17/connections/1, PipingNetworkSegment-17/connections/2
+  [connection] PipingNetworkSegment-19/connections/1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19, PipingNetworkSystem-7
+  [connection] PipingNetworkSegment-23/connections/1  <- conceptual_graph: PipingNetworkSegment-23/connections/1, PipingNetworkSegment-23, PipingNetworkSystem-11
+  [connection] PipingNetworkSegment-19/connections/2  <- conceptual_graph: PipingNetworkSegment-19/connections/2, PipingNetworkSegment-19, PipingNetworkSystem-7
+  [connection] PipingNetworkSegment-4/connections/1  <- conceptual_graph: PipingNetworkSegment-4/connections/1, PipingNetworkSegment-4, PipingNetworkSystem-4
+  [connection] PipingNetworkSegment-4/connections/2  <- conceptual_graph: PipingNetworkSegment-4/connections/2, PipingNetworkSegment-4, PipingNetworkSystem-4
+  [connection] PipingNetworkSegment-5/connections/1  <- conceptual_graph: PipingNetworkSegment-5/connections/1, PipingNetworkSegment-5, PipingNetworkSystem-4
+  [connection] PipingNetworkSegment-6/connections/1  <- conceptual_graph: PipingNetworkSegment-6/connections/1, PipingNetworkSegment-6, PipingNetworkSystem-4
+  [connection] PipingNetworkSegment-6/connections/2  <- conceptual_graph: PipingNetworkSegment-6/connections/2, PipingNetworkSegment-6, PipingNetworkSystem-4
+  [connection] PipingNetworkSegment-9/connections/1  <- conceptual_graph: PipingNetworkSegment-9/connections/1, PipingNetworkSegment-9, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-10/connections/1  <- conceptual_graph: PipingNetworkSegment-10/connections/1, PipingNetworkSegment-10, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-11/connections/1  <- conceptual_graph: PipingNetworkSegment-11/connections/1, PipingNetworkSegment-11, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-12/connections/1  <- conceptual_graph: PipingNetworkSegment-12/connections/1, PipingNetworkSegment-12, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-7/connections/1  <- conceptual_graph: PipingNetworkSegment-7/connections/1, PipingNetworkSegment-7, PipingNetworkSystem-5
+  [connection] PipingNetworkSegment-13/connections/1  <- conceptual_graph: PipingNetworkSegment-13/connections/1, PipingNetworkSegment-13, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-14/connections/1  <- conceptual_graph: PipingNetworkSegment-14/connections/1, PipingNetworkSegment-14, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-13/connections/2  <- conceptual_graph: PipingNetworkSegment-13/connections/2, PipingNetworkSegment-13, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-14/connections/2  <- conceptual_graph: PipingNetworkSegment-14/connections/2, PipingNetworkSegment-14, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-16/connections/1  <- conceptual_graph: PipingNetworkSegment-16/connections/1, PipingNetworkSegment-16, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-17/connections/1  <- conceptual_graph: PipingNetworkSegment-17/connections/1, PipingNetworkSegment-17, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-18/connections/1  <- conceptual_graph: PipingNetworkSegment-18/connections/1, PipingNetworkSegment-18, PipingNetworkSystem-6
+  [connection] PipingNetworkSegment-17/connections/2  <- conceptual_graph: PipingNetworkSegment-17/connections/2, PipingNetworkSegment-17, PipingNetworkSystem-6
+  [open_end] PipingNetworkSegment-23/connections/2  <- plant_graph: PipingNetworkSegment-23/connections/2, PipingNetworkSegment-23, PipingNetworkSystem-11
+  [boundary] TubularHeatExchanger-1:Chamber-3|Chamber-4  <- plant_graph: TubularHeatExchanger-1, Chamber-3, Chamber-4, PipingNetworkSegment-23/connections/1
+  [path] TubularHeatExchanger-1->CentrifugalPump-1  <- conceptual_graph: PipingNetworkSegment-19/connections/1, PipingNetworkSegment-19/connections/2, PipingNetworkSegment-3/connections/2, PipingNetworkSegment-3/connections/1, PipingNetworkSegment-2/connections/1
+  [connection] PipingNetworkSegment-3/connections/2  <- conceptual_graph: PipingNetworkSegment-3/connections/2, PipingNetworkSegment-3, PipingNetworkSystem-3
+  [connection] PipingNetworkSegment-3/connections/1  <- conceptual_graph: PipingNetworkSegment-3/connections/1, PipingNetworkSegment-3, PipingNetworkSystem-3
+  [connection] PipingNetworkSegment-2/connections/1  <- conceptual_graph: PipingNetworkSegment-2/connections/1, PipingNetworkSegment-2, PipingNetworkSystem-2
+
+USAGE: 6 model calls, 43586 tokens, 26023 ms
