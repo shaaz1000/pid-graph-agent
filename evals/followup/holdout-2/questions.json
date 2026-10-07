@@ -1,0 +1,782 @@
+{
+ "description": "Second holdout on C01, written after the capability and route-semantics pass and frozen before any model call. Gold is derived from the graph by build_holdout.py. Not part of the official follow-up scores.",
+ "pid": "data/C01V04-VER.EX01.xml",
+ "questions": [
+  {
+   "id": "K1",
+   "source": "holdout-2",
+   "type": "Isolation completeness",
+   "question": "The tee PipeTee 47126/C9 has to be cut out. Which shut-off valves bound it, and which of its connections reach equipment or leave the drawing with no valve in between?",
+   "anchors": [
+    "PipeTee-5"
+   ],
+   "gold_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "PipeTee-5"
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "BallValve-4 bounds PipeTee-5",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "PipeTee-5",
+       "o": "BallValve-4"
+      }
+     ]
+    },
+    {
+     "fact": "BallValve-5 bounds PipeTee-5",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "PipeTee-5",
+       "o": "BallValve-5"
+      }
+     ]
+    },
+    {
+     "fact": "no valve between PipeTee-5 and FlowOutPipeOffPageConnector-1",
+     "any_of": [
+      {
+       "p": "unisolated_connection",
+       "s": "PipeTee-5",
+       "o": "FlowOutPipeOffPageConnector-1",
+       "q": {
+        "kind": "off_page_connector"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "no valve between PipeTee-5 and TubularHeatExchanger-1",
+     "any_of": [
+      {
+       "p": "unisolated_connection",
+       "s": "PipeTee-5",
+       "o": "TubularHeatExchanger-1",
+       "q": {
+        "kind": "equipment"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "The two valves without the two unvalved connections.",
+   "forbidden_conclusions": [
+    "that the tee can be fully isolated",
+    "an order for closing the valves"
+   ]
+  },
+  {
+   "id": "K2",
+   "source": "holdout-2",
+   "type": "Directional versus topological route",
+   "question": "Following the way the piping is drawn to flow, can anything get from H1008 to P4711? Separately, leaving flow direction aside, are the two joined by piping at all?",
+   "anchors": [
+    "TubularHeatExchanger-1",
+    "CentrifugalPump-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "TubularHeatExchanger-1",
+      "target_entity_id": "CentrifugalPump-1"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "TubularHeatExchanger-1",
+      "target_entity_id": "CentrifugalPump-1",
+      "direction": "any"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "CentrifugalPump-1",
+      "target_entity_id": "TubularHeatExchanger-1",
+      "direction": "upstream"
+     }
+    },
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "TubularHeatExchanger-1",
+      "direction": "both",
+      "entity_types": [
+       "equipment"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "no route in the drawn flow direction from H1008 to P4711",
+     "any_of": [
+      {
+       "p": "no_path",
+       "s": "TubularHeatExchanger-1",
+       "o": "CentrifugalPump-1",
+       "q": {
+        "semantics": "drawn_flow"
+       }
+      },
+      {
+       "p": "no_path",
+       "s": "CentrifugalPump-1",
+       "o": "TubularHeatExchanger-1",
+       "q": {
+        "direction": "upstream",
+        "semantics": "drawn_flow"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "the two are joined by piping when flow direction is ignored",
+     "any_of": [
+      {
+       "p": "path",
+       "ends": [
+        "TubularHeatExchanger-1",
+        "CentrifugalPump-1"
+       ],
+       "q": {
+        "semantics": "topological"
+       }
+      },
+      {
+       "p": "reaches",
+       "ends": [
+        "TubularHeatExchanger-1",
+        "CentrifugalPump-1"
+       ],
+       "q": {
+        "semantics": "topological"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "One of the two answers.",
+   "forbidden_conclusions": [
+    "that H1008 feeds or reaches P4711",
+    "that fluid can flow from H1008 to P4711"
+   ]
+  },
+  {
+   "id": "K3",
+   "source": "holdout-2",
+   "type": "Instrumentation chain entered from the valve",
+   "question": "Start from GlobeValve 47141/C1: which actuating function operates it, which function sends that its signal, where is the measurement for that loop taken, and what fail action is encoded?",
+   "anchors": [
+    "GlobeValve-3"
+   ],
+   "gold_calls": [
+    {
+     "tool": "trace_instrumentation",
+     "args": {
+      "entity_id": "GlobeValve-3"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "ActuatingFunction-3"
+      ],
+      "requested_properties": [
+       "failAction"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "TV4750.03 operates GlobeValve 47141/C1",
+     "any_of": [
+      {
+       "p": "operates",
+       "s": "ActuatingFunction-3",
+       "o": "GlobeValve-3"
+      },
+      {
+       "p": "loop_acts_on",
+       "s": "ProcessInstrumentationFunction-4",
+       "o": "GlobeValve-3"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ActuatingFunction-3",
+        "GlobeValve-3"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "TICSA4750.03 sends its signal to TV4750.03",
+     "any_of": [
+      {
+       "p": "sends_signal_to",
+       "s": "ProcessInstrumentationFunction-4",
+       "o": "ActuatingFunction-3"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ProcessInstrumentationFunction-4",
+        "ActuatingFunction-3"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "the measurement is taken at T4750",
+     "any_of": [
+      {
+       "p": "senses_at",
+       "s": "ProcessSignalGeneratingFunction-3",
+       "o": "Tank-1"
+      },
+      {
+       "p": "loop_measured_at",
+       "s": "ProcessInstrumentationFunction-4",
+       "o": "Tank-1"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ProcessSignalGeneratingFunction-3",
+        "Tank-1"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "encoded fail action: fail open",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "ActuatingFunction-3",
+       "v": "fail open",
+       "q": {
+        "property": "failAction"
+       }
+      },
+      {
+       "p": "loop_acts_on",
+       "o": "GlobeValve-3",
+       "q": {
+        "fail_action": "fail open"
+       }
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ActuatingFunction-3"
+       ],
+       "q": {
+        "fail_action": "fail open"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "The actuating function and fail action without the measurement point.",
+   "forbidden_conclusions": [
+    "the temperature at which the valve acts",
+    "what the valve does to the process"
+   ]
+  },
+  {
+   "id": "K4",
+   "source": "holdout-2",
+   "type": "Reachability with an item closed",
+   "question": "With BallValve 47124/C4 treated as closed, which equipment is still downstream of T4750? For comparison, which equipment is downstream of T4750 with nothing closed?",
+   "anchors": [
+    "Tank-1",
+    "BallValve-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "Tank-1",
+      "direction": "downstream",
+      "entity_types": [
+       "equipment"
+      ],
+      "blocked_entity_ids": [
+       "BallValve-1"
+      ]
+     }
+    },
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "Tank-1",
+      "direction": "downstream",
+      "entity_types": [
+       "equipment"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "Tank-1",
+      "target_entity_id": "ReciprocatingPump-1",
+      "blocked_entity_ids": [
+       "BallValve-1"
+      ]
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "Tank-1",
+      "target_entity_id": "ReciprocatingPump-1"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "Tank-1",
+      "target_entity_id": "TubularHeatExchanger-1"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "no equipment is downstream of T4750 with the valve treated as closed",
+     "any_of": [
+      {
+       "p": "reaches_nothing",
+       "s": "Tank-1",
+       "blocked_contains": "BallValve-1"
+      },
+      {
+       "p": "no_path",
+       "s": "Tank-1",
+       "o": "ReciprocatingPump-1",
+       "blocked_contains": "BallValve-1",
+       "q": {
+        "semantics": "drawn_flow"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "P4712 is downstream of T4750 with nothing closed",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "Tank-1",
+       "o": "ReciprocatingPump-1",
+       "q": {
+        "direction": "downstream"
+       },
+       "blocked_absent": true
+      },
+      {
+       "p": "path",
+       "s": "Tank-1",
+       "o": "ReciprocatingPump-1",
+       "blocked_absent": true,
+       "q": {
+        "semantics": "drawn_flow"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "H1008 is downstream of T4750 with nothing closed",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "Tank-1",
+       "o": "TubularHeatExchanger-1",
+       "q": {
+        "direction": "downstream"
+       },
+       "blocked_absent": true
+      },
+      {
+       "p": "path",
+       "s": "Tank-1",
+       "o": "TubularHeatExchanger-1",
+       "blocked_absent": true,
+       "q": {
+        "semantics": "drawn_flow"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "Either half of the comparison.",
+   "forbidden_conclusions": [
+    "that the pump is starved, trips or cavitates",
+    "that flow stops"
+   ]
+  },
+  {
+   "id": "K5",
+   "source": "holdout-2",
+   "type": "Branches of a line",
+   "question": "On line 47126, which branches end in a dead end rather than at equipment or at the drawing edge? Give where each starts, where it ends and its size.",
+   "anchors": [],
+   "gold_calls": [
+    {
+     "tool": "trace_line",
+     "args": {
+      "line": "47126"
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "the branch PipeTee-2 -> BallValve-2 ends in a dead end and is DN 25",
+     "any_of": [
+      {
+       "p": "line_run",
+       "s": "PipeTee-2",
+       "o": "BallValve-2",
+       "q": {
+        "ends_at": "end of the drawn piping",
+        "diameters": [
+         "DN 25"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "fact": "the branch PipeTee-3 -> BlindFlange-1 ends in a dead end and is DN 25",
+     "any_of": [
+      {
+       "p": "line_run",
+       "s": "PipeTee-3",
+       "o": "BlindFlange-1",
+       "q": {
+        "ends_at": "end of the drawn piping",
+        "diameters": [
+         "DN 25"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "fact": "the branch PipeTee-5 -> BlindFlange-2 ends in a dead end and is DN 25",
+     "any_of": [
+      {
+       "p": "line_run",
+       "s": "PipeTee-5",
+       "o": "BlindFlange-2",
+       "q": {
+        "ends_at": "end of the drawn piping",
+        "diameters": [
+         "DN 25"
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "Some of the three branches.",
+   "forbidden_conclusions": [
+    "what the dead-end branches are for (drain, vent, test point)"
+   ]
+  },
+  {
+   "id": "K6",
+   "source": "holdout-2",
+   "type": "Adjacency with flow direction",
+   "question": "Which piping lines are attached directly to T4750, and for each one, does the drawn flow enter the tank or leave it?",
+   "anchors": [
+    "Tank-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "Tank-1",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "line 47123: GlobeValve-2 -> Tank-1",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "GlobeValve-2",
+       "o": "Tank-1",
+       "q": {
+        "lineNumber": "47123"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "line 47125: SpringLoadedGlobeSafetyValve-1 -> Tank-1",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "SpringLoadedGlobeSafetyValve-1",
+       "o": "Tank-1",
+       "q": {
+        "lineNumber": "47125"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "line 47127: GlobeValve-1 -> Tank-1",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "GlobeValve-1",
+       "o": "Tank-1",
+       "q": {
+        "lineNumber": "47127"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "line 47124: Tank-1 -> ButterflyValve-1",
+     "any_of": [
+      {
+       "p": "flows_to",
+       "s": "Tank-1",
+       "o": "ButterflyValve-1",
+       "q": {
+        "lineNumber": "47124"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "Some of the four lines.",
+   "forbidden_conclusions": [
+    "flow rates",
+    "which lines are in service"
+   ]
+  },
+  {
+   "id": "K7",
+   "source": "holdout-2",
+   "type": "Upstream reach with a loop",
+   "question": "Which equipment lies upstream of the reciprocating pump? Is the pump itself inside a loop that returns to something upstream of it?",
+   "anchors": [
+    "ReciprocatingPump-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "ReciprocatingPump-1",
+      "direction": "upstream",
+      "entity_types": [
+       "equipment"
+      ]
+     }
+    },
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "ReciprocatingPump-1",
+      "direction": "downstream",
+      "entity_types": [
+       "equipment"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "Tank-1",
+      "target_entity_id": "ReciprocatingPump-1"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ReciprocatingPump-1",
+      "target_entity_id": "Tank-1"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "T4750 is upstream of P4712",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "ReciprocatingPump-1",
+       "o": "Tank-1",
+       "q": {
+        "direction": "upstream"
+       }
+      },
+      {
+       "p": "path",
+       "s": "Tank-1",
+       "o": "ReciprocatingPump-1",
+       "q": {
+        "semantics": "drawn_flow"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "H1007 is upstream of P4712",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "ReciprocatingPump-1",
+       "o": "PlateHeatExchanger-1",
+       "q": {
+        "direction": "upstream"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "P4711 is upstream of P4712",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "ReciprocatingPump-1",
+       "o": "CentrifugalPump-1",
+       "q": {
+        "direction": "upstream"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "H1008 is upstream of P4712",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "ReciprocatingPump-1",
+       "o": "TubularHeatExchanger-1",
+       "q": {
+        "direction": "upstream"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "the loop: T4750 is also downstream of P4712",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "ReciprocatingPump-1",
+       "o": "Tank-1",
+       "q": {
+        "direction": "downstream"
+       }
+      },
+      {
+       "p": "path",
+       "s": "ReciprocatingPump-1",
+       "o": "Tank-1",
+       "q": {
+        "semantics": "drawn_flow"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "The upstream equipment without the loop.",
+   "forbidden_conclusions": [
+    "a recycle rate",
+    "that the loop is operating"
+   ]
+  },
+  {
+   "id": "K8",
+   "source": "holdout-2",
+   "type": "A boundary with no valves",
+   "question": "For the centrifugal pump: is any shut-off valve drawn on either side of it, and what is it connected to with no valve in between?",
+   "anchors": [
+    "CentrifugalPump-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "CentrifugalPump-1"
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "no valve between CentrifugalPump-1 and FlowInPipeOffPageConnector-1",
+     "any_of": [
+      {
+       "p": "unisolated_connection",
+       "s": "CentrifugalPump-1",
+       "o": "FlowInPipeOffPageConnector-1",
+       "q": {
+        "kind": "off_page_connector"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "no valve between CentrifugalPump-1 and PlateHeatExchanger-1",
+     "any_of": [
+      {
+       "p": "unisolated_connection",
+       "s": "CentrifugalPump-1",
+       "o": "PlateHeatExchanger-1",
+       "q": {
+        "kind": "equipment"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "the pump cannot be isolated with the valves drawn",
+     "any_of": [
+      {
+       "p": "fully_valve_bounded",
+       "s": "CentrifugalPump-1",
+       "v": false
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "One of the two unvalved connections.",
+   "forbidden_conclusions": [
+    "that valves exist beyond the drawing edge",
+    "how the pump is isolated in practice"
+   ]
+  }
+ ]
+}
