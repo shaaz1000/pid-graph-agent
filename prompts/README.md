@@ -44,6 +44,7 @@ written; later prompts never overwrite earlier ones.
 | `36-followup-holdout-sanity-check.md` | Requirement checklist and a frozen holdout (8 new complex questions, 3 new rephrasing groups) on the hardened main; measurement only | Preserved development instruction |
 | `37-followup-final-polish.md` | A strictly short note, the directional-route limitation, the holdout committed as a post-evaluation check | Preserved development instruction |
 | `38-docs-consistency-cleanup.md` | Align the supporting docs with current main: drawings tested, base tools versus follow-up analyses, old limits labelled historical | Preserved development instruction |
+| `39-capability-planning-bundles-and-route-semantics.md` | Post-evaluation architecture pass: capabilities declare the outputs they produce, composite results are completed by the application, topological and drawn-flow routes are separated; new frozen holdout | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 
