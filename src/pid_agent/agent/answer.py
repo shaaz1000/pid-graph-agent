@@ -261,14 +261,18 @@ def render_submission(submission: dict[str, Any]) -> str:
 
 
 def _check_coverage(out: Submission, registry: EvidenceRegistry, requested: list[dict[str, Any]], seen: set[str]) -> None:
-    """Every requested output must be answered by evidence that can answer its kind, or be an unknown.
+    """Every requested output must be answered by evidence, or be an unknown.
 
-    Three rules, all from the declarations in ``capabilities`` and the tool results:
+    The kind the model gave an output is its reading of the question. It can make this check
+    stricter; it never decides what a cited result proves or how much of it is shown:
 
-    * rows of an operation that cannot produce the kind do not answer it;
-    * an output a P&ID does not contain needs an unknown;
-    * when a composite analysis answers an output, the application adds every row of that
-      analysis that belongs to the kind, so the result is complete whatever the model cited.
+    * when any row of a composite analysis is cited, the application adds every core row of
+      that analysis, whatever kind the output was given;
+    * what the evidence for an output establishes is read from the operations and the route
+      semantics of their results. A route that ignores flow direction is recorded as
+      connectivity, never as process flow, and is worded that way whatever the kind;
+    * where the model named a strict kind, rows of an operation that cannot produce it do not
+      answer the output, and an output a P&ID does not contain needs an unknown.
     """
     ids = [r["id"] for r in requested]
     only = ids[0] if len(ids) == 1 else None
@@ -284,10 +288,9 @@ def _check_coverage(out: Submission, registry: EvidenceRegistry, requested: list
     for output in requested:
         kind, name = output["kind"], f"{output['id']} ({output['description']})"
         covering = [item for item in cited if output["id"] in outputs(item["covers"])]
-        answering = [item for item in covering if capabilities.answers(kind, registry.tool(item["ref"]), registry.semantics(item["ref"]))]
         added: list[str] = []
-        for item in list(answering):
-            for ref in capabilities.bundle(kind, registry.tool(item["ref"]), registry.result(item["ref"])):
+        for item in list(covering):
+            for ref in capabilities.complete(registry.tool(item["ref"]), registry.result(item["ref"])):
                 if ref in seen:
                     continue
                 seen.add(ref)
@@ -297,9 +300,12 @@ def _check_coverage(out: Submission, registry: EvidenceRegistry, requested: list
                     out.derived.append({**row, "operation": registry.operation(ref)})
                 else:
                     out.direct.append(row)
-                answering.append(row)
+                covering.append(row)
                 added.append(ref)
         completed += len(added)
+        answering = [item for item in covering if capabilities.answers(kind, registry.tool(item["ref"]), registry.semantics(item["ref"]))]
+        proven = sorted({k for item in covering for k in capabilities.establishes(registry.tool(item["ref"]), registry.semantics(item["ref"]))})
+        routes = sorted({registry.semantics(item["ref"]) for item in covering if registry.semantics(item["ref"])})
         unknown = [u["category"] for u in out.unknowns if output["id"] in outputs(u["covers"])]
         if kind in capabilities.NOT_IN_A_DRAWING and not unknown:
             out.errors.append(f"Requested output {name} is of kind {kind}, which a P&ID does not contain. Name it as an unknown; facts may be cited in addition.")
@@ -311,10 +317,11 @@ def _check_coverage(out: Submission, registry: EvidenceRegistry, requested: list
                 out.errors.append(f"Requested output {name} has not been addressed. Provide supported evidence or mark it unknown.")
         refs = [i["ref"] for i in answering]
         output_record = {"direct": [r for r in refs if registry.kind(r) == "direct"], "derived": [r for r in refs if registry.kind(r) == "derived"], "unknown": unknown,
-                         "answered_by": sorted({registry.tool(r) for r in refs}), "completed_by_application": added}  # fmt: skip
+                         "answered_by": sorted({registry.tool(r) for r in refs}), "completed_by_application": added,
+                         "evidence_establishes": proven, "route_semantics": routes, "shows_process_flow": "flow_reachability" in proven}  # fmt: skip
         out.requested.append({**{k: output[k] for k in ("id", "description", "kind")}, "covered_by": output_record})
     if completed:
-        out.notes.append(f"{completed} row(s) were added by the application: they belong to an analysis the answer cites and to the kind of output asked for.")
+        out.notes.append(f"{completed} row(s) were added by the application: they are the core rows of an analysis the answer cites.")
 
 
 Resolver = Callable[[str], list[tuple[str, str]]]  # an id, tag or name -> the (id, name) it denotes

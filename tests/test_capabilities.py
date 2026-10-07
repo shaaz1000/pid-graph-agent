@@ -141,11 +141,10 @@ def test_a_line_and_a_set_of_routes_are_completed_too(tools):
     assert predicates(answer).count("path") == 2  # both routes of the result, not only the one that was cited
 
 
-def test_rows_are_only_added_for_the_kind_that_was_asked(tools):
-    obs = observe(tools, ("isolation_boundary", {"entity_id": "P4712"}))
-    one_valve = obs[0]["derived"][0]["ref"]
-    as_item = submit(obs, outputs("items"), [(one_valve, ["q1"])])
-    assert as_item.ok and len(as_item.derived) == 1 and not any("added by the application" in n for n in as_item.notes)  # asked for an item, got the cited row and nothing more
+def test_rows_are_added_once_and_only_from_a_composite_analysis(tools):
+    obs = observe(tools, ("isolation_boundary", {"entity_id": "P4712"}), ("get_connections", {"entity_id": "P4712", "relationship": "piping"}), ("get_entity", {"entity_id": "P4712"}))
+    plain = submit(obs, outputs("items"), [("E2.1", ["q1"]), ("E3.1", ["q1"])])
+    assert plain.ok and len(plain.direct) == 2 and not plain.derived and not any("added by the application" in n for n in plain.notes)  # single lookups are shown as cited
     twice = submit(obs, outputs("boundary"), [("R1", ["q1"])])
     assert len({item["ref"] for item in twice.derived}) == len(twice.derived)  # nothing is added twice
 
@@ -234,5 +233,5 @@ def test_the_routing_logic_contains_nothing_from_any_question():
     kinds = set(OUTPUT_KINDS.__args__)
     assert set(capabilities.PRODUCERS) | capabilities.NOT_IN_A_DRAWING <= kinds
     assert {tool for producers in capabilities.PRODUCERS.values() for tool in producers} <= set(TOOL_ARGS)
-    assert {(tool, kind) for tool, kind in capabilities.BUNDLES} <= {(tool, kind) for kind, producers in capabilities.PRODUCERS.items() for tool in producers}
+    assert set(capabilities.CORE_ROWS) <= set(TOOL_ARGS)  # completion is declared per operation; no kind and no question appears in it
     assert "import re" not in source
