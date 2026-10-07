@@ -1,8 +1,9 @@
-# Follow-up Exercise
+# Follow-up Exercise: detailed results
 
-Complex operational questions and consistency under rephrasing, on the same C01 P&ID.
+The one-page note is [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md). This file holds the detail
+behind it: the design, the full result tables, causes, and the post-evaluation checks.
 The exercise as received is in [prompts/29](../prompts/29-followup-exercise-from-intuigence.md);
-the instructions that shaped this round are prompts 30 to 35.
+the instructions that shaped this round are prompts 30 to 37.
 
 ## What was tested
 
@@ -164,15 +165,44 @@ model wrote it. The hardened code did not produce the recorded results.
 - "Map all connections for X" (R3a) can be read as the controller's own links. That reading is
   scored correct for the question, and still counts against the group's consistency.
 - The agent keeps no conversation history, so the optional successive-turn test was not run.
+- **Topological reachability is not process reachability.** A route query that ignores flow
+  direction (`direction=any`) can return a path that is valid in the graph but is not a
+  process-flow route. Observed: with the tank's outlet valve treated as closed, the route
+  T4750 -> SV 104.01 -> piping -> P4712 exists in the graph, but it runs backwards through the
+  relief valve into the pump's discharge. The row is labelled "direction any" and is correct
+  as connectivity; it must not be read as "the tank can still feed the pump". The agent can
+  still choose this operation when a question asks whether a route "remains". This affected
+  H5 and HG2 in the holdout below and is related to the miss on C7.
 
 **Next step for production.** Reduce planner freedom with a typed planning or capability
 layer, use composite deterministic graph analyses for the common multi-hop operations, and
 keep the structured answer contract.
 
+## Post-evaluation holdout / sanity check
+
+Not part of the official 150-run evaluation. After the security hardening, a separate holdout
+was run on the hardened branch (commit `fd4dfe8`) to see whether the final code still answers
+fresh questions. The holdout was created and frozen before inference. No code, prompt or gold
+changes were made after results were observed. Details:
+[evals/followup/holdout/README.md](../evals/followup/holdout/README.md).
+
+- 8 new complex questions, one run each: 5 correct, 2 partial, 1 incorrect, mean 0.78;
+  required facts 18 of 22, required unknowns 1 of 1; 0 contradictions, 0 unsupported facts.
+- 3 new rephrasing groups, 4 phrasings each, 2 repeats (24 runs, 23 answered, 1 provider
+  timeout): 10 of 12 phrasings repeat-consistent on required facts. HG1 was fully consistent
+  on required facts; HG3 in 7 of 8 answered runs.
+- HG2 exposed a semantic weakness: direction-agnostic connectivity can be stable across
+  paraphrases while still answering the wrong process-level question. The evaluator's raw
+  consistency figure for HG2 is high and must not be read as success; its required-fact
+  recall is 0.00 (see the limitation above).
+- No grounding or security regression: 0 model-authored prose in rendered answers, 0 cited
+  ids missing from tool results, 0 model-controlled tool-input text in rendered output.
+
 ## Reproduce
 
 ```bash
 uv run pytest                                              # 785 deterministic tests, no key
+uv run python evals/followup/holdout/run_holdout.py        # re-score the holdout, no key
 uv run python evals/followup/followup.py                   # re-score the saved runs, no key
 uv run python evals/followup/followup.py --run complex     # ask the 27 complex questions
 uv run python evals/followup/followup.py --run consistency --repeats 3
@@ -185,7 +215,8 @@ tool trace of every question: [evals/followup/runs/](../evals/followup/runs/).
 
 ## Time spent
 
-About four and a half hours of elapsed time from receiving the follow-up to this report,
-measured from the working session: roughly 1 h 45 min of that was the unattended full
-evaluation and about 45 min the smaller diagnostic runs. An AI coding assistant was used
-throughout, directed by the six instructions in `prompts/30` to `prompts/35`.
+About five hours of working time from receiving the follow-up to the final holdout, measured
+from the working session and excluding an overnight idle gap. Roughly three of those hours
+were unattended model runs (the 150-run evaluation 1 h 45 min, the diagnostic smoke runs about
+45 min, the holdout about 30 min). That is more than the four hours suggested. An AI coding
+assistant was used throughout, directed by the instructions in `prompts/30` to `prompts/37`.

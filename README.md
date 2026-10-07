@@ -147,7 +147,7 @@ or line plus component number), identifiers inside a phrase, then type words. An
 shared by several items returns all of them flagged ambiguous. Fuzzy matches are only ever
 suggestions.
 
-**Tools.** Seven generic operations, no question-specific ones (three more for multi-step analysis were added in the [follow-up](#follow-up-complex-reasoning-and-rephrasing)):
+**Tools.** Seven generic operations, no question-specific ones (three more for multi-step analysis were added in the [follow-up](#follow-up-evaluation)):
 `find_entities`, `list_entities`, `get_entity`, `get_connections` (adjacency),
 `traverse` (reachability, cycle-safe, depth-bounded), `find_path` (route) and
 `get_properties`. Every result is structured and carries evidence items that point back to
@@ -512,7 +512,7 @@ Tests: `tests/test_relation_grounding.py`. Two existing tests changed: a cost te
 scripted answer had relied on the hedge bypass, and the documented gloss limitation, which is
 now detected as unchecked instead of passing as grounded.
 
-## Follow-up: Complex Reasoning and Rephrasing
+## Follow-up Evaluation
 
 A follow-up exercise asked for operational, multi-step questions (isolation, trips, fail
 positions, blocked-in equipment, loop mapping), for the same question to give the same facts
@@ -521,8 +521,8 @@ graph operations (isolation boundary, instrumentation chain, line trace, reachab
 items treated as closed) and a structured answer path, now the default (`ANSWER_MODE=structured`):
 the model records what is asked, cites evidence rows as direct or derived facts, names what the
 P&ID does not establish as typed unknowns, and the application writes the answer. The
-sentence-level validator described above is used only for the recorded runs in this README
-(`ANSWER_MODE=prose`).
+sentence-level validator described above is used only for the earlier recorded runs in this
+README (`ANSWER_MODE=prose`).
 
 Results on C01 with NVIDIA-hosted Nemotron 3 Super, an open-weight model released under the
 NVIDIA Nemotron Open Model License:
@@ -534,8 +534,15 @@ NVIDIA Nemotron Open Model License:
 - 0 model-authored factual prose shown, and no cited fact outside the tool evidence.
 
 The agent is safe but not yet consistent on complex phrasings: answers differ in which valid
-facts they retrieve and cite, not in what those facts say. Details, causes and limitations:
-[docs/FOLLOWUP_EXERCISE.md](docs/FOLLOWUP_EXERCISE.md).
+facts they retrieve and cite, not in what those facts say.
+
+- One-page summary: [docs/FOLLOWUP_EXERCISE.md](docs/FOLLOWUP_EXERCISE.md)
+- Detailed results and method: [docs/FOLLOWUP_DETAILS.md](docs/FOLLOWUP_DETAILS.md); questions,
+  gold, runs and transcripts: [evals/followup/](evals/followup/)
+- Post-evaluation holdout: [evals/followup/holdout/](evals/followup/holdout/README.md). A
+  separate frozen holdout on the hardened final branch used 8 new complex questions and 3 new
+  paraphrase groups; it found no grounding/security regressions but reproduced the
+  directional-vs-topological route limitation.
 
 ## Limitations
 

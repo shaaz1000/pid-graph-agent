@@ -41,6 +41,8 @@ written; later prompts never overwrite earlier ones.
 | `33-followup-repair-and-request-coverage.md` | One repair of a rejected final submission; request decomposition with coverage validation; larger-model smoke | Preserved development instruction |
 | `34-followup-model-decision-and-full-run.md` | No paid provider: run the full follow-up on NVIDIA-hosted Nemotron 3 Super (open-weight), commit first | Preserved development instruction |
 | `35-followup-finalization.md` | Commit the evaluation unchanged, fix the status-message provenance issue found by a security review, write the follow-up report | Preserved development instruction |
+| `36-followup-holdout-sanity-check.md` | Requirement checklist and a frozen holdout (8 new complex questions, 3 new rephrasing groups) on the hardened main; measurement only | Preserved development instruction |
+| `37-followup-final-polish.md` | A strictly short note, the directional-route limitation, the holdout committed as a post-evaluation check | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 
