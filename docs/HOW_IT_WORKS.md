@@ -4,7 +4,7 @@ A 10 to 15 minute read. For the full reference, see [ARCHITECTURE_DEEP_DIVE.md](
 
 ## The one-screen version
 
-**What it is.** A program that answers plain-English questions about one plant drawing (the DEXPI reference P&ID "C01"): what is connected to what, what is downstream, which line, what size.
+**What it is.** A program that answers plain-English questions about a plant drawing: what is connected to what, what is downstream, which line, what size. It was built on the DEXPI reference P&ID "C01", and the examples here use it.
 
 **Why it exists.** Engineers ask these questions of drawings all day. The drawing is already a graph, so the answers can be looked up exactly. The hard part is turning an arbitrary question into the right lookups, and that is the only part a language model does.
 
@@ -21,6 +21,16 @@ flowchart TD
 ```
 
 The loop between the agent and the tools can repeat: look something up, read the result, decide whether another lookup is needed.
+
+## What has changed since the first version
+
+This document explains the original design, which is still the core. Three things were added later:
+
+- **More drawings.** All 35 official DEXPI 1.3 examples pass deterministic ingestion, and eight structurally diverse additional P&IDs received a live reasoning evaluation. The complex and rephrasing follow-up itself is on C01.
+- **More graph operations.** The original agent exposed seven base tools. The follow-up added generic multi-step analyses for isolation boundaries, instrumentation chains, line tracing, and route and reachability analysis (see [The seven base tools](#the-seven-base-tools)).
+- **A structured answer.** By default the model no longer writes the answer. It records what the question asks for, calls graph tools, and submits evidence ids (direct facts, derived facts) and typed unknowns; the application writes the answer. The prose answer with evidence ids, described under [Grounding](#grounding-a-good-and-a-bad-answer), is the earlier contract, kept as `ANSWER_MODE=prose` for the recorded C01 and cross-P&ID runs.
+
+Results and limits of the follow-up: [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md). The two walkthroughs below are real runs of the original build.
 
 ## The most important idea
 
@@ -152,7 +162,7 @@ Now a pipe is an edge with a direction, and "what is downstream" is a normal gra
 
 Code: [`graph/normalizer.py`](../src/pid_agent/graph/normalizer.py).
 
-## The seven tools
+## The seven base tools
 
 | Tool | What I would ask it | What it actually does |
 |---|---|---|
@@ -181,9 +191,22 @@ find_path(A, D)           A ===== B ===== C ===== D    one route between two kno
 
 In this drawing the direct neighbour of a pump is usually a tee or a valve. Answering "where does it discharge to" with adjacency gives the tee, which is why the distinction matters.
 
-There is no tool for a specific question. The same seven served every question asked so far.
+There is no tool for a specific question. These seven served every question of the first evaluation.
 
-Code: [`graph/service.py`](../src/pid_agent/graph/service.py).
+The follow-up's multi-step questions (isolation, loop mapping, "what if this valve is closed") needed many calls with these alone, so general analyses were added. Each is a graph concept, not an answer to a particular question:
+
+| Operation | What I would ask it | What it actually does |
+|---|---|---|
+| `isolation_boundary` | "What valves box this item in?" | Follows the piping away from an item to the nearest valve on every branch; lists connections that have no valve |
+| `trace_instrumentation` | "Show me this whole loop." | Every instrumentation link of a loop in signal order, with the encoded fail action and the valve's line, in one call |
+| `trace_line` | "Walk this line." | One line as runs between junctions, with sizes, ends and where it meets other lines |
+| `find_path` with `all_paths` | "Is there more than one route?" | Every route between two items, with the valves and equipment on each |
+| `blocked_entity_ids` on `traverse` and `find_path` | "What if this valve is closed?" | The same search with those items treated as closed |
+| `list_entities` with properties | "Which pump is the 84 kW one?" | Lists items with requested attributes, or filters by a property value |
+
+One caution: `find_path` with direction `any` ignores flow direction. Its result is graph connectivity, which is not always a process-flow route.
+
+Code: [`graph/service.py`](../src/pid_agent/graph/service.py), [`graph/analysis.py`](../src/pid_agent/graph/analysis.py).
 
 ## The heat exchanger problem
 
@@ -233,6 +256,8 @@ Two different statements, kept apart:
 There are four such pipes. Traversal never walks through them.
 
 ## Grounding: a good and a bad answer
+
+> This section describes the **prose contract** (`ANSWER_MODE=prose`) of the original build, used by the recorded C01 and cross-P&ID runs. The default is now the **structured contract**: the model submits evidence ids and typed unknowns, code checks that every id exists and that every part of the question is accounted for, and the application writes the answer from the cited rows. No sentence written by the model is shown, so the sentence checks below are not needed on that path. Evidence ids work the same way in both.
 
 Every row of a tool result gets an **evidence id** from the application: `E2.3` is row 3 of step 2, `R2` is the whole result of step 2. The model does not restate facts. It cites ids, and plain Python checks each sentence against the facts those ids stand for. No model judges the answer.
 
@@ -295,6 +320,8 @@ Code: [`agent/evidence_refs.py`](../src/pid_agent/agent/evidence_refs.py) → `a
 
 ## What happens when things go wrong
 
+The table describes the prose contract. Under the structured contract a submission that cites an unknown id, or leaves part of the question unaddressed, is rejected and the model is asked again; a final rejected submission gets exactly one repair, and otherwise the answer is withheld. A status such as "not found" is then stated in fixed application wording.
+
 | Problem | What the user sees | What the system does |
 |---|---|---|
 | Entity not found | "X was not found in the P&ID", possibly with near-miss suggestions | Resolver returns `not_found`; suggestions are never used as the answer |
@@ -323,6 +350,8 @@ flowchart TD
     V -->|"still unsupported"| B["evidence-only fallback"]
 ```
 
+Under the structured contract the loop has the same shape, with a first step that records what the question asks for, and `submit_answer` in place of "answer, validate, regenerate".
+
 **Why this is an agent and not one LLM call.** The model cannot know what to look up second until it has seen the first result. "Which pumps are upstream of the tubular heat exchanger" needs the exchanger's id before it can traverse from it. So the model is called in a loop, each time with the results so far, until it decides it can answer.
 
 The loop is bounded: at most 8 planning turns and 16 tool calls, and an identical repeated call is refused. The first turn must call a tool, so the graph is always consulted.
@@ -339,9 +368,9 @@ Code: [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `PidAgent`.
 
 "The drawing is loaded with pyDEXPI into two NetworkX graphs. The detailed one has every object but its edges mean ownership, not flow. The simplified one has pipes as directed edges, which is what you want for 'downstream', but it loses nozzles, chambers and a few pipes. I use the simplified one for connectivity and the detailed one for facts, and merge them into one index at start-up.
 
-On top of that are seven generic tools: find entities, list, get entity, direct connections, traverse, find path, get properties. There is nothing question-specific, because the review uses unseen questions.
+On top of that are seven generic base tools: find entities, list, get entity, direct connections, traverse, find path, get properties. A follow-up added general multi-step analyses: the isolation boundary of an item, a whole instrumentation chain, a line trace, and routes or reachability with items treated as closed. There is nothing question-specific, because the review uses unseen questions.
 
-The agent is a small LangGraph state machine. The model picks tools, the code runs them, and that repeats until the model answers. The answer cites evidence ids, and a deterministic validator checks each sentence against the typed facts behind those ids. If something is unsupported the model gets one rewrite; after that the user gets the raw evidence instead.
+The agent is a small LangGraph state machine. The model picks tools, the code runs them, and that repeats until the model answers. By default the model does not write the answer: it submits the evidence ids that answer the question and names, by category, what a P&ID does not establish; code checks the ids and writes the answer. The original contract, where the model wrote sentences with evidence ids and a validator checked each sentence, is kept for the earlier recorded runs.
 
 Two things I am most pleased with are the handling of the drawing's messiness: heat exchangers have two sides that must not be connected by a search, and some pipes leave the drawing with no destination, which I report as open ends without inventing where they go."
 
@@ -353,9 +382,9 @@ Add to the above:
 - **Direction** is DEXPI source-to-target, which I verified against the XML's `FromID`/`ToID` and the flow-arrow symbols. It is drawing direction, not live flow.
 - **Chamber-aware search**: the search state is (entity, chamber), so a path cannot enter one side of an exchanger and leave the other. The boundary is reported as evidence.
 - **Traversal results carry path facts**: distance, equipment passed through, real ends, and whether the search was cut off by its depth limit. Those exist because a real model misread a truncated search as "the line ends here".
-- **Grounding** uses evidence ids: code labels every result row, the answer cites the ids, and each sentence is checked against the typed facts behind them for pairing (value belongs to the named item) and relation (shown by a tool result, in that direction). Simple results are printed by the application from the rows, without model prose.
-- **Evaluation**: 15 questions with gold facts read from the graph, a deterministic scorer, no LLM judge. The final run on NVIDIA-hosted Nemotron 3 Super got 12 of 15 fully correct (13.42 of 15 points), 14 grounded and 1 limited, with no unsupported claims detected by the checks used for that run (it predates the post-evaluation validator hardening described in the README). An earlier run on DeepSeek scored 15 of 15 with a weaker grounding check, so the two are not comparable.
-- **Honest limits**: NVIDIA-hosted inference is slow at times (a question can take minutes); the model sometimes answers "feeds" with the adjacent fitting; prose with nothing checkable is not detected; the model can make redundant calls; only C01 has been tested; one evaluation run.
+- **Grounding** uses evidence ids: code labels every result row. By default the model submits ids as direct facts (read from the drawing), derived facts (computed by a graph operation) and typed unknowns, and the application writes the answer, so no model prose is shown. In the earlier prose contract the answer cited the ids and each sentence was checked for pairing (value belongs to the named item) and relation (shown by a tool result, in that direction).
+- **Evaluation**: 15 questions with gold facts read from the graph, a deterministic scorer, no LLM judge. The final run on NVIDIA-hosted Nemotron 3 Super got 12 of 15 fully correct (13.42 of 15 points), 14 grounded and 1 limited, with no unsupported claims detected by the checks used for that run (it predates the post-evaluation validator hardening described in the README). An earlier run on DeepSeek scored 15 of 15 with a weaker grounding check, so the two are not comparable. Beyond C01: all 35 official DEXPI 1.3 examples pass deterministic ingestion, and 37 questions on eight of them scored 0.811. The follow-up on C01 (27 complex questions, 41 phrasings asked 3 times) scored a complex mean of 0.64, with 22 of 41 phrasings repeat-consistent, 1 of 10 groups fully consistent across phrasings, and no contradictions.
+- **Honest limits**: the model's choice of graph operation varies, so paraphrase consistency is weak; multi-hop questions sometimes stop early; retrieved facts are sometimes left out of the answer; a route found while ignoring flow direction is connectivity, not process flow; NVIDIA-hosted inference is slow at times; Nemotron is open-weight, not OSI open source.
 
 ### Questions you will be asked
 
@@ -372,7 +401,7 @@ One has the right shape for following flow, the other has the complete facts. Ne
 To map arbitrary wording onto graph operations and chain several of them. That is the part that has to work on questions nobody anticipated.
 
 **How do you prevent hallucinations?**
-The model has no plant knowledge to draw on and must call a tool first. Its answer cites evidence ids, and code checks each sentence against the facts those ids stand for: the value must belong to the item named, and a stated relation must be one a tool result shows. Unsupported content gets one rewrite and is then withheld. That reduces hallucination; it does not make it impossible: a sentence with nothing checkable in it is not verified (it only makes the answer "limited"), and a relation worded outside the validator's fixed vocabulary is checked only for the items it names.
+The model has no plant knowledge to draw on and must call a tool first. By default it does not write the answer at all: it submits evidence ids and typed unknowns, code rejects any id that no tool result contains, and the application writes the answer from the cited rows. So no fact outside the tool evidence, and no model-written prose, can be shown. What this does not guarantee is completeness or the right reading of the question: the model can cite too little, or pick an operation that answers a slightly different question. In the earlier prose contract, code checked each cited sentence instead; a sentence with nothing checkable was not verified.
 
 **What does downstream mean?**
 Following pipes in the direction they are drawn, source to target. It does not mean fluid is currently flowing; valve positions are not in a P&ID.
@@ -384,10 +413,10 @@ A search cannot enter through one chamber and leave through another. The boundar
 It is reported as missing: absent properties, unknown tags, pipes with no destination. Nothing is filled in.
 
 **How did you evaluate it?**
-Fifteen questions with graph-derived expected facts and a deterministic scorer. The final run got 12 fully correct and 3 partially correct, none with a false statement: two answers left something out and one stopped a lookup early. Median latency was 21 s, almost all of it hosted model inference.
+Three rounds, all with graph-derived expected facts and no LLM judge. C01: fifteen questions, 12 fully correct and 3 partial (0.894). Cross-P&ID: 37 questions on eight other official DEXPI examples, 30 fully correct (0.811), after all 35 examples passed ingestion. Follow-up on C01: 27 complex questions (mean 0.64) and 41 phrasings asked three times each, compared as facts rather than text: 22 of 41 repeat-consistent, 1 of 10 groups fully consistent, no contradictions.
 
 **What are the biggest current limitations?**
-Provider latency; "feeds" answered with the adjacent fitting; instrumentation chains cost one call per hop; only one drawing has been tried.
+The model's choice of graph operation varies, so the same question reworded can retrieve different facts; multi-hop questions sometimes stop early; retrieved facts are sometimes left out of the answer; a route found while ignoring flow direction is connectivity, not process flow; provider latency; the model is open-weight, not OSI open source. (Two earlier limits no longer hold: a whole instrumentation chain is now one call, and the code has been run on 35 drawings for ingestion and eight more for live questions.)
 
 **What would you build next in production?**
 Many drawings joined across sheets through the off-page connectors, a persistent graph store behind the same tool interface, stored traces for audit, and evaluation sets written by plant engineers.

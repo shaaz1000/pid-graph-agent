@@ -8,6 +8,12 @@ The sidebar shows the loaded drawing, the provider and model, and the graph size
 nodes / 376 edges, conceptual 36 nodes / 39 edges). Point at those first: the real C01 file is
 loaded through pyDEXPI.
 
+This script was written for the original build and its prose answers (`ANSWER_MODE=prose`).
+With the default structured contract the tool calls are the same kind, but the answer is a
+list of cited rows under "Facts in the drawing", "Derived by graph analysis of the drawing"
+and "Not established by the P&ID", written by the application; there is no rewrite step and
+no "limited" status. Other drawings can be loaded with `--pid`.
+
 The facts under "what the graph says" below were checked against the graph tools, so they do
 not depend on the model. The wording of a live answer, and the exact tool calls the model
 chooses, can differ between runs and between models. If an answer differs, open "Tool calls"
@@ -93,21 +99,24 @@ What to point out:
   two tool calls and reported the transmitter and actuating function, not the sensing point and
   the valve, so it scored 0.5. An earlier DeepSeek run got it right but needed ten calls where
   about six would do.
-- Two honest limits show here: following an instrument chain costs one call per hop (there is
-  no multi-hop instrumentation tool), and nothing tells the model it already has enough
-  evidence. Budgets (8 planning turns, 16 tool calls) stop it running away.
+- In that build, following an instrument chain cost one call per hop. `trace_instrumentation`
+  now returns the whole loop in one call; the remaining limit is that the model does not
+  always choose it. Nothing tells the model it already has enough evidence either. Budgets
+  (8 planning turns, 16 tool calls) stop it running away.
 
 Optional sixth, missing data: "How much does heat exchanger H1007 weigh?" The answer should
 say the P&ID does not contain a weight.
 
 ## Thirty-second close
 
-"The model never sees the drawing. It chooses from seven generic graph operations, plain
-Python runs them on the pyDEXPI graph, and every identifier and number in the answer is
-checked against the cited evidence for identifiers, values and a fixed set of relations
-before it is shown. When the graph does not contain something, such as a weight, a
+"The model never sees the drawing. It chooses from generic graph operations (seven base
+tools, plus multi-step analyses for isolation boundaries, instrumentation chains, line
+tracing and routes), plain Python runs them on the pyDEXPI graph, and the answer is written
+by the application from the evidence rows the model cites. When the graph does not contain something, such as a weight, a
 destination off the drawing or a unique match, the system says so. The evaluation uses
 expected facts taken from the graph and a deterministic scorer. On C01, Nemotron 3 Super got
 12 of 15 fully correct (0.894). On eight other official DEXPI examples, 37 new questions, it
-got 30 fully correct (0.811), with no unsupported claim detected in a final answer; the
-misses are documented, mostly answers withheld by a strict validator."
+got 30 fully correct (0.811), with no unsupported claim detected in a final answer. On the
+harder follow-up, 27 complex questions averaged 0.64 and 22 of 41 rephrasings were
+repeat-consistent, with no contradictions: it is safe, and its choice of graph operation is
+not yet stable."

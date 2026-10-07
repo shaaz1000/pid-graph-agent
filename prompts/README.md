@@ -43,6 +43,7 @@ written; later prompts never overwrite earlier ones.
 | `35-followup-finalization.md` | Commit the evaluation unchanged, fix the status-message provenance issue found by a security review, write the follow-up report | Preserved development instruction |
 | `36-followup-holdout-sanity-check.md` | Requirement checklist and a frozen holdout (8 new complex questions, 3 new rephrasing groups) on the hardened main; measurement only | Preserved development instruction |
 | `37-followup-final-polish.md` | A strictly short note, the directional-route limitation, the holdout committed as a post-evaluation check | Preserved development instruction |
+| `38-docs-consistency-cleanup.md` | Align the supporting docs with current main: drawings tested, base tools versus follow-up analyses, old limits labelled historical | Preserved development instruction |
 
 `00` is the requirement. `01` onward are our own instructions for building it.
 

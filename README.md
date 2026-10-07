@@ -192,7 +192,7 @@ flowchart TD
     CG --> GS
     U["User question"] --> AG["LangGraph agent"]
     AG <-->|"plans tool calls / reads results"| LLM["Hosted LLM<br/>interpretation and planning only"]
-    AG -->|"7 generic tools"| GS
+    AG -->|"generic graph tools"| GS
     GS -->|"structured results + evidence"| AG
     AG --> GR["Grounding check"] --> OUT["Answer + tool trace + evidence"] --> U
 ```
@@ -553,8 +553,13 @@ facts they retrieve and cite, not in what those facts say.
   chamber rule does nothing for other equipment.
 - **Most components have no tag.** Valves are addressed by derived identifiers such as
   `47126/C5`; the agent says when an identifier is derived.
-- **`find_path` returns only the shortest route.**
-- **Instrumentation is one call per hop**; there is no multi-hop instrumentation traversal.
+- **`find_path` returns the shortest route by default**; `all_paths` returns every route. A
+  route with direction `any` ignores flow direction: it is graph connectivity and may not be
+  a process-flow route.
+- **Multi-step answers depend on the model's choice of operation.** A whole instrumentation
+  loop (`trace_instrumentation`) or an isolation boundary is one call, but the model does not
+  always choose it, sometimes stops early, and sometimes leaves retrieved facts out of the
+  answer. Consistency under rephrasing is weak; see [Follow-up Evaluation](#follow-up-evaluation).
 - **Latency.** NVIDIA's hosted endpoint was slow and uneven during testing: a model call
   usually returned in 2 to 30 s but at times took 90 to 145 s, so one question took between
   half a minute and several minutes. The agent makes one call per tool round plus one for the
@@ -563,7 +568,7 @@ facts they retrieve and cite, not in what those facts say.
   direct neighbour (a tee) and does not traverse to the equipment beyond it. The answer is
   true and grounded but shallow. The generic operation exists
   (`traverse` with `stop_at_types=["equipment"]`); choosing it is up to the model.
-- **What the grounding check cannot prove.** It checks identifiers, values and a fixed
+- **What the grounding check cannot prove** (prose contract, `ANSWER_MODE=prose`). It checks identifiers, values and a fixed
   relation vocabulary; it does not prove that a sentence is true. A statement about the plant
   with nothing checkable in it (an invented purpose, a general-knowledge gloss such as
   expanding the instrument code "TICSA") is not verified; it only makes the answer `limited`,

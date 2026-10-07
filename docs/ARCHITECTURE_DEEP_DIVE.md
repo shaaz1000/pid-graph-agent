@@ -4,12 +4,14 @@
 P&ID XML -> pyDEXPI -> NetworkX graphs -> LLM planner -> deterministic graph tools -> evidence -> grounding -> answer + trace
 ```
 
-This project answers natural-language questions about one plant drawing, the DEXPI reference P&ID "C01". pyDEXPI parses the drawing into NetworkX graphs. A language model reads the question and decides which of seven generic graph operations to run. Deterministic code runs them, returns structured results with evidence, and then checks the drafted answer against that evidence. Every answer is returned with the tool calls that produced it.
+This project answers natural-language questions about a plant drawing in DEXPI format. It was built on the DEXPI reference P&ID "C01", and this document explains that build. pyDEXPI parses the drawing into NetworkX graphs. A language model reads the question and decides which generic graph operations to run: seven base tools in the build described here, plus the generic multi-step analyses added in the follow-up. Deterministic code runs them, returns structured results with evidence, and then checks the answer against that evidence. Every answer is returned with the tool calls that produced it.
 
 > **Key idea**
 > The LLM interprets intent and plans graph operations; it is not the source of plant knowledge. Plant-specific facts are retrieved from deterministic operations over the pyDEXPI graph. A deterministic grounding validator checks cited identifiers, values and supported relation classes before model-generated prose is shown.
 
-This document was written for the C01 implementation at commit `a8d56b3`. The code has changed since: evidence-reference grounding, the NVIDIA provider, cross-P&ID support (`--pid`, `SignalLineFunction`, validator robustness fixes), the post-evaluation validator hardening, and the follow-up round (graph analyses, structured answers; see [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md)). The README describes those changes; where the two differ, the README and the code are authoritative. The [README](../README.md) is the short version. Entity names such as `P4711` appear freely here because this document explains the dataset; none of this text is sent to the model.
+This document was written for the C01 implementation at commit `a8d56b3`. The code has changed since: evidence-reference grounding, the NVIDIA provider, cross-P&ID support (`--pid`, `SignalLineFunction`, validator robustness fixes), the post-evaluation validator hardening, and the follow-up round (graph analyses, structured answers; see [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md)). The README describes those changes; where the two differ, the README and the code are authoritative.
+
+**Current state, in short.** Drawings: all 35 official DEXPI 1.3 examples pass deterministic ingestion, eight structurally diverse additional P&IDs received a live reasoning evaluation, and the complex and rephrasing follow-up is on C01. Tools: the original agent exposed seven base graph tools; the follow-up added generic multi-step analyses for isolation boundaries (`isolation_boundary`), instrumentation chains (`trace_instrumentation`), line tracing (`trace_line`) and route and reachability analysis (all routes, and items treated as closed). Answers: the default contract is now structured (`decompose_request`, then `submit_answer`, and the application writes the answer); the sentence-level validation this document describes is the earlier prose contract, kept as `ANSWER_MODE=prose` for the recorded C01 and cross-P&ID runs. Passages marked *historical* describe the original C01 build. The [README](../README.md) is the short version. Entity names such as `P4711` appear freely here because this document explains the dataset; none of this text is sent to the model.
 
 ---
 
@@ -53,7 +55,7 @@ For study before a conversation: [what went wrong and what I changed](#what-went
 | DEXPI ingestion | XML to plant graph and conceptual graph | Yes | [`ingestion/dexpi_loader.py`](../src/pid_agent/ingestion/dexpi_loader.py) → `load_plant` |
 | Graph normalization | Stable ids, entities, connections, open ends, chambers | Yes | [`graph/normalizer.py`](../src/pid_agent/graph/normalizer.py) → `normalize` |
 | Entity resolution | Names and descriptions to entities; ambiguity | Yes | [`graph/entity_resolver.py`](../src/pid_agent/graph/entity_resolver.py) → `EntityResolver.resolve` |
-| Graph operations | Seven generic tools; traversal | Yes | [`graph/service.py`](../src/pid_agent/graph/service.py) → `GraphService`; [`graph/traversal.py`](../src/pid_agent/graph/traversal.py) → `FlowGraph.bfs` |
+| Graph operations | Seven base tools; traversal; multi-step analyses added in the follow-up (`graph/analysis.py`) | Yes | [`graph/service.py`](../src/pid_agent/graph/service.py) → `GraphService`; [`graph/traversal.py`](../src/pid_agent/graph/traversal.py) → `FlowGraph.bfs` |
 | LLM planning | Choose tools, decide when to stop, word the answer | **No** | [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `PidAgent._plan`; [`llm/`](../src/pid_agent/llm/) |
 | Grounding | Resolve the evidence ids an answer cites to typed facts and check each sentence against them | Yes | [`agent/evidence_refs.py`](../src/pid_agent/agent/evidence_refs.py) → `check_answer`; facts in [`agent/claims.py`](../src/pid_agent/agent/claims.py) |
 | Presentation | Trace, evidence, transcript, CLI | Yes | [`agent/workflow.py`](../src/pid_agent/agent/workflow.py) → `format_transcript`; [`main.py`](../src/pid_agent/main.py) |
@@ -221,15 +223,15 @@ Totals: 3 model calls, 3 tool calls, 8,411 tokens, 2.4 s.
 
 | Implemented in this repository | Not implemented (see [production extensions](#production-extensions-not-implemented)) |
 |---|---|
-| pyDEXPI ingestion of the real C01 file | Any drawing other than C01; multi-drawing graphs |
+| pyDEXPI ingestion of the real C01 file; since then all 35 official DEXPI 1.3 examples pass ingestion and eight more P&IDs were evaluated live | Multi-drawing graphs joined across sheets |
 | In-memory NetworkX graphs, rebuilt on start | A persistent graph database |
 | Normalized index with stable ids, open ends, chambers | Cross-sheet resolution of off-page connectors |
 | Deterministic entity resolution with ambiguity | Semantic or embedding search |
-| Seven generic graph tools | Multi-hop instrumentation traversal as one call |
+| Seven base graph tools; since the follow-up also generic multi-step analyses (isolation boundary, instrumentation chain in one call, line trace, routes and reachability with items treated as closed) | A typed planning layer that narrows the model's choice of operation |
 | LangGraph agent with budgets and a visible trace | A deterministic "enough evidence" detector |
-| Claim-level grounding, one regeneration, evidence-only fallback | Checking prose that contains no identifier, value or claim |
+| Claim-level grounding, one regeneration, evidence-only fallback; since the follow-up, structured answers written by the application (the default) | Checking prose that contains no identifier, value or claim (the structured contract shows no model prose) |
 | Three provider adapters behind one interface | Automatic provider failover |
-| 15-question evaluation with a deterministic scorer | A complete evaluation run on `openai/gpt-oss-20b` |
+| 15-question C01 evaluation with a deterministic scorer; later a 37-question cross-P&ID evaluation and the follow-up (27 complex questions; 41 phrasings asked 3 times) | A complete evaluation run on `openai/gpt-oss-20b`; a blind set written by a process engineer |
 | CLI and a local chat UI (added after the evaluation; presentation only, [`ui/`](../src/pid_agent/ui/)) | OCR, image input, visual highlighting, hosting |
 | | Live process state, access control, monitoring |
 
@@ -243,7 +245,7 @@ Eight files explain most of the system. Suggested reading order:
 2. [`ingestion/dexpi_loader.py`](../src/pid_agent/ingestion/dexpi_loader.py): 70 lines; how the graphs are made.
 3. [`graph/normalizer.py`](../src/pid_agent/graph/normalizer.py): how two graphs become one index.
 4. [`graph/traversal.py`](../src/pid_agent/graph/traversal.py): the search, including the chamber rule.
-5. [`graph/service.py`](../src/pid_agent/graph/service.py): the seven operations.
+5. [`graph/service.py`](../src/pid_agent/graph/service.py): the seven base operations. The follow-up analyses are in [`graph/analysis.py`](../src/pid_agent/graph/analysis.py).
 6. [`agent/tools.py`](../src/pid_agent/agent/tools.py): what the model is offered.
 7. [`agent/workflow.py`](../src/pid_agent/agent/workflow.py): the state machine.
 8. [`agent/grounding.py`](../src/pid_agent/agent/grounding.py): the answer check.
@@ -277,7 +279,7 @@ Eight files explain most of the system. Suggested reading order:
 | [`graph/normalizer.py`](../src/pid_agent/graph/normalizer.py) | `normalize(loaded)` → `PlantIndex(entities, connections, objects, warnings)` |
 | [`graph/entity_resolver.py`](../src/pid_agent/graph/entity_resolver.py) | `EntityResolver.resolve(query, entity_type)` → `Resolution` |
 | [`graph/traversal.py`](../src/pid_agent/graph/traversal.py) | `FlowGraph.bfs(...)` → `TraversalOutcome` |
-| [`graph/service.py`](../src/pid_agent/graph/service.py) | `GraphService`: the seven operations |
+| [`graph/service.py`](../src/pid_agent/graph/service.py) | `GraphService`: the seven base operations; it delegates the follow-up analyses to [`graph/analysis.py`](../src/pid_agent/graph/analysis.py) |
 
 ### Agent orchestration
 
@@ -654,6 +656,8 @@ All asserted in [`tests/test_entity_resolution.py`](../tests/test_entity_resolut
 
 ## The seven graph tools
 
+> **Current main has more than these seven.** This part describes the seven base tools of the original agent, which are unchanged. The follow-up added generic multi-step analyses: `isolation_boundary` (the valves that bound an item, and its connections with no valve), `trace_instrumentation` (a whole loop in signal order in one call), `trace_line` (a line as runs between junctions), every route between two items (`find_path` with `all_paths`), reachability and routes with items treated as closed (`blocked_entity_ids` on `traverse` and `find_path`), and listing with attributes and a property filter. They are described in [FOLLOWUP_DETAILS.md](FOLLOWUP_DETAILS.md); the code is [`graph/analysis.py`](../src/pid_agent/graph/analysis.py).
+
 **Why generic tools.** The assignment's main test is questions the author never saw. A table from phrasing to tool sequence would work for the phrasings in the table and fail on the rest. So the tools are generic graph operations, their semantics are described to the model, and the model maps the question onto them. The same seven tools served the four example questions, the development questions and the 15 evaluation questions with no question-specific code.
 
 **How they are exposed.** Each tool is a method on `GraphService` ([`graph/service.py`](../src/pid_agent/graph/service.py)), wrapped by `GraphTools` ([`agent/tools.py`](../src/pid_agent/agent/tools.py)). `GraphTools.call`:
@@ -1006,7 +1010,7 @@ LangGraph's own recursion limit is derived from these, so the graph cannot loop 
 On each planning call the model receives exactly three things:
 
 1. **The system prompt** ([`agent/prompts.py`](../src/pid_agent/agent/prompts.py) → `SYSTEM_PROMPT`).
-2. **The tool schemas** (`tool_specs()`): seven tools, each a name, a description and a JSON schema generated from its pydantic argument model.
+2. **The tool schemas** (`tool_specs()`): seven tools in the build described here (ten on current main, plus `decompose_request` and `submit_answer` under the structured contract), each a name, a description and a JSON schema generated from its pydantic argument model.
 3. **The conversation so far**: the question, the model's earlier tool calls, and for each call a tool message with the **compact** result.
 
 It never receives the graph, the full tool results, API keys, or anything about the dataset before it asks.
@@ -1657,7 +1661,7 @@ All from the DeepSeek run.
 
 | | |
 |---|---|
-| Difficulty | A four-hop instrumentation chain, one call per hop; "4712.02" is a loop number, not a tag |
+| Difficulty | A four-hop instrumentation chain, one call per hop in that build (`trace_instrumentation` now returns the chain in one call); "4712.02" is a loop number, not a tag |
 | Tools | 10 calls: `find_entities`, `list_entities`, then `get_entity` and `get_connections` on the controller, transmitter and actuator, then `get_entity` on the flange and the valve |
 | Facts that mattered | `PT4712.02` senses at `BlindFlange-2`; signal to `PV4712.02` (`ActuatingFunction-1`); it operates `GlobeValve-1` |
 | Answer | The correct chain, plus fail close, and a note that `PV4712.02_YV` is an alias |
@@ -1786,7 +1790,7 @@ The method each time: reproduce the failure, classify the cause (planning, tool 
 - **Root cause.** Looking up the valve's alias (`PV4712.02_YV`) returned the valve itself, so the model went in a circle. Nothing told it an instrumentation link existed. It also re-looked-up an entity it already had.
 - **General fix.** Type-plus-line resolution; `links` counts on entities; alias notes that name the related entity; a `meaning` on each instrumentation link; "already identified" reminders.
 - **Why this generalizes.** All are properties of results for any entity. Tested on three different valves.
-- **Remaining limitation.** A chain still costs one call per hop, and the fix was confirmed on DeepSeek, not on the model that failed.
+- **Remaining limitation (historical).** At that point a chain still cost one call per hop, and the fix was confirmed on DeepSeek, not on the model that failed. The follow-up added `trace_instrumentation`, which returns a whole chain in one call.
 
 ### 5. Typographic minus signs
 
@@ -1843,7 +1847,7 @@ The method each time: reproduce the failure, classify the cause (planning, tool 
 | NetworkX, in memory | pyDEXPI already produces it; no infrastructure; exact algorithms | Rebuilt on every start; one process; no persistence | Use a graph database behind the same service interface |
 | pyDEXPI as the source | The real graph, as the assignment requires; no parser to write | Its abstraction has defects to work around | Contribute fixes upstream, or own the abstraction step |
 | Two graph views | Each used for what it is right about; nothing lost | A normalizer that must reconcile them (the largest file) | Build one purpose-made graph from the DEXPI model |
-| Seven generic tools | Generalizes to unseen questions; small surface to test | The model must compose them; some questions take many calls | Add generic composites where calls are wasted |
+| Seven generic base tools | Generalizes to unseen questions; small surface to test | The model must compose them; some questions take many calls | Generic composites were added in the follow-up (isolation boundary, instrumentation chain, line trace); next, a typed planning layer so the model chooses them reliably |
 | LLM as planner only | Handles phrasing; cannot corrupt facts | Planning quality depends on the model; not repeatable | Add planning evaluations; a cheaper router for simple questions |
 | Deterministic execution | Testable, repeatable, explainable | Every capability must be coded | Same |
 | Claims stated by the model, validated by code | Role-aware grounding with no second model | Depends on the model filling the claims block; otherwise `limited` | Measure claim compliance per model |
@@ -1855,6 +1859,16 @@ The method each time: reproduce the failure, classify the cause (planning, tool 
 ---
 
 ## Known limitations
+
+**Current limitations after the follow-up** (see [FOLLOWUP_EXERCISE.md](FOLLOWUP_EXERCISE.md))
+
+- **Planner and tool selection vary.** The same question can lead to different operations.
+- **Multi-hop questions stop early**, at the step limit or one lookup short.
+- **Retrieved facts are sometimes left out** of the final structured answer.
+- **Paraphrase consistency is weak.** 22 of 41 phrasings were repeat-consistent and 1 of 10 groups fully consistent across phrasings.
+- **Nemotron is open-weight**, not OSI open source.
+
+The lists below were written for the original C01 build; where an item no longer holds it is marked *historical*.
 
 **Model and agent**
 
@@ -1875,13 +1889,14 @@ The method each time: reproduce the failure, classify the cause (planning, tool 
 - **Abstraction loss.** Chamber information exists only for the two heat exchangers.
 - **Topology, not operation.** No valve positions, no operating state.
 - **`find_path` is shortest path only.**
-- **Instrumentation is one call per hop.**
-- **Only C01.** Nothing has been run on another drawing.
+- *Historical (original C01 build):* instrumentation cost one call per hop. `trace_instrumentation` now returns a whole chain in one call; whether the model chooses it still varies.
+- *Historical (original C01 build):* only C01 had been run. Since then all 35 official DEXPI 1.3 examples pass deterministic ingestion, eight structurally diverse additional P&IDs received a live reasoning evaluation, and the complex and rephrasing follow-up is on C01.
+- **Directional versus direction-agnostic routes.** A route query that ignores flow direction returns graph connectivity, which is not always a process-flow route (for example backwards through a relief valve).
 - **Resolver heuristics.** A small stop-word list and a plural rule decide whether a type phrase is a set or an ambiguity.
 
 **Evaluation and infrastructure**
 
-- **Evaluation.** One run, one complete model, author-written questions, a presence-based scorer.
+- **Evaluation.** Author-written questions throughout. The C01 and cross-P&ID suites were run once per question with a presence-based scorer; the follow-up compares canonical facts and repeats each phrasing three times.
 - **Provider quotas.** The intended open-weight model has one evaluation question answered.
 
 ---
@@ -1938,7 +1953,7 @@ Start from the transcript (`uv run pid-agent "..."`, or `--json`). The trace sho
 ### What is it?
 
 - **Short.** An agent that answers questions about a P&ID by querying the graph pyDEXPI builds from the DEXPI file. The model plans; deterministic code supplies and checks every fact.
-- **Deeper.** `ProteusSerializer` → `GraphLoader` gives a 214-node plant graph; `GraphAbstractor` gives a 36-node conceptual graph. A normalizer merges them into an index with stable ids. Seven generic tools query it. A LangGraph state machine runs plan, execute, repeat, draft, grounding check, at most one regeneration, then the answer or an evidence-only fallback.
+- **Deeper.** `ProteusSerializer` → `GraphLoader` gives a 214-node plant graph; `GraphAbstractor` gives a 36-node conceptual graph. A normalizer merges them into an index with stable ids. Seven base tools query it, and since the follow-up generic multi-step analyses as well. A LangGraph state machine runs plan, execute, repeat, draft, grounding check, at most one regeneration, then the answer or an evidence-only fallback. That is the earlier prose contract; by default the model now submits evidence ids and typed unknowns, and the application writes the answer.
 - **Code.** `main.py`, `graph/service.py`, `agent/workflow.py`.
 
 ### Why not RAG or a vector database?
@@ -1997,8 +2012,8 @@ Start from the transcript (`uv run pid-agent "..."`, or `--json`). The trace sho
 
 ### What would you improve with another day?
 
-- **Short.** Complete the evaluation on the open-weight model.
-- **Deeper.** A generic multi-hop traversal over instrumentation links; fix the two known grounding false positives; run on a second DEXPI file to find what is C01-specific; a harder evaluation set with several runs per question.
+- **Short.** Reduce the planner's freedom, so the same question leads to the same graph operations.
+- **Deeper.** *Historical:* the earlier answer was a multi-hop traversal over instrumentation links, a run on a second DEXPI file, and a harder evaluation with several runs per question. All three were done (`trace_instrumentation`; the cross-P&ID evaluation; the follow-up with three repeats). What remains: a typed planning or capability layer; an explicit distinction between directional and direction-agnostic routes; a blind evaluation set written by a process engineer.
 
 ### What would change in production?
 
@@ -2044,11 +2059,11 @@ Start from the transcript (`uv run pid-agent "..."`, or `--json`). The trace sho
 2. **The real C01 file is loaded through pyDEXPI**: `ProteusSerializer` → `GraphLoader` → `GraphAbstractor`. There is no stand-in dataset.
 3. **The conceptual graph gives topology and flow direction**, verified against the XML's `FromID`/`ToID` and flow arrows.
 4. **The plant graph gives properties, hierarchy and provenance**, and repairs what the abstraction lost.
-5. **The seven tools are generic.** There is no question-specific tool, prompt rule or code path.
+5. **The tools are generic**: seven base tools and, since the follow-up, multi-step analyses. There is no question-specific tool, prompt rule or code path.
 6. **Adjacency, reachability and path are three different operations**: `get_connections`, `traverse`, `find_path`.
 7. **Chamber-aware traversal prevents false paths across a heat exchanger**, and reports the boundary as evidence.
 8. **Missing data is surfaced, not invented**: `missing` properties, `not_found` entities, open ends with a null destination.
-9. **The answer's facts are structured claims, validated by code against typed graph facts**; one regeneration, then an evidence-only fallback.
-10. **The evaluation uses graph-derived gold facts and a deterministic scorer**, committed before the run. The complete run is on DeepSeek `deepseek-chat`; no score is claimed for `gpt-oss-20b`.
+9. **The answer is built from cited evidence.** By default the model submits evidence ids and typed unknowns and the application writes the answer; the earlier prose contract validated cited sentences, with one regeneration and an evidence-only fallback.
+10. **The evaluation uses graph-derived gold facts and a deterministic scorer**, committed before the run. The recorded runs are on NVIDIA-hosted Nemotron 3 Super (open-weight): C01 0.894, cross-P&ID 0.811, follow-up complex mean 0.64 with 22 of 41 phrasings repeat-consistent. The earlier DeepSeek run is historical and not comparable.
 
 [Back to Start here](#start-here)
