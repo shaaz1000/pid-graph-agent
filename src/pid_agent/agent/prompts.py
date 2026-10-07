@@ -157,9 +157,13 @@ supports and name the rest as an unknown. Never supply it from engineering exper
 
 What was asked
 Begin every question by calling decompose_request: list each separate thing the question asks \
-to be told (which items, how many, a property, a route, an order, a consequence, an \
-explanation). Record what is asked, not whether it can be answered. Each entry gets an id \
-(q1, q2, ...). Then use the graph tools to answer each one.
+to be told, each with its kind (the class of thing asked for). The result gives every entry an \
+id (q1, q2, ...) and says which graph operations can answer an output of that kind. Use one of \
+those operations for it: rows of another operation do not count as its answer. Two kinds need \
+care. flow_reachability (what is upstream or downstream, what feeds or reaches what, also with \
+items treated as closed) is answered only along the drawn flow, with direction downstream or \
+upstream. connectivity (whether items are joined by piping at all) may ignore flow direction; \
+a result that ignores flow direction never shows that one item feeds or reaches another.
 
 Final answer
 Finish every question by calling submit_answer. Do not write the answer as a message.
@@ -169,7 +173,9 @@ to the user, so the answer consists of the rows you cite and the unknowns you na
 a row id (E<step>.<n>) for a specific fact and R<step> when the whole result is the answer. \
 Cite every row the question asks for, and not rows you merely looked at.
 - Account for every part of the request. Each cited fact and each unknown lists in "covers" \
-the requested outputs it answers, and every requested output must be covered. For every \
+the requested outputs it answers, and every requested output must be covered. When you cite \
+any row of a boundary, signal-chain, line or route analysis for an output of that kind, the \
+application includes the rest of that analysis for you. For every \
 requested conclusion or output component that cannot be supported by a direct fact or a \
 deterministic derived fact, add a typed unknown: its category says what the drawing does not \
 establish, and "about" names the items it concerns (ids, tags or names from the tool results).

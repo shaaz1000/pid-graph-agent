@@ -23,6 +23,13 @@ logger = logging.getLogger(__name__)
 
 RELATIONSHIPS = ("piping", "instrumentation", "all")
 PATH_DIRECTIONS = ("downstream", "upstream", "any")
+# What a route or a reach result means. "drawn_flow": it follows the drawn flow direction
+# (downstream, or upstream against it), so it can support a statement about what feeds or
+# reaches what. "topological": flow direction was ignored, so it shows only that the items
+# are connected by piping.
+DRAWN_FLOW, TOPOLOGICAL = "drawn_flow", "topological"
+ROUTE_SEMANTICS = {"downstream": DRAWN_FLOW, "upstream": DRAWN_FLOW, "any": TOPOLOGICAL, "both": TOPOLOGICAL}
+ONE_WAY_ROLES = ("check_valve", "relief_device")  # devices that pass flow in their drawn direction only
 DEFAULT_MAX_DEPTH = 25
 MAX_PATHS = 12
 MIN_PARTIAL_PROPERTY_LENGTH = 4
@@ -252,7 +259,7 @@ class GraphService:
             if wanted is not None and reach.entity_id not in wanted:
                 continue
             entity = self._index.entities[reach.entity_id]
-            row = {**entity.summary(), **self._reach_view(reach)}
+            row = {**entity.summary(), **self._reach_view(reach), "route_semantics": ROUTE_SEMANTICS[direction]}
             # Path facts that separate "reached directly" from "reached through other equipment".
             row["through_equipment"] = [i for i in reach.entity_path[1:-1] if self._index.entities[i].category == "equipment"]
             if terminal:
@@ -281,6 +288,8 @@ class GraphService:
         ]
         # Entities where the search stopped only because of max_depth (also unfiltered).
         result.meta["unexplored_beyond_max_depth"] = sorted(outcome.frontier - {start.id})
+        result.meta["start"] = start.id
+        result.meta["route_semantics"] = ROUTE_SEMANTICS[direction]
         if blocked:
             # A hypothetical: these items were treated as closed. Nothing is said about the process.
             result.meta["blocked"] = sorted(blocked)
@@ -319,10 +328,11 @@ class GraphService:
         reach = outcome.reached.get(target.id)
         if blocked:
             result.meta["blocked"] = sorted(blocked)
+        result.meta["route_semantics"] = ROUTE_SEMANTICS[travel]
         if reach is None:
             result.status = "empty"
             result.message = f"No {direction} piping path from {source.id} to {target.id} exists in the P&ID graph{closed}."
-            result.meta["no_path"] = {"source": source.id, "target": target.id, "direction": direction, **({"blocked": sorted(blocked)} if blocked else {})}
+            result.meta["no_path"] = {"source": source.id, "target": target.id, "direction": direction, "route_semantics": ROUTE_SEMANTICS[travel], **({"blocked": sorted(blocked)} if blocked else {})}
             if direction != "any" and not blocked:
                 opposite = "upstream" if direction == "downstream" else "downstream"
                 if target.id in self._flow.bfs(source.id, opposite, self._max_depth_limit).reached:  # type: ignore[arg-type]
@@ -342,7 +352,15 @@ class GraphService:
                     "connection": self._connection_view(connection),
                 })
                 result.evidence.append(self._connection_evidence(connection))
-            path = {"length": found.distance, "direction": direction, "entities": [self._entity_ref(i) for i in found.entity_path], "steps": steps}
+            path = {"length": found.distance, "direction": direction, "route_semantics": ROUTE_SEMANTICS[travel], "entities": [self._entity_ref(i) for i in found.entity_path], "steps": steps}
+            if path["route_semantics"] == TOPOLOGICAL:
+                # How far this is from a flow route: pipes followed against the drawn flow, and
+                # one-way devices (check valves, relief devices) passed against their direction.
+                against = [step for step in route if not step.with_flow]
+                path["pipes_against_flow"] = len(against)
+                reversed_devices = [i for step in against for i in (step.from_id, step.to_id) if analysis.piping_role(self._index.entities[i]) in ONE_WAY_ROLES]
+                if reversed_devices:
+                    path["one_way_devices_against_flow"] = list(dict.fromkeys(reversed_devices))
             # What lies on the route, by kind, so that routes can be told apart.
             for role, name in (("isolation_valve", "shut_off_valves"), ("check_valve", "check_valves"), ("relief_device", "relief_devices"), ("equipment", "equipment")):
                 on_route = [i for i in found.entity_path[1:-1] if analysis.piping_role(self._index.entities[i]) == role]

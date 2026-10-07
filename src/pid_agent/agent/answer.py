@@ -22,6 +22,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
+from pid_agent.agent import capabilities
 from pid_agent.agent.claims import build_facts
 from pid_agent.agent.evidence_refs import _status_text, render_rows
 from pid_agent.agent.status import Provenance
@@ -91,6 +92,7 @@ class EvidenceRegistry:
         self._derived: dict[str, dict[str, Any]] = {}
         self._tool: dict[str, str] = {}
         self._attributes: dict[str, list[dict[str, Any]]] = {}
+        self._result: dict[str, dict[str, Any]] = {}
         # Steps are numbered over everything the model did, so a result is found by its own id.
         self._by_step = {_step(r["result_ref"]): r for r in observations if r.get("result_ref")}
         self.entity_ids: set[str] = set()
@@ -102,6 +104,7 @@ class EvidenceRegistry:
                     if row.get("ref"):
                         self._kind[row["ref"]] = "derived" if computed or section == "derived" else "direct"
                         self._tool[row["ref"]] = tool
+                        self._result[row["ref"]] = result
                         if row.get("attributes"):
                             self._attributes[row["ref"]] = [{**a, "of": row["id"]} for a in row["attributes"]]
                         if section == "derived":
@@ -110,11 +113,14 @@ class EvidenceRegistry:
                 if isinstance(report, dict) and "found" in report:
                     for item in report["found"]:
                         self._kind[item["ref"]] = "direct"
+                        self._tool[item["ref"]], self._result[item["ref"]] = tool, result
                     if report.get("missing_ref"):
                         self._kind[report["missing_ref"]] = "direct"
+                        self._tool[report["missing_ref"]], self._result[report["missing_ref"]] = tool, result
             if result.get("status_ref") and _status_text(result):
                 self._kind[result["status_ref"]] = "derived" if computed else "direct"
                 self._tool[result["status_ref"]] = tool
+                self._result[result["status_ref"]] = result
         for fact in self._index.facts:
             self.entity_ids.update(i for i in (fact.subject, fact.object) if i and i != "query")
         for row in self._derived.values():
@@ -126,6 +132,17 @@ class EvidenceRegistry:
 
     def kind(self, row_ref: str) -> str:
         return self._kind.get(row_ref, "direct")
+
+    def tool(self, row_ref: str) -> str:
+        return self._tool.get(row_ref, "")
+
+    def result(self, row_ref: str) -> dict[str, Any]:
+        """The tool result a row belongs to."""
+        return self._result.get(row_ref, {})
+
+    def semantics(self, row_ref: str) -> str | None:
+        """"drawn_flow" or "topological" for a row of a route or reach result; None otherwise."""
+        return (self.result(row_ref).get("meta") or {}).get("route_semantics")
 
     def operation(self, row_ref: str) -> str | None:
         row = self._derived.get(row_ref)
@@ -152,6 +169,8 @@ class EvidenceRegistry:
             qualifiers = {name: fact.qualifiers.get(name) for name in FACT_KEYS.get(fact.predicate, ())}
             if fact.predicate in ("reaches", "path", "no_path") and meta.get("blocked"):
                 qualifiers["blocked"] = meta["blocked"]
+            if fact.predicate in ("reaches", "path", "no_path") and meta.get("route_semantics"):
+                qualifiers["semantics"] = meta["route_semantics"]
             # The subject is the object that carries the property (a nozzle, an actuator, a line
             # segment). The item it belongs to is kept beside it, so two nozzles of one pump
             # stay two facts and a fact can still be found by the item it was asked for.
@@ -159,6 +178,11 @@ class EvidenceRegistry:
             if fact.predicate in ("has_property", "lacks_property") and owner and owner != fact.subject:
                 qualifiers["owner"] = owner
             out.append(canonical(fact.predicate, fact.subject, fact.object, fact.value, **qualifiers))
+        observed = self._by_step.get(_step(row_ref), {})
+        if observed.get("tool") == "traverse" and observed.get("status") == "empty" and row_ref == observed.get("status_ref") and meta.get("start"):
+            # Nothing was reached: a result in its own right, for example with items treated as closed.
+            given = observed.get("input") or {}
+            out.append(canonical("reaches_nothing", meta["start"], None, None, direction=given.get("direction"), blocked=meta.get("blocked"), semantics=meta.get("route_semantics"), entity_types=given.get("entity_types")))
         for item in self._attributes.get(row_ref, []):
             out.append(canonical("has_property", item.get("on") or item["of"], None, item["value"], property=item["property"], owner=item["of"] if item.get("on") else None))
         return out
@@ -211,6 +235,63 @@ def render_submission(submission: dict[str, Any]) -> str:
     return Submission(direct=submission["direct_facts"], derived=submission["derived_facts"], unknowns=submission["unknowns"]).render()
 
 
+def _check_coverage(out: Submission, registry: EvidenceRegistry, requested: list[dict[str, Any]], seen: set[str]) -> None:
+    """Every requested output must be answered by evidence that can answer its kind, or be an unknown.
+
+    Three rules, all from the declarations in ``capabilities`` and the tool results:
+
+    * rows of an operation that cannot produce the kind do not answer it;
+    * an output a P&ID does not contain needs an unknown;
+    * when a composite analysis answers an output, the application adds every row of that
+      analysis that belongs to the kind, so the result is complete whatever the model cited.
+    """
+    ids = [r["id"] for r in requested]
+    only = ids[0] if len(ids) == 1 else None
+
+    def outputs(covers: list[str]) -> list[str]:
+        named = [c.strip().casefold() for c in covers]
+        return named or ([only] if only else [])  # one thing asked: whatever is submitted is about it
+
+    cited = [*out.direct, *out.derived]
+    for stray in sorted({o for item in [*cited, *out.unknowns] for o in outputs(item["covers"])} - set(ids)):
+        out.errors.append(f"'covers' names {stray}, which is not a requested output. The requested outputs are {', '.join(ids)}.")
+    completed = 0
+    for output in requested:
+        kind, name = output["kind"], f"{output['id']} ({output['description']})"
+        covering = [item for item in cited if output["id"] in outputs(item["covers"])]
+        answering = [item for item in covering if capabilities.answers(kind, registry.tool(item["ref"]), registry.semantics(item["ref"]))]
+        added: list[str] = []
+        for item in list(answering):
+            for ref in capabilities.bundle(kind, registry.tool(item["ref"]), registry.result(item["ref"])):
+                if ref in seen:
+                    continue
+                seen.add(ref)
+                text = (registry.rows(ref) or [("", ref)])[0][0]
+                row = {"ref": ref, "text": text, "facts": registry.facts(ref), "covers": [output["id"]], "added_by_application": True}
+                if registry.kind(ref) == "derived":
+                    out.derived.append({**row, "operation": registry.operation(ref)})
+                else:
+                    out.direct.append(row)
+                answering.append(row)
+                added.append(ref)
+        completed += len(added)
+        unknown = [u["category"] for u in out.unknowns if output["id"] in outputs(u["covers"])]
+        if kind in capabilities.NOT_IN_A_DRAWING and not unknown:
+            out.errors.append(f"Requested output {name} is of kind {kind}, which a P&ID does not contain. Name it as an unknown; facts may be cited in addition.")
+        elif not answering and not unknown:
+            if covering:
+                used = sorted({registry.tool(i["ref"]) + (f" ({registry.semantics(i['ref'])})" if registry.semantics(i["ref"]) else "") for i in covering})
+                out.errors.append(f"Requested output {name} is of kind {kind}. The rows cited for it come from {', '.join(used)}, which cannot answer that kind. {capabilities.guidance(kind)} Or mark it unknown.")
+            else:
+                out.errors.append(f"Requested output {name} has not been addressed. Provide supported evidence or mark it unknown.")
+        refs = [i["ref"] for i in answering]
+        output_record = {"direct": [r for r in refs if registry.kind(r) == "direct"], "derived": [r for r in refs if registry.kind(r) == "derived"], "unknown": unknown,
+                         "answered_by": sorted({registry.tool(r) for r in refs}), "completed_by_application": added}  # fmt: skip
+        out.requested.append({**{k: output[k] for k in ("id", "description", "kind")}, "covered_by": output_record})
+    if completed:
+        out.notes.append(f"{completed} row(s) were added by the application: they belong to an analysis the answer cites and to the kind of output asked for.")
+
+
 Resolver = Callable[[str], list[tuple[str, str]]]  # an id, tag or name -> the (id, name) it denotes
 
 
@@ -225,9 +306,9 @@ def validate_submission(arguments: dict[str, Any], observations: list[dict[str, 
     values the status of an empty or failed lookup may show; a tool input is never shown just
     because a tool repeated it.
 
-    ``requested`` is the decomposition of the question (ids q1, q2, ...). Every one of them
-    must be covered by cited evidence or by an unknown. This checks that nothing asked was
-    passed over; whether the evidence answers it is not judged here.
+    ``requested`` is the decomposition of the question (ids q1, q2, ..., each with a kind).
+    Every one of them must be answered by evidence that can answer its kind, or be named as an
+    unknown; see ``_check_coverage``.
     """
     out = Submission()
     try:
@@ -238,12 +319,6 @@ def validate_submission(arguments: dict[str, Any], observations: list[dict[str, 
         return out
     registry = EvidenceRegistry(observations, provenance)
     seen: set[str] = set()
-    covered: dict[str, dict[str, list[str]]] = {}
-
-    def cover(ids: list[str], kind: str, what: str) -> None:
-        for output in ids:
-            covered.setdefault(output.strip().casefold(), {"direct": [], "derived": [], "unknown": []})[kind].append(what)
-
     for cited in [*args.direct_facts, *args.derived_facts]:
         ref = cited.ref
         rows = registry.rows(str(ref).strip().strip("[]"))
@@ -259,7 +334,6 @@ def validate_submission(arguments: dict[str, Any], observations: list[dict[str, 
                 out.derived.append({**item, "operation": registry.operation(row_ref)})
             else:
                 out.direct.append(item)
-            cover(cited.covers, registry.kind(row_ref), row_ref)
     listed = {"direct": {c.ref for c in args.direct_facts}, "derived": {c.ref for c in args.derived_facts}}
     moved = sum(1 for kind, items in (("direct", out.derived), ("derived", out.direct)) for item in items if item["ref"] in listed[kind])
     if moved:
@@ -276,18 +350,9 @@ def validate_submission(arguments: dict[str, Any], observations: list[dict[str, 
             else:
                 out.errors.append(f"unknowns.about: '{text}' does not name an item in the drawing. Use an entity id, a tag or a name from the tool results, or leave 'about' empty.")
         out.unknowns.append({"category": unknown.category, "about": ids, "about_names": names, "covers": unknown.covers, "note": unknown.note.strip()})
-        cover(unknown.covers, "unknown", unknown.category)
     if not (out.direct or out.derived or args.unknowns) and not out.errors:
         out.errors.append("The answer cites no evidence and names no unknown. Cite the rows that answer the question, or name what the P&ID does not establish.")
     if requested:
-        ids = [r["id"] for r in requested]
-        if len(ids) == 1 and (out.direct or out.derived or out.unknowns):
-            covered.setdefault(ids[0], {"direct": [], "derived": [], "unknown": []})  # one thing asked: whatever is submitted is about it
-        for stray in sorted(set(covered) - set(ids)):
-            out.errors.append(f"'covers' names {stray}, which is not a requested output. The requested outputs are {', '.join(ids)}.")
-        for output in requested:
-            if output["id"] not in covered:
-                out.errors.append(f"Requested output {output['id']} ({output['description']}) has not been addressed. Provide supported evidence or mark it unknown.")
-        out.requested = [{**r, "covered_by": covered.get(r["id"], {})} for r in requested]
+        _check_coverage(out, registry, requested, seen)
     out.model_summary = (args.summary or "").strip() or None
     return out

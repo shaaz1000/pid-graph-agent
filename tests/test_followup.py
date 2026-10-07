@@ -319,7 +319,7 @@ def test_submission_schema(tools):
 
 # ---- what was asked, and whether all of it was accounted for
 ASKED = [call("decompose_request", requested_outputs=[{"description": "which pumps there are", "kind": "items"}, {"description": "the design shaft power of each", "kind": "property"},
-                                                      {"description": "which one should be serviced first", "kind": "ordering_or_procedure"}])]
+                                                      {"description": "which one should be serviced first", "kind": "procedure_or_behaviour"}])]
 PUMPS = [call("list_entities", entity_type="pump", properties=["designShaftPower"])]
 QUESTION = "Which pumps are there, what is the shaft power of each, and which should be serviced first?"
 
@@ -330,12 +330,12 @@ def covered(*covers, unknown=None):
 
 def test_the_request_is_decomposed_first_and_ids_come_from_code(tools):
     result, llm, _ = ask(tools, QUESTION, ASKED, PUMPS, [covered("q1", "q2", unknown={"category": "operating_procedure", "covers": ["q3"]})])
-    assert [(o["id"], o["kind"]) for o in result.requested_outputs] == [("q1", "items"), ("q2", "property"), ("q3", "ordering_or_procedure")]
+    assert [(o["id"], o["kind"]) for o in result.requested_outputs] == [("q1", "items"), ("q2", "property"), ("q3", "procedure_or_behaviour")]
     assert result.grounding_status == "grounded" and result.iterations == 2  # recording what was asked is not a planning step
     shown = llm.calls[1]["messages"][-1]["content"]
     assert '"id": "q3"' in shown and "every one of these ids must be covered" in shown
     by = {o["id"]: o["covered_by"] for o in result.submission["requested_outputs"]}
-    assert by["q1"]["direct"] and by["q2"]["direct"] and by["q3"] == {"direct": [], "derived": [], "unknown": ["operating_procedure"]}
+    assert by["q1"]["direct"] and by["q2"]["direct"] and by["q3"]["unknown"] == ["operating_procedure"] and not by["q3"]["direct"] and not by["q3"]["derived"]
     assert "which one should be serviced first" not in result.answer  # the model's paraphrase of the question is not answer text
     assert "A P&ID does not contain operating procedures or sequences" in result.answer
 
@@ -343,10 +343,14 @@ def test_the_request_is_decomposed_first_and_ids_come_from_code(tools):
 def test_a_requested_output_that_is_passed_over_is_rejected_until_it_is_accounted_for(tools):
     result, llm, _ = ask(tools, QUESTION, ASKED, PUMPS, [covered("q1", "q2")], [covered("q1", "q2", unknown={"category": "operating_procedure", "covers": ["q3"]})])
     problems = next(s.result["problems"] for s in result.trace if s.tool == "submit_answer" and s.status == "rejected")
-    assert problems == ["Requested output q3 (which one should be serviced first) has not been addressed. Provide supported evidence or mark it unknown."]
+    assert problems == ["Requested output q3 (which one should be serviced first) is of kind procedure_or_behaviour, which a P&ID does not contain. Name it as an unknown; facts may be cited in addition."]
     assert [s.status for s in result.trace if s.tool == "submit_answer"] == ["rejected", "accepted"] and result.grounding_status == "grounded"
-    stray, _, _ = ask(tools, QUESTION, ASKED, PUMPS, [covered("q1", "q2", "q3", "q9")], [covered("q1", "q2", "q3")])
+    order = {"category": "operating_procedure", "covers": ["q3"]}
+    stray, _, _ = ask(tools, QUESTION, ASKED, PUMPS, [covered("q1", "q2", "q9", unknown=order)], [covered("q1", "q2", unknown=order)])
     assert "q9, which is not a requested output" in next(s.result["problems"] for s in stray.trace if s.status == "rejected")[0]
+    # facts alone do not answer something a P&ID does not contain
+    facts_only, _, _ = ask(tools, QUESTION, ASKED, PUMPS, [covered("q1", "q2", "q3")], [covered("q1", "q2", unknown=order)])
+    assert "is of kind procedure_or_behaviour, which a P&ID does not contain. Name it as an unknown" in next(s.result["problems"] for s in facts_only.trace if s.status == "rejected")[0]
 
 
 @pytest.mark.parametrize(
@@ -371,8 +375,8 @@ def test_decomposition_details(tools):
     assert [t["name"] for t in llm.calls[1]["tools"]] == ["decompose_request"] and len(llm.calls[2]["tools"]) == 11
     spec = workflow.decompose_request_spec()
     text = json.dumps(spec).casefold()
-    assert "do not judge whether the drawing can answer it" in text
-    for tool in ("isolation_boundary", "trace_instrumentation", "trace_line", "find_path", "traverse"):  # no request -> tool routing
+    assert "this only records what was asked" in text
+    for tool in ("isolation_boundary", "trace_instrumentation", "trace_line", "find_path", "traverse"):  # no wording -> tool routing
         assert tool not in text and tool not in STRUCTURED_SYSTEM_PROMPT.split("Final answer")[0].split("What was asked")[1]
 
 
@@ -706,4 +710,4 @@ def test_registry_reads_results_by_their_own_step_number(tools):
     observations = [annotate_refs(tools.call("traverse", {"start_entity_id": "P4712", "direction": "downstream", "entity_types": ["equipment"], "blocked_entity_ids": ["BallValve-4"]}).to_dict(), 4)]
     registry = EvidenceRegistry(observations)
     reach = next(f for f in registry.all_facts() if f["p"] == "reaches")
-    assert reach["q"] == {"direction": "downstream", "blocked": ["BallValve-4"]} and registry.kind("E4.1") == "derived"
+    assert reach["q"] == {"direction": "downstream", "blocked": ["BallValve-4"], "semantics": "drawn_flow"} and registry.kind("E4.1") == "derived"

@@ -256,7 +256,8 @@ class PidAgent:
                     payload = {"status": "rejected", "message": f"Invalid decompose_request arguments: {problem}"}
                 else:
                     requested = outputs
-                    payload = {"status": "accepted", "requested_outputs": outputs, "message": "Now use the graph tools. In submit_answer, every one of these ids must be covered by cited evidence or by an unknown."}
+                    payload = {"status": "accepted", "requested_outputs": outputs,
+                               "message": "Now use the graph tools. Each requested output says how it can be answered: use one of those operations for it. In submit_answer, every one of these ids must be covered by evidence of such an operation or by an unknown."}  # fmt: skip
                 trace.append(TraceStep(step=step, tool=DECOMPOSE_REQUEST, input=call.arguments, status=payload["status"], result=payload, executed=False))
             elif call.name == SUBMIT_ANSWER and self._structured and not call.parse_error:
                 # The final answer: checked against the tool results, never executed on the graph.
@@ -554,7 +555,8 @@ def format_transcript(result: AgentResult, show_results: bool = True) -> str:
         out.append(f"  a draft was rejected for unsupported claims: {claims}")
     for output in (result.submission or {}).get("requested_outputs") or []:
         by = output["covered_by"]
-        how = ", ".join(part for part in (f"facts {', '.join([*by.get('direct', []), *by.get('derived', [])])}" if by.get("direct") or by.get("derived") else "", f"unknown ({', '.join(by['unknown'])})" if by.get("unknown") else "") if part)
+        how = ", ".join(part for part in (f"facts {', '.join([*by.get('direct', []), *by.get('derived', [])])}" if by.get("direct") or by.get("derived") else "", f"unknown ({', '.join(by['unknown'])})" if by.get("unknown") else "",
+                                          f"{len(by['completed_by_application'])} row(s) added by the application" if by.get("completed_by_application") else "") if part)  # fmt: skip
         out.append(f"  requested output {output['id']} [{output['kind']}]: {how or 'the whole answer'}")
     if result.repair:
         out.append(f"FINAL SUBMISSION REPAIR: {'succeeded' if result.repair['succeeded'] else 'failed'} (first rejected for: {'; '.join(result.repair['initial_problems'])})")

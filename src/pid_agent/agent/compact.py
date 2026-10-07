@@ -26,7 +26,7 @@ CONNECTION_PROPERTIES = (
 # Dropped from the model's view: bookkeeping that carries no plant meaning.
 ENTITY_DROP = {"identifier_origins", "in_topology", "confidence"}
 META_KEEP = ("count", "max_depth", "cycle_detected", "start_is_in_cycle", "truncated_by_max_depth", "stopped_at", "shortest_path_only",
-             "blocked", "blocked_reached", "path_count", "more_paths_exist", "line", "runs", "chains", "connections_without_valve")  # fmt: skip
+             "blocked", "blocked_reached", "path_count", "more_paths_exist", "line", "runs", "chains", "connections_without_valve", "route_semantics")  # fmt: skip
 # Kept from a computed fact: what it says and how to cite it. Its provenance stays in the trace.
 DERIVED_KEEP = ("ref", "predicate", "subject", "object", "value", "qualifiers", "statement")
 # Per-pipe details not needed to follow a route; get_connections / get_properties have them.
@@ -175,7 +175,7 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
                 "length": path["length"],
                 "direction": path["direction"],
                 "entities": [_ref(e) for e in path["entities"]],
-                **{k: path[k] for k in ("shut_off_valves", "check_valves", "relief_devices", "equipment", "blocked") if k in path},
+                **{k: path[k] for k in ("route_semantics", "pipes_against_flow", "one_way_devices_against_flow", "shut_off_valves", "check_valves", "relief_devices", "equipment", "blocked") if k in path},
                 "steps": [
                     {"travelled": s["travelled"], **{k: v for k, v in compact_connection(s["connection"]).items() if k not in PATH_STEP_DROP}}
                     for s in path["steps"]
@@ -192,6 +192,8 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
     if result.get("warnings"):
         out["warnings"] = result["warnings"]
     meta = {k: result["meta"][k] for k in META_KEEP if result.get("meta", {}).get(k) not in (None, [], False)}
+    if result["tool"] == "traverse" and meta.get("route_semantics") == "drawn_flow":
+        meta.pop("route_semantics")  # the usual case for a traversal; only the exception is spelled out
     for key in ("endpoints", "endpoint_details", "unexplored_beyond_max_depth"):
         if result.get("meta", {}).get(key):
             meta[key] = result["meta"][key]

@@ -615,7 +615,16 @@ def _row_text(row: dict[str, Any], section: str, result: dict[str, Any]) -> str:
     if section == "connections":
         return _connection_line(row)
     if section == "paths":
-        text = "Route: " + " -> ".join(f"{e['name']} ({e['id']})" for e in row["entities"]) + f"; {row['length']} pipe(s), direction {row['direction']}"
+        names = [f"{e['name']} ({e['id']})" for e in row["entities"]]
+        if row.get("route_semantics") == "topological":
+            # Connectivity only. It is worded so that it cannot be read as a flow route.
+            text = "Connected by piping when flow direction is ignored (not a route in the drawn flow direction): " + " - ".join(names) + f"; {row['length']} pipe(s)"
+            if row.get("pipes_against_flow"):
+                text += f", {row['pipes_against_flow']} of them against the drawn flow"
+            if row.get("one_way_devices_against_flow"):
+                text += f", passing {', '.join(row['one_way_devices_against_flow'])} against its flow direction"
+        else:
+            text = "Route: " + " -> ".join(names) + f"; {row['length']} pipe(s), direction {row['direction']}"
         return text + (f" (with {', '.join(row['blocked'])} treated as closed)" if row.get("blocked") else "")
     if section == "boundaries":
         return f"Chamber boundary at {row['equipment']}: entered through {row['entered_chamber']}, not continued into {row['blocked_chamber']}"
@@ -624,7 +633,8 @@ def _row_text(row: dict[str, Any], section: str, result: dict[str, Any]) -> str:
         text += ": " + ", ".join(f"{a['property']} = {a['value']}" + (f" (on {a['on']})" if a.get("on") else "") for a in row["attributes"])
     if "distance" in row:
         direction = (result.get("input") or {}).get("direction", "downstream")
-        text += f": {direction} of {row['path_entities'][0]}, {row['distance']} pipe(s) away"
+        where = f"connected to {row['path_entities'][0]} when flow direction is ignored" if row.get("route_semantics") == "topological" else f"{direction} of {row['path_entities'][0]}"
+        text += f": {where}, {row['distance']} pipe(s) away"
         if row.get("through_equipment"):
             text += f", through {', '.join(row['through_equipment'])}"
         text += ", end of drawn piping" if row.get("terminal") else (", piping continues beyond the search depth" if row.get("continues_beyond_max_depth") else "")

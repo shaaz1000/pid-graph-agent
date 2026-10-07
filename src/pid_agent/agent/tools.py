@@ -14,6 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
+from pid_agent.agent import capabilities
 from pid_agent.graph.service import GraphService
 from pid_agent.models import ToolResult
 
@@ -93,12 +94,25 @@ UNKNOWN_CATEGORIES = Literal[
 ]
 
 
-OUTPUT_KINDS = Literal["items", "count", "property", "connection_or_route", "boundary", "ordering_or_procedure", "consequence", "explanation", "other"]
+OUTPUT_KINDS = Literal[
+    "items",                   # which items there are, of a type or matching a description
+    "count",                   # how many
+    "property",                # an attribute of an item, a pipe or a line
+    "adjacency",               # what is directly attached to an item
+    "boundary",                # the valves that bound an item, and what around it has no valve
+    "signal_chain",            # an instrumentation chain: measurement point, functions, final element, fail action
+    "line_structure",          # the runs, branches, sizes and ends of a piping line
+    "flow_reachability",       # what is upstream or downstream, what feeds or reaches what, also with items closed
+    "connectivity",            # whether items are joined by piping at all, whatever the flow direction
+    "procedure_or_behaviour",  # a sequence or procedure, operating state, a process response, adequacy, a purpose
+    "explanation",
+    "other",
+]
 
 
 class RequestedOutput(_Args):
     description: str = Field(max_length=200, description="One thing the question asks to be told, in a few words.")
-    kind: OUTPUT_KINDS = Field(default="other", description="What sort of output it is.")
+    kind: OUTPUT_KINDS = Field(default="other", description="The class of thing asked for. It decides which graph operations can answer it.")
 
 
 class DecomposeRequestArgs(_Args):
@@ -146,9 +160,16 @@ SUBMIT_ANSWER = "submit_answer"
 DECOMPOSE_REQUEST = "decompose_request"
 DECOMPOSE_DESCRIPTION = (
     "Call this first, before any graph tool. List every separate thing the question asks to be "
-    "told, one entry each. Do not answer and do not judge whether the drawing can answer it: "
-    "this only records what was asked. Each entry gets an id (q1, q2, ...) that the final "
-    "answer must account for."
+    "told, one entry each, with its kind. Do not answer: this only records what was asked. "
+    "Kinds: items, count, property, adjacency (directly attached), boundary (the valves that "
+    "bound an item and what has no valve), signal_chain (an instrumentation chain end to end), "
+    "line_structure (a line's runs, branches and sizes), flow_reachability (what is upstream or "
+    "downstream, what feeds or reaches what along the drawn flow, also with items treated as "
+    "closed), connectivity (whether items are joined by piping at all, whatever the flow "
+    "direction), procedure_or_behaviour (a sequence, operating state, a process response, "
+    "adequacy or a purpose: things a P&ID does not contain), explanation, other. Each entry "
+    "gets an id (q1, q2, ...) and the list of operations that can answer it; the final answer "
+    "must account for every id."
 )
 TOOL_DESCRIPTIONS: dict[str, str] = {
     "find_entities": (
@@ -180,7 +201,8 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     ),
     "traverse": (
         "REACHABILITY: everything reachable from an entity along piping, any number of hops, "
-        "in one call ('downstream' = drawn flow direction, 'upstream', or 'both'). Each result "
+        "in one call ('downstream' = drawn flow direction, 'upstream' = against it; 'both' "
+        "ignores flow direction and shows connectivity only, route_semantics topological). Each result "
         "has its distance, the entity it was reached via, through_equipment (equipment lying "
         "between it and the start; empty = reached through pipes, valves and fittings only) "
         "and terminal (nothing further is drawn in that direction). An entity with "
@@ -196,14 +218,17 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     ),
     "find_path": (
         "PATH: the shortest piping route between two known entities, with line and nominal "
-        "diameter of every pipe on it. By default only the shortest route is returned, which "
+        "diameter of every pipe on it. direction 'downstream' or 'upstream' follows the drawn "
+        "flow: such a route can show what feeds or reaches what (route_semantics drawn_flow). "
+        "direction 'any' ignores flow direction: its result shows only that two items are "
+        "joined by piping (route_semantics topological) and may run backwards through pipes "
+        "and one-way devices, so it never shows that one item feeds or reaches another. "
+        "By default only the shortest route is returned, which "
         "answers 'is there a route' but says nothing about other routes. Use all_paths when the "
         "question is about alternatives: whether more than one route exists, which routes "
         "there are, or what a route depends on. Every route then lists the shut-off valves, "
         "check valves, relief devices and equipment on it. With blocked_entity_ids: the routes "
-        "that remain when those entities are treated as closed; no route is a result too. "
-        "direction 'any' ignores the drawn flow direction; each step says whether it runs with "
-        "or against it."
+        "that remain when those entities are treated as closed; no route is a result too."
     ),
     "get_properties": (
         "Property values of entities, connections, lines, segments, nozzles, chambers or the "
@@ -294,7 +319,8 @@ def requested_outputs(arguments: dict[str, Any]) -> tuple[list[dict[str, str]], 
         args = DecomposeRequestArgs(**arguments)
     except ValidationError as exc:
         return [], "; ".join(f"{'.'.join(map(str, e['loc']))}: {e['msg']}" for e in exc.errors())
-    return [{"id": f"q{number}", "description": item.description.strip(), "kind": item.kind} for number, item in enumerate(args.requested_outputs, start=1)], None
+    return [{"id": f"q{number}", "description": item.description.strip(), "kind": item.kind, "how_to_answer": capabilities.guidance(item.kind)}
+            for number, item in enumerate(args.requested_outputs, start=1)], None  # fmt: skip
 
 
 def submit_answer_spec() -> dict[str, Any]:
