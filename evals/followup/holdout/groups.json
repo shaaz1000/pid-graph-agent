@@ -1,0 +1,252 @@
+{
+ "description": "Holdout sanity check on C01, written after the formal follow-up evaluation and frozen before any model call. Gold is derived from the graph by build_holdout.py. Not part of the official follow-up scores.",
+ "pid": "data/C01V04-VER.EX01.xml",
+ "groups": [
+  {
+   "id": "HG1",
+   "title": "Valves around a fitting",
+   "source": "holdout",
+   "complex": true,
+   "based_on": "H1",
+   "anchors": [
+    "PipeReducer-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "PipeReducer-1"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "PipeReducer-1",
+      "relationship": "piping"
+     }
+    },
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "check valve"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "BallValve 47124/C4 is the shut-off valve on the downstream side",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "PipeReducer-1",
+       "o": "BallValve-1"
+      },
+      {
+       "p": "flows_to",
+       "s": "PipeReducer-1",
+       "o": "BallValve-1"
+      }
+     ]
+    },
+    {
+     "fact": "the valve on the upstream side is a check valve, not a shut-off valve",
+     "any_of": [
+      {
+       "p": "check_valve_on_boundary",
+       "s": "PipeReducer-1",
+       "o": "SwingCheckValve-1"
+      },
+      {
+       "p": "is_a",
+       "s": "SwingCheckValve-1",
+       "v": "SwingCheckValve"
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "HG1a",
+     "style": "exact identifier",
+     "question": "PipeReducer 47124/C3: which valves bound it on each side, and is each of them a shut-off valve?"
+    },
+    {
+     "id": "HG1b",
+     "style": "type description",
+     "question": "The pipe reducer on this sheet is to be swapped out. What valves box it in, and are they all isolation valves?"
+    },
+    {
+     "id": "HG1c",
+     "style": "property and context",
+     "question": "Where the suction pipe of P4712 steps down from DN 80 to DN 50, which valves sit either side of that fitting, and can both be shut?"
+    },
+    {
+     "id": "HG1d",
+     "style": "terse operator wording",
+     "question": "47124 C3 reducer: bounding valves, shut-off or not?"
+    }
+   ]
+  },
+  {
+   "id": "HG2",
+   "title": "A route with one valve closed",
+   "source": "holdout",
+   "complex": true,
+   "based_on": "H5",
+   "anchors": [
+    "ButterflyValve-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "Tank-1",
+      "target_entity_id": "ReciprocatingPump-1",
+      "blocked_entity_ids": [
+       "ButterflyValve-1"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ReciprocatingPump-1",
+      "target_entity_id": "Tank-1",
+      "direction": "upstream",
+      "blocked_entity_ids": [
+       "ButterflyValve-1"
+      ]
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "no drawn route from T4750 to P4712 with the butterfly valve treated as closed",
+     "any_of": [
+      {
+       "p": "no_path",
+       "ends": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+       ],
+       "blocked_contains": "ButterflyValve-1"
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "HG2a",
+     "style": "exact identifier",
+     "question": "With ButterflyValve 47124/C1 closed, is there still a drawn route from T4750 to P4712?"
+    },
+    {
+     "id": "HG2b",
+     "style": "type description",
+     "question": "Shut the butterfly valve. Is the reciprocating pump still connected to the tank on its suction side?"
+    },
+    {
+     "id": "HG2c",
+     "style": "property and context",
+     "question": "Suppose the DN 80 valve directly on the tank's outlet is closed: does any drawn path remain from the tank to the pump with the 40 m design pressure head?"
+    },
+    {
+     "id": "HG2d",
+     "style": "terse operator wording",
+     "question": "47124/C1 shut: T-4750 to P-4712 still connected?"
+    }
+   ]
+  },
+  {
+   "id": "HG3",
+   "title": "An indication and where it is tapped",
+   "source": "holdout",
+   "complex": true,
+   "based_on": "H3",
+   "anchors": [],
+   "gold_calls": [
+    {
+     "tool": "trace_instrumentation",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-1"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "trace_instrumentation",
+     "args": {
+      "entity_id": "BlindFlange-1"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "the measurement is taken at BlindFlange 47126/C6",
+     "any_of": [
+      {
+       "p": "senses_at",
+       "s": "ProcessSignalGeneratingFunction-1",
+       "o": "BlindFlange-1"
+      },
+      {
+       "p": "loop_measured_at",
+       "s": "ProcessInstrumentationFunction-1",
+       "o": "BlindFlange-1"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ProcessSignalGeneratingFunction-1",
+        "BlindFlange-1"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "PT4712.01 feeds PI4712.01",
+     "any_of": [
+      {
+       "p": "measurement_input_to",
+       "s": "ProcessSignalGeneratingFunction-1",
+       "o": "ProcessInstrumentationFunction-1"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ProcessSignalGeneratingFunction-1",
+        "ProcessInstrumentationFunction-1"
+       ]
+      }
+     ]
+    }
+   ],
+   "phrasings": [
+    {
+     "id": "HG3a",
+     "style": "exact identifier",
+     "question": "PI4712.01: at which component is its measurement taken, and which transmitter feeds it?"
+    },
+    {
+     "id": "HG3b",
+     "style": "type description",
+     "question": "The pressure indication that is located in the field: what does it read from, and at which point on the piping?"
+    },
+    {
+     "id": "HG3c",
+     "style": "property and context",
+     "question": "Which transmitter measures at the blind flange behind valve 47126/C5, and which indication does it feed?"
+    },
+    {
+     "id": "HG3d",
+     "style": "terse operator wording",
+     "question": "PI 4712.01: tap point + source transmitter"
+    }
+   ]
+  }
+ ]
+}

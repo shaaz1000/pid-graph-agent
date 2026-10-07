@@ -1,0 +1,812 @@
+{
+ "description": "Holdout sanity check on C01, written after the formal follow-up evaluation and frozen before any model call. Gold is derived from the graph by build_holdout.py. Not part of the official follow-up scores.",
+ "pid": "data/C01V04-VER.EX01.xml",
+ "questions": [
+  {
+   "id": "H1",
+   "source": "holdout",
+   "type": "Isolation boundary with an unresolved gap",
+   "question": "The reducer in the suction piping of the reciprocating pump has to be replaced. Which valves box it in on each side, and is each side closed off by a shut-off valve?",
+   "anchors": [
+    "PipeReducer-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "PipeReducer-1"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "PipeReducer-1",
+      "relationship": "piping"
+     }
+    },
+    {
+     "tool": "find_entities",
+     "args": {
+      "query": "check valve"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "BallValve 47124/C4 is the shut-off valve on the downstream side",
+     "any_of": [
+      {
+       "p": "isolation_boundary_valve",
+       "s": "PipeReducer-1",
+       "o": "BallValve-1"
+      },
+      {
+       "p": "flows_to",
+       "s": "PipeReducer-1",
+       "o": "BallValve-1"
+      }
+     ]
+    },
+    {
+     "fact": "the valve on the upstream side is a check valve, not a shut-off valve",
+     "any_of": [
+      {
+       "p": "check_valve_on_boundary",
+       "s": "PipeReducer-1",
+       "o": "SwingCheckValve-1"
+      },
+      {
+       "p": "is_a",
+       "s": "SwingCheckValve-1",
+       "v": "SwingCheckValve"
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "Naming both neighbouring valves without saying that one is a check valve.",
+   "forbidden_conclusions": [
+    "that the reducer can be positively isolated on both sides",
+    "a sequence for closing the valves"
+   ]
+  },
+  {
+   "id": "H2",
+   "source": "holdout",
+   "type": "Path comparison",
+   "question": "From P4712, compare the way to the off-page outlet with the way to H1008: list what lies on each, and name the last item the two routes have in common.",
+   "anchors": [
+    "ReciprocatingPump-1",
+    "TubularHeatExchanger-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ReciprocatingPump-1",
+      "target_entity_id": "FlowOutPipeOffPageConnector-1"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ReciprocatingPump-1",
+      "target_entity_id": "TubularHeatExchanger-1"
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "the route P4712 -> off-page outlet",
+     "any_of": [
+      {
+       "p": "path",
+       "s": "ReciprocatingPump-1",
+       "o": "FlowOutPipeOffPageConnector-1",
+       "q": {
+        "entities": [
+         "ReciprocatingPump-1",
+         "PipeTee-2",
+         "PipeTee-1",
+         "PipeTee-3",
+         "BallValve-4",
+         "PipeTee-4",
+         "PipeTee-5",
+         "FlowOutPipeOffPageConnector-1"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "fact": "the route P4712 -> H1008",
+     "any_of": [
+      {
+       "p": "path",
+       "s": "ReciprocatingPump-1",
+       "o": "TubularHeatExchanger-1",
+       "q": {
+        "entities": [
+         "ReciprocatingPump-1",
+         "PipeTee-2",
+         "PipeTee-1",
+         "PipeTee-3",
+         "BallValve-4",
+         "PipeTee-4",
+         "TubularHeatExchanger-1"
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "One of the two routes.",
+   "forbidden_conclusions": [
+    "where the piping goes beyond the off-page connector",
+    "which route carries more flow"
+   ]
+  },
+  {
+   "id": "H3",
+   "source": "holdout",
+   "type": "Instrumentation chain with piping context",
+   "question": "For PI4712.01: where on the piping is its measurement tapped, which transmitter feeds it, what size is the branch at the tap point, and does this indication drive any valve?",
+   "anchors": [
+    "ProcessInstrumentationFunction-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "trace_instrumentation",
+     "args": {
+      "entity_id": "ProcessInstrumentationFunction-1"
+     }
+    },
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "BlindFlange-1"
+      ],
+      "requested_properties": [
+       "nominalDiameterRepresentation"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "BlindFlange-1",
+      "relationship": "piping"
+     }
+    },
+    {
+     "tool": "trace_line",
+     "args": {
+      "line": "47126"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "the measurement is taken at BlindFlange 47126/C6",
+     "any_of": [
+      {
+       "p": "senses_at",
+       "s": "ProcessSignalGeneratingFunction-1",
+       "o": "BlindFlange-1"
+      },
+      {
+       "p": "loop_measured_at",
+       "s": "ProcessInstrumentationFunction-1",
+       "o": "BlindFlange-1"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ProcessSignalGeneratingFunction-1",
+        "BlindFlange-1"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "PT4712.01 feeds PI4712.01",
+     "any_of": [
+      {
+       "p": "measurement_input_to",
+       "s": "ProcessSignalGeneratingFunction-1",
+       "o": "ProcessInstrumentationFunction-1"
+      },
+      {
+       "p": "signal_chain",
+       "contains": [
+        "ProcessSignalGeneratingFunction-1",
+        "ProcessInstrumentationFunction-1"
+       ]
+      }
+     ]
+    },
+    {
+     "fact": "the branch at the tap point is DN 25",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "BlindFlange-1",
+       "v": "DN 25",
+       "q": {
+        "property": "nominalDiameterRepresentation"
+       }
+      },
+      {
+       "p": "flows_to",
+       "s": "BallValve-3",
+       "o": "BlindFlange-1",
+       "q": {
+        "nominalDiameterRepresentation": "DN 25"
+       }
+      },
+      {
+       "p": "line_run",
+       "o": "BlindFlange-1",
+       "q": {
+        "diameters": [
+         "DN 25"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "fact": "the chain ends at the indication: no actuating function or operated valve follows it",
+     "any_of": [
+      {
+       "p": "signal_chain",
+       "s": "BlindFlange-1",
+       "o": "ProcessInstrumentationFunction-1"
+      }
+     ],
+     "unknown": [
+      "not_represented"
+     ]
+    }
+   ],
+   "acceptable_partial": "The tap point and transmitter without the branch size.",
+   "forbidden_conclusions": [
+    "an operated valve for this indication",
+    "the pressure the indicator shows"
+   ]
+  },
+  {
+   "id": "H4",
+   "source": "holdout",
+   "type": "Branch-aware line tracing",
+   "question": "Trace line 47125 from end to end: where it starts, what sits on it, where it ends, and how its size changes along the way.",
+   "anchors": [],
+   "gold_calls": [
+    {
+     "tool": "trace_line",
+     "args": {
+      "line": "47125"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "SpringLoadedGlobeSafetyValve-1",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "it starts at the tee PipeTee 47126/C3 and passes SV 104.01",
+     "any_of": [
+      {
+       "p": "line_run",
+       "s": "PipeTee-1",
+       "contains": [
+        "SpringLoadedGlobeSafetyValve-1"
+       ]
+      },
+      {
+       "p": "flows_to",
+       "s": "PipeTee-1",
+       "o": "SpringLoadedGlobeSafetyValve-1"
+      }
+     ]
+    },
+    {
+     "fact": "it ends at T4750",
+     "any_of": [
+      {
+       "p": "line_run",
+       "s": "PipeTee-1",
+       "o": "Tank-1"
+      },
+      {
+       "p": "flows_to",
+       "s": "SpringLoadedGlobeSafetyValve-1",
+       "o": "Tank-1"
+      }
+     ]
+    },
+    {
+     "fact": "DN 25 before the safety valve",
+     "any_of": [
+      {
+       "p": "line_run",
+       "s": "PipeTee-1",
+       "o": "Tank-1",
+       "q": {
+        "diameters": [
+         "DN 25",
+         "DN 50"
+        ]
+       }
+      },
+      {
+       "p": "flows_to",
+       "s": "PipeTee-1",
+       "o": "SpringLoadedGlobeSafetyValve-1",
+       "q": {
+        "nominalDiameterRepresentation": "DN 25"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "DN 50 after the safety valve",
+     "any_of": [
+      {
+       "p": "line_run",
+       "s": "PipeTee-1",
+       "o": "Tank-1",
+       "q": {
+        "diameters": [
+         "DN 25",
+         "DN 50"
+        ]
+       }
+      },
+      {
+       "p": "flows_to",
+       "s": "SpringLoadedGlobeSafetyValve-1",
+       "o": "Tank-1",
+       "q": {
+        "nominalDiameterRepresentation": "DN 50"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "Start and end without both sizes.",
+   "forbidden_conclusions": [
+    "when the safety valve lifts",
+    "that the line is normally empty or normally flowing"
+   ]
+  },
+  {
+   "id": "H5",
+   "source": "holdout",
+   "type": "Reachability with a component closed",
+   "question": "With the butterfly valve at the tank outlet closed, is there still a drawn route from T4750 to P4712? State which line that valve is on.",
+   "anchors": [
+    "ButterflyValve-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "Tank-1",
+      "target_entity_id": "ReciprocatingPump-1",
+      "blocked_entity_ids": [
+       "ButterflyValve-1"
+      ]
+     }
+    },
+    {
+     "tool": "get_properties",
+     "args": {
+      "ids": [
+       "ButterflyValve-1"
+      ],
+      "requested_properties": [
+       "lineNumber"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ReciprocatingPump-1",
+      "target_entity_id": "Tank-1",
+      "direction": "upstream",
+      "blocked_entity_ids": [
+       "ButterflyValve-1"
+      ]
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "Tank-1",
+      "relationship": "piping"
+     }
+    },
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "Tank-1"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "no drawn route from T4750 to P4712 with the butterfly valve treated as closed",
+     "any_of": [
+      {
+       "p": "no_path",
+       "ends": [
+        "Tank-1",
+        "ReciprocatingPump-1"
+       ],
+       "blocked_contains": "ButterflyValve-1"
+      }
+     ]
+    },
+    {
+     "fact": "the butterfly valve is on line 47124",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "ButterflyValve-1",
+       "v": "47124",
+       "q": {
+        "property": "lineNumber"
+       }
+      },
+      {
+       "p": "flows_to",
+       "s": "Tank-1",
+       "o": "ButterflyValve-1",
+       "q": {
+        "lineNumber": "47124"
+       }
+      },
+      {
+       "p": "isolation_boundary_valve",
+       "o": "ButterflyValve-1",
+       "q": {
+        "line": "47124"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "The missing route without the line.",
+   "forbidden_conclusions": [
+    "that the pump runs dry, cavitates or trips",
+    "that flow stops"
+   ]
+  },
+  {
+   "id": "H6",
+   "source": "holdout",
+   "type": "Inventory filtered by two attributes",
+   "question": "Which ball valves are both on line 47126 and on DN 50 piping?",
+   "anchors": [],
+   "gold_calls": [
+    {
+     "tool": "list_entities",
+     "args": {
+      "entity_type": "BallValve",
+      "properties": [
+       "lineNumber",
+       "nominalDiameterRepresentation"
+      ],
+      "property_filter": {
+       "lineNumber": "47126",
+       "nominalDiameterRepresentation": "DN 50"
+      }
+     }
+    }
+   ],
+   "alt_calls": [],
+   "required": [
+    {
+     "fact": "BallValve 47126/C7 is on line 47126",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "BallValve-4",
+       "v": "47126",
+       "q": {
+        "property": "lineNumber"
+       }
+      }
+     ]
+    },
+    {
+     "fact": "BallValve 47126/C7 is on DN 50 piping",
+     "any_of": [
+      {
+       "p": "has_property",
+       "s": "BallValve-4",
+       "v": "DN 50",
+       "q": {
+        "property": "nominalDiameterRepresentation"
+       }
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "The valve with one of the two attributes.",
+   "forbidden_conclusions": [
+    "a function or purpose for the valve"
+   ]
+  },
+  {
+   "id": "H7",
+   "source": "holdout",
+   "type": "Downstream reach with recycle",
+   "question": "List the equipment downstream of the plate heat exchanger, and say whether the piping comes back around to any of it.",
+   "anchors": [
+    "PlateHeatExchanger-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "PlateHeatExchanger-1",
+      "direction": "downstream",
+      "entity_types": [
+       "equipment"
+      ]
+     }
+    },
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "ReciprocatingPump-1",
+      "direction": "downstream",
+      "entity_types": [
+       "equipment"
+      ]
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "traverse",
+     "args": {
+      "start_entity_id": "TubularHeatExchanger-1",
+      "direction": "downstream",
+      "entity_types": [
+       "equipment"
+      ]
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "PlateHeatExchanger-1",
+      "target_entity_id": "Tank-1"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "PlateHeatExchanger-1",
+      "target_entity_id": "ReciprocatingPump-1"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "PlateHeatExchanger-1",
+      "target_entity_id": "TubularHeatExchanger-1"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "ReciprocatingPump-1",
+      "target_entity_id": "Tank-1"
+     }
+    },
+    {
+     "tool": "find_path",
+     "args": {
+      "source_entity_id": "TubularHeatExchanger-1",
+      "target_entity_id": "Tank-1"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "T4750 is downstream of H1007",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "PlateHeatExchanger-1",
+       "o": "Tank-1",
+       "q": {
+        "direction": "downstream"
+       }
+      },
+      {
+       "p": "path",
+       "s": "PlateHeatExchanger-1",
+       "o": "Tank-1"
+      }
+     ]
+    },
+    {
+     "fact": "P4712 is downstream of H1007",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "PlateHeatExchanger-1",
+       "o": "ReciprocatingPump-1",
+       "q": {
+        "direction": "downstream"
+       }
+      },
+      {
+       "p": "path",
+       "s": "PlateHeatExchanger-1",
+       "o": "ReciprocatingPump-1"
+      }
+     ]
+    },
+    {
+     "fact": "H1008 is downstream of H1007",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "PlateHeatExchanger-1",
+       "o": "TubularHeatExchanger-1",
+       "q": {
+        "direction": "downstream"
+       }
+      },
+      {
+       "p": "path",
+       "s": "PlateHeatExchanger-1",
+       "o": "TubularHeatExchanger-1"
+      }
+     ]
+    },
+    {
+     "fact": "the piping returns to T4750 from further downstream",
+     "any_of": [
+      {
+       "p": "reaches",
+       "s": "ReciprocatingPump-1",
+       "o": "Tank-1",
+       "q": {
+        "direction": "downstream"
+       }
+      },
+      {
+       "p": "reaches",
+       "s": "TubularHeatExchanger-1",
+       "o": "Tank-1",
+       "q": {
+        "direction": "downstream"
+       }
+      },
+      {
+       "p": "path",
+       "s": "ReciprocatingPump-1",
+       "o": "Tank-1"
+      },
+      {
+       "p": "path",
+       "s": "TubularHeatExchanger-1",
+       "o": "Tank-1"
+      }
+     ]
+    }
+   ],
+   "acceptable_partial": "The downstream equipment without the return.",
+   "forbidden_conclusions": [
+    "flow rates or a recycle ratio",
+    "that the loop is in operation"
+   ]
+  },
+  {
+   "id": "H8",
+   "source": "holdout",
+   "type": "Relief-device position",
+   "question": "Standing at SV 104.01: which equipment is piped to it with no shut-off valve in between, on its inlet side and on its outlet side, and what is it there to protect?",
+   "anchors": [
+    "SpringLoadedGlobeSafetyValve-1"
+   ],
+   "gold_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "SpringLoadedGlobeSafetyValve-1"
+     }
+    }
+   ],
+   "alt_calls": [
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "ReciprocatingPump-1"
+     }
+    },
+    {
+     "tool": "isolation_boundary",
+     "args": {
+      "entity_id": "Tank-1"
+     }
+    },
+    {
+     "tool": "get_connections",
+     "args": {
+      "entity_id": "SpringLoadedGlobeSafetyValve-1",
+      "relationship": "piping"
+     }
+    }
+   ],
+   "required": [
+    {
+     "fact": "P4712 is piped to its inlet side with no shut-off valve between",
+     "any_of": [
+      {
+       "p": "unisolated_connection",
+       "s": "SpringLoadedGlobeSafetyValve-1",
+       "o": "ReciprocatingPump-1"
+      },
+      {
+       "p": "relief_device_on_boundary",
+       "s": "ReciprocatingPump-1",
+       "o": "SpringLoadedGlobeSafetyValve-1"
+      }
+     ]
+    },
+    {
+     "fact": "T4750 is piped to its outlet side with no shut-off valve between",
+     "any_of": [
+      {
+       "p": "unisolated_connection",
+       "s": "SpringLoadedGlobeSafetyValve-1",
+       "o": "Tank-1"
+      },
+      {
+       "p": "flows_to",
+       "s": "SpringLoadedGlobeSafetyValve-1",
+       "o": "Tank-1"
+      },
+      {
+       "p": "relief_device_on_boundary",
+       "s": "Tank-1",
+       "o": "SpringLoadedGlobeSafetyValve-1"
+      }
+     ]
+    },
+    {
+     "unknown": [
+      "purpose_or_intent"
+     ]
+    }
+   ],
+   "acceptable_partial": "Both pieces of equipment without the unknown.",
+   "forbidden_conclusions": [
+    "what the valve protects against, stated as a fact",
+    "that the relief capacity is adequate"
+   ]
+  }
+ ]
+}

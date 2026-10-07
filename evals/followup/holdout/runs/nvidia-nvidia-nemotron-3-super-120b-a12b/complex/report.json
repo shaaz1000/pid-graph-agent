@@ -1,0 +1,721 @@
+{
+  "suite": "complex",
+  "provider": "nvidia",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "fd4dfe8022b45fe7833f7ff517a0533b217913d9",
+  "dirty": false,
+  "run_id": "20261007T131508",
+  "questions": 8,
+  "outcomes": {
+    "correct": 5,
+    "incorrect": 1,
+    "partial": 2
+  },
+  "mean_score": 0.781,
+  "required_facts": {
+    "found": 18,
+    "of": 22
+  },
+  "required_unknowns": {
+    "named": 1,
+    "of": 1
+  },
+  "forbidden_facts_cited": 0,
+  "grounding": {
+    "structured_answers": 8,
+    "withheld": 0,
+    "provider_failures": 0,
+    "rejected_submissions": 2,
+    "final_repairs": {
+      "attempted": 0,
+      "succeeded": 0
+    },
+    "requested_outputs": {
+      "total": 23,
+      "covered_by_facts": 22,
+      "marked_unknown": 2,
+      "unaccounted": 0
+    },
+    "unsupported_facts_in_answers": 0,
+    "model_text_shown": 0,
+    "answers_with_log_only_summary": 0
+  },
+  "efficiency": {
+    "runs": 8,
+    "llm_calls": 44,
+    "tool_calls": 26,
+    "tokens": 278825,
+    "median_latency_s": 62.3,
+    "mean_latency_s": 68.4
+  },
+  "rows": [
+    {
+      "id": "H1",
+      "source": "holdout",
+      "type": "Isolation boundary with an unresolved gap",
+      "question": "The reducer in the suction piping of the reciprocating pump has to be replaced. Which valves box it in on each side, and is each side closed off by a shut-off valve?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "BallValve 47124/C4 is the shut-off valve on the downstream side",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the valve on the upstream side is a check valve, not a shut-off valve",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 59,
+      "cause": null,
+      "answer": "Facts in the drawing\n- SwingCheckValve-1 (SwingCheckValve 47124/C2) -> PipeReducer-1 (PipeReducer 47124/C3) [pipe] (lineNumber 47124, segmentNumber S2, nominalDiameterRepresentation DN 80, fluidCode MNc) [E6.2]\n- PipeReducer-1 (PipeReducer 47124/C3) -> BallValve-1 (BallValve 47124/C4) [pipe] (lineNumber 47124, segmentNumber S3, nominalDiameterRepresentation DN 50, fluidCode MNc) [E6.3]\n- BallValve 47124/C4 (BallValve-1), BallValve [E5.1]\n- SwingCheckValve 47124/C2 (SwingCheckValve-1), SwingCheckValve [E7.1]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Identify the valve(s) that box the reducer on the upstream side of the reducer in the suction piping of the reciprocating pump.",
+          "covered_by": {
+            "direct": [
+              "E6.2",
+              "E7.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "Identify the valve(s) that box the reducer on the downstream side of the reducer in the suction piping of the reciprocating pump.",
+          "covered_by": {
+            "direct": [
+              "E6.3",
+              "E5.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "property",
+          "description": "Determine whether the upstream side valve is a shut-off valve.",
+          "covered_by": {
+            "direct": [
+              "E7.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "property",
+          "description": "Determine whether the downstream side valve is a shut-off valve.",
+          "covered_by": {
+            "direct": [
+              "E5.1"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "get_connections",
+        "traverse",
+        "get_entity",
+        "get_connections",
+        "get_entity"
+      ],
+      "repair": null,
+      "llm_calls": 8,
+      "tool_calls": 6,
+      "latency_s": 157.0
+    },
+    {
+      "id": "H2",
+      "source": "holdout",
+      "type": "Path comparison",
+      "question": "From P4712, compare the way to the off-page outlet with the way to H1008: list what lies on each, and name the last item the two routes have in common.",
+      "outcome": "incorrect",
+      "score": 0.0,
+      "profile": [
+        false,
+        false
+      ],
+      "required": [
+        {
+          "item": "the route P4712 -> off-page outlet",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "the route P4712 -> H1008",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 25,
+      "cause": "planner/tool choice",
+      "answer": "Derived by graph analysis of the drawing\n- PipeTee 47126/C1 (PipeTee-2), PipeTee: downstream of ReciprocatingPump-1, 1 pipe(s) away [E4.1, traverse]\n- PipeTee 47126/C3 (PipeTee-1), PipeTee: downstream of ReciprocatingPump-1, 2 pipe(s) away [E4.3, traverse]\n- PipeTee 47126/C4 (PipeTee-3), PipeTee: downstream of ReciprocatingPump-1, 3 pipe(s) away [E4.4, traverse]\n- BallValve 47126/C7 (BallValve-4), BallValve: downstream of ReciprocatingPump-1, 4 pipe(s) away [E4.7, traverse]\n- PipeTee 47126/C8 (PipeTee-4), PipeTee: downstream of ReciprocatingPump-1, 5 pipe(s) away [E4.11, traverse]\n- PipeTee 47126/C9 (PipeTee-5), PipeTee: downstream of ReciprocatingPump-1, 6 pipe(s) away [E4.12, traverse]\n- FlowOutPipeOffPageConnector-1 (FlowOutPipeOffPageConnector-1), FlowOutPipeOffPageConnector: downstream of ReciprocatingPump-1, 7 pipe(s) away, end of drawn piping [E4.16, traverse]\n- H1008 (TubularHeatExchanger-1), TubularHeatExchanger: downstream of ReciprocatingPump-1, 6 pipe(s) away [E4.14, traverse]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "connection_or_route",
+          "description": "List what lies on the way from P4712 to the off-page outlet",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E4.1",
+              "E4.3",
+              "E4.4",
+              "E4.7",
+              "E4.11",
+              "E4.12",
+              "E4.16"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "connection_or_route",
+          "description": "List what lies on the way from P4712 to H1008",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E4.1",
+              "E4.3",
+              "E4.4",
+              "E4.7",
+              "E4.11",
+              "E4.14"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "other",
+          "description": "Name the last item the two routes have in common",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E4.11"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "list_entities",
+        "traverse"
+      ],
+      "repair": null,
+      "llm_calls": 5,
+      "tool_calls": 3,
+      "latency_s": 91.7
+    },
+    {
+      "id": "H3",
+      "source": "holdout",
+      "type": "Instrumentation chain with piping context",
+      "question": "For PI4712.01: where on the piping is its measurement tapped, which transmitter feeds it, what size is the branch at the tap point, and does this indication drive any valve?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "the measurement is taken at BlindFlange 47126/C6",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "PT4712.01 feeds PI4712.01",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the branch at the tap point is DN 25",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the chain ends at the indication: no actuating function or operated valve follows it",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "not_represented"
+      ],
+      "cited_facts": 8,
+      "cause": null,
+      "answer": "Facts in the drawing\n- ProcessSignalGeneratingFunction-1 (PT4712.01) -> BlindFlange-1 (BlindFlange 47126/C6) [sensing_location] [E3.3]\n- PipingNetworkSegment-13: lineNumber = 47126 [E3.10]\n- PipingNetworkSegment-13: nominalDiameterRepresentation = DN 25 [E3.11]\n- ProcessSignalGeneratingFunction-1: processSignalGeneratingFunctionNumber = PT4712.01 [E3.9]\n- ProcessSignalGeneratingFunction-1 (PT4712.01) -> ProcessInstrumentationFunction-1 (ProcessInstrumentationFunction PI4712.01) [measuring_line] [E4.2]\n\nNot established by the P&ID\n- The drawing does not contain an item or attribute that the question asks for. Asked about: ProcessInstrumentationFunction PI4712.01 (ProcessInstrumentationFunction-1).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Location of measurement tap point on piping for PI4712.01",
+          "covered_by": {
+            "direct": [
+              "E3.3",
+              "E3.10"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "Transmitter that feeds PI4712.01",
+          "covered_by": {
+            "direct": [
+              "E3.9",
+              "E4.2"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "property",
+          "description": "Size (diameter) of the branch pipe at the tap point",
+          "covered_by": {
+            "direct": [
+              "E3.11"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "items",
+          "description": "Whether PI4712.01 drives any valve (list of valves driven)",
+          "covered_by": {
+            "direct": [],
+            "derived": [],
+            "unknown": [
+              "not_represented"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "trace_instrumentation",
+        "get_connections"
+      ],
+      "repair": null,
+      "llm_calls": 7,
+      "tool_calls": 3,
+      "latency_s": 93.0
+    },
+    {
+      "id": "H4",
+      "source": "holdout",
+      "type": "Branch-aware line tracing",
+      "question": "Trace line 47125 from end to end: where it starts, what sits on it, where it ends, and how its size changes along the way.",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "it starts at the tee PipeTee 47126/C3 and passes SV 104.01",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "it ends at T4750",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "DN 25 before the safety valve",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "DN 50 after the safety valve",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 1,
+      "cause": null,
+      "answer": "Derived by graph analysis of the drawing\n- Line 47125: from PipeTee 47126/C3 (PipeTee-1) to T4750 (Tank-1) through SV 104.01 (SpringLoadedGlobeSafetyValve-1); DN 25 then DN 50; the run ends at: equipment [E2.3, trace_line]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "connection_or_route",
+          "description": "Start point of line 47125",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E2.3"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "Equipment or items that sit on line 47125",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E2.3"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "connection_or_route",
+          "description": "End point of line 47125",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E2.3"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q4",
+          "kind": "property",
+          "description": "How the size (diameter) of line 47125 changes along its length",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E2.3"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "trace_line"
+      ],
+      "repair": null,
+      "llm_calls": 3,
+      "tool_calls": 1,
+      "latency_s": 16.7
+    },
+    {
+      "id": "H5",
+      "source": "holdout",
+      "type": "Reachability with a component closed",
+      "question": "With the butterfly valve at the tank outlet closed, is there still a drawn route from T4750 to P4712? State which line that valve is on.",
+      "outcome": "partial",
+      "score": 0.5,
+      "profile": [
+        false,
+        true
+      ],
+      "required": [
+        {
+          "item": "no drawn route from T4750 to P4712 with the butterfly valve treated as closed",
+          "kind": "fact",
+          "found": false
+        },
+        {
+          "item": "the butterfly valve is on line 47124",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 62,
+      "cause": "planner/tool choice",
+      "answer": "Facts in the drawing\n- Tank-1 (T4750) -> ButterflyValve-1 (ButterflyValve 47124/C1) [pipe] (lineNumber 47124, segmentNumber S1, nominalDiameterRepresentation DN 80, fluidCode MNc) [E3.2]\n\nDerived by graph analysis of the drawing\n- Route: T4750 (Tank-1) -> SV 104.01 (SpringLoadedGlobeSafetyValve-1) -> PipeTee 47126/C3 (PipeTee-1) -> PipeTee 47126/C1 (PipeTee-2) -> P4712 (ReciprocatingPump-1); 4 pipe(s), direction any (with ButterflyValve-1 treated as closed) [E6.1, find_path]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "connection_or_route",
+          "description": "Whether there is still a drawn route from T4750 to P4712 when the butterfly valve at the tank outlet is closed",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E6.1"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "property",
+          "description": "The line number on which the butterfly valve at the tank outlet is located",
+          "covered_by": {
+            "direct": [
+              "E3.2"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "get_connections",
+        "get_entity",
+        "find_entities",
+        "find_path"
+      ],
+      "repair": null,
+      "llm_calls": 7,
+      "tool_calls": 5,
+      "latency_s": 33.3
+    },
+    {
+      "id": "H6",
+      "source": "holdout",
+      "type": "Inventory filtered by two attributes",
+      "question": "Which ball valves are both on line 47126 and on DN 50 piping?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "BallValve 47126/C7 is on line 47126",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "BallValve 47126/C7 is on DN 50 piping",
+          "kind": "fact",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 4,
+      "cause": null,
+      "answer": "Facts in the drawing\n- BallValve 47126/C7 (BallValve-4), BallValve: nominalDiameterRepresentation = DN 50 (on PipingNetworkSegment-14), lineNumber = 47126 (on PipingNetworkSegment-14) [E3.2]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "List of ball valves that are on line 47126 and have DN 50 piping",
+          "covered_by": {
+            "direct": [
+              "E3.2"
+            ],
+            "derived": [],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "list_entities"
+      ],
+      "repair": null,
+      "llm_calls": 4,
+      "tool_calls": 2,
+      "latency_s": 31.0
+    },
+    {
+      "id": "H7",
+      "source": "holdout",
+      "type": "Downstream reach with recycle",
+      "question": "List the equipment downstream of the plate heat exchanger, and say whether the piping comes back around to any of it.",
+      "outcome": "partial",
+      "score": 0.75,
+      "profile": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "required": [
+        {
+          "item": "T4750 is downstream of H1007",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "P4712 is downstream of H1007",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "H1008 is downstream of H1007",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "the piping returns to T4750 from further downstream",
+          "kind": "fact",
+          "found": false
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [],
+      "cited_facts": 18,
+      "cause": "planner/tool choice",
+      "answer": "Derived by graph analysis of the drawing\n- T4750 (Tank-1), Tank: downstream of PlateHeatExchanger-1, 2 pipe(s) away [E3.1, traverse]\n- P4712 (ReciprocatingPump-1), ReciprocatingPump: downstream of PlateHeatExchanger-1, 7 pipe(s) away, through Tank-1 [E3.2, traverse]\n- H1008 (TubularHeatExchanger-1), TubularHeatExchanger: downstream of PlateHeatExchanger-1, 13 pipe(s) away, through Tank-1, ReciprocatingPump-1 [E3.3, traverse]\n- Chamber boundary at TubularHeatExchanger-1: entered through Chamber-3, not continued into Chamber-4 [E3.18, traverse]\n- BallValve 47126/C2 (BallValve-2): end of drawn piping [E3.0, traverse]",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "List equipment downstream of the plate heat exchanger",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E3.1",
+              "E3.2",
+              "E3.3"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "explanation",
+          "description": "Indicate whether the piping downstream comes back around to any of that equipment",
+          "covered_by": {
+            "direct": [],
+            "derived": [
+              "E3.18",
+              "E3.0"
+            ],
+            "unknown": []
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "traverse"
+      ],
+      "repair": null,
+      "llm_calls": 4,
+      "tool_calls": 2,
+      "latency_s": 39.1
+    },
+    {
+      "id": "H8",
+      "source": "holdout",
+      "type": "Relief-device position",
+      "question": "Standing at SV 104.01: which equipment is piped to it with no shut-off valve in between, on its inlet side and on its outlet side, and what is it there to protect?",
+      "outcome": "correct",
+      "score": 1.0,
+      "profile": [
+        true,
+        true,
+        true
+      ],
+      "required": [
+        {
+          "item": "P4712 is piped to its inlet side with no shut-off valve between",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "T4750 is piped to its outlet side with no shut-off valve between",
+          "kind": "fact",
+          "found": true
+        },
+        {
+          "item": "unknown: purpose_or_intent",
+          "kind": "unknown",
+          "found": true
+        }
+      ],
+      "forbidden": [],
+      "unknown_categories": [
+        "purpose_or_intent"
+      ],
+      "cited_facts": 4,
+      "cause": null,
+      "answer": "Facts in the drawing\n- SV 104.01 (SpringLoadedGlobeSafetyValve-1), SpringLoadedGlobeSafetyValve [E2.1]\n\nDerived by graph analysis of the drawing\n- No valve between SV 104.01 (SpringLoadedGlobeSafetyValve-1) and P4712 (ReciprocatingPump-1) (line 47126, DN 50) [E5.6, isolation_boundary]\n- No valve between SV 104.01 (SpringLoadedGlobeSafetyValve-1) and T4750 (Tank-1) (line 47125, DN 50) [E5.5, isolation_boundary]\n\nNot established by the P&ID\n- A P&ID does not state the purpose of an item or the intent of a design. Asked about: SV 104.01 (SpringLoadedGlobeSafetyValve-1).",
+      "requested_outputs": [
+        {
+          "id": "q1",
+          "kind": "items",
+          "description": "Equipment piped to SV 104.01 on its inlet side with no shut-off valve in between",
+          "covered_by": {
+            "direct": [
+              "E2.1"
+            ],
+            "derived": [
+              "E5.6"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q2",
+          "kind": "items",
+          "description": "Equipment piped to SV 104.01 on its outlet side with no shut-off valve in between",
+          "covered_by": {
+            "direct": [
+              "E2.1"
+            ],
+            "derived": [
+              "E5.5"
+            ],
+            "unknown": []
+          }
+        },
+        {
+          "id": "q3",
+          "kind": "explanation",
+          "description": "What SV 104.01 is there to protect",
+          "covered_by": {
+            "direct": [
+              "E2.1"
+            ],
+            "derived": [],
+            "unknown": [
+              "purpose_or_intent"
+            ]
+          }
+        }
+      ],
+      "tools_used": [
+        "find_entities",
+        "get_connections",
+        "get_connections",
+        "isolation_boundary"
+      ],
+      "repair": null,
+      "llm_calls": 6,
+      "tool_calls": 4,
+      "latency_s": 85.6
+    }
+  ]
+}
