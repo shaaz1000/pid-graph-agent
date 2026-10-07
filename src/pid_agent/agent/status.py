@@ -101,7 +101,9 @@ def _nothing_reached(given: dict[str, Any], meta: dict[str, Any], provenance: Pr
     if unknown or stops:
         why = "its type filter named a type that is not in the graph" if unknown else "it was told to stop at certain types"
         return f"Nothing {what} was found {direction} {start}{conditions}, but the search was limited ({why}), so this does not show that nothing is connected."
-    return f"Nothing {what} is {direction} {start}{conditions}. The search covered all the drawn piping in that direction" + (" (no type filter)." if not types else ".")
+    leaves = _ids([e.get("id") for e in meta.get("endpoint_details") or [] if e.get("kind") == "drawing_end"], provenance)
+    beyond = f" The piping leaves this drawing at {', '.join(leaves)}; what is connected beyond is not shown." if leaves else ""
+    return f"Nothing {what} is {direction} {start}{conditions}. The search covered all the drawn piping in that direction" + (" (no type filter)." if not types else ".") + beyond
 
 
 def status_statement(result: dict[str, Any], provenance: Provenance) -> str | None:

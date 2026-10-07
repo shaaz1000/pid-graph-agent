@@ -93,14 +93,16 @@ def absence_fact(result: dict[str, Any]) -> dict[str, Any]:
     ``reaches_nothing`` for a complete search; ``found_nothing_within_search_limits`` for one
     that was bounded, which says nothing about what lies beyond. The start, direction, items
     treated as closed, type filter and depth bound are part of the fact, so two searches with
-    different conditions are two different facts.
+    different conditions are two different facts. So are the off-page connectors the searched
+    piping ends at: the fact is about this drawing, not about what is connected beyond them.
     """
     meta, given = result.get("meta") or {}, result.get("input") or {}
     definitive = absence_is_definitive(result)
     types = (meta.get("type_filter") or {}).get("applied") or []
     return canonical("reaches_nothing" if definitive else "found_nothing_within_search_limits", meta["start"], None, None, direction=given.get("direction"), blocked=meta.get("blocked"),
                      semantics=meta.get("route_semantics"), entity_types=sorted(types), max_depth=meta.get("max_depth"), complete=definitive,
-                     unknown_types=(meta.get("type_filter") or {}).get("unknown"), stopped_at_types=meta.get("stopped_at_types"))  # fmt: skip
+                     unknown_types=(meta.get("type_filter") or {}).get("unknown"), stopped_at_types=meta.get("stopped_at_types"),
+                     leaves_drawing_at=sorted(e["id"] for e in meta.get("endpoint_details") or [] if e.get("kind") == "drawing_end"))  # fmt: skip
 
 
 def fact_key(fact: dict[str, Any]) -> str:
@@ -269,8 +271,8 @@ def _check_coverage(out: Submission, registry: EvidenceRegistry, requested: list
     * when any row of a composite analysis is cited, the application adds every core row of
       that analysis, whatever kind the output was given;
     * what the evidence for an output establishes is read from the operations and the route
-      semantics of their results. A route that ignores flow direction is recorded as
-      connectivity, never as process flow, and is worded that way whatever the kind;
+      semantics of their results, row by row. A route that ignores flow direction is
+      recorded as connectivity, never as process flow, and is worded that way whatever the kind;
     * where the model named a strict kind, rows of an operation that cannot produce it do not
       answer the output, and an output a P&ID does not contain needs an unknown.
     """
@@ -304,8 +306,10 @@ def _check_coverage(out: Submission, registry: EvidenceRegistry, requested: list
                 added.append(ref)
         completed += len(added)
         answering = [item for item in covering if capabilities.answers(kind, registry.tool(item["ref"]), registry.semantics(item["ref"]))]
-        proven = sorted({k for item in covering for k in capabilities.establishes(registry.tool(item["ref"]), registry.semantics(item["ref"]))})
-        routes = sorted({registry.semantics(item["ref"]) for item in covering if registry.semantics(item["ref"])})
+        # Stated row by row: one flag for the whole output would let a drawn-flow row lend its
+        # reading to a topological one cited beside it.
+        routes = [{"ref": item["ref"], "semantics": registry.semantics(item["ref"]), "establishes": capabilities.establishes(registry.tool(item["ref"]), registry.semantics(item["ref"]))}
+                  for item in covering if registry.semantics(item["ref"])]  # fmt: skip
         unknown = [u["category"] for u in out.unknowns if output["id"] in outputs(u["covers"])]
         if kind in capabilities.NOT_IN_A_DRAWING and not unknown:
             out.errors.append(f"Requested output {name} is of kind {kind}, which a P&ID does not contain. Name it as an unknown; facts may be cited in addition.")
@@ -318,7 +322,7 @@ def _check_coverage(out: Submission, registry: EvidenceRegistry, requested: list
         refs = [i["ref"] for i in answering]
         output_record = {"direct": [r for r in refs if registry.kind(r) == "direct"], "derived": [r for r in refs if registry.kind(r) == "derived"], "unknown": unknown,
                          "answered_by": sorted({registry.tool(r) for r in refs}), "completed_by_application": added,
-                         "evidence_establishes": proven, "route_semantics": routes, "shows_process_flow": "flow_reachability" in proven}  # fmt: skip
+                         "route_evidence": routes}  # fmt: skip
         out.requested.append({**{k: output[k] for k in ("id", "description", "kind")}, "covered_by": output_record})
     if completed:
         out.notes.append(f"{completed} row(s) were added by the application: they are the core rows of an analysis the answer cites.")

@@ -81,6 +81,16 @@ def test_the_direction_is_part_of_the_fact(tools):
     assert other["q"]["direction"] == "downstream" and other != fact
 
 
+def test_piping_that_leaves_the_drawing_is_named_with_the_absence(tools):
+    # Downstream of this tee the piping ends at an off-page connector: nothing of the type is on this drawing, and the answer says where the drawing ends.
+    obs = traverse(tools, start_entity_id="PipeTee-5", direction="downstream", entity_types=["equipment"])
+    fact, text = absence(obs)
+    assert fact["p"] == "reaches_nothing" and fact["q"]["leaves_drawing_at"] == ["FlowOutPipeOffPageConnector-1"]
+    assert text.endswith("The piping leaves this drawing at FlowOutPipeOffPageConnector-1; what is connected beyond is not shown.")
+    closed, text = absence(traverse(tools, start_entity_id="BlindFlange-1", direction="downstream"))
+    assert "leaves_drawing_at" not in closed["q"] and "leaves this drawing" not in text
+
+
 def test_the_same_start_with_different_filters_gives_distinct_facts(tools):
     from pid_agent.agent.answer import fact_key
 

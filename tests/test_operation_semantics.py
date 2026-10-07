@@ -57,8 +57,7 @@ def test_no_label_turns_a_backwards_route_through_a_relief_valve_into_flow(tools
     path = obs[0]["paths"][0]
     assert path["route_semantics"] == "topological" and path["one_way_devices_against_flow"] == [RELIEF]
     answer = submit(obs, kind, "E1.1")
-    assert record(answer)["shows_process_flow"] is False and "flow_reachability" not in record(answer)["evidence_establishes"]
-    assert record(answer)["route_semantics"] == ["topological"]
+    assert record(answer)["route_evidence"] == [{"ref": "E1.1", "semantics": "topological", "establishes": ["connectivity"]}]
     if kind == "flow_reachability":  # the model said it is a flow question: the route does not answer it
         assert not answer.ok and "cannot answer that kind" in answer.errors[0]
     text = answer.render()
@@ -71,7 +70,7 @@ def test_no_label_turns_a_backwards_route_through_a_relief_valve_into_flow(tools
 def test_reach_ignoring_flow_direction_is_not_flow_under_any_label(tools, kind):
     obs = observe(tools, ("traverse", {"start_entity_id": "P4712", "direction": "both", "entity_types": ["equipment"]}))
     answer = submit(obs, kind, "R1")
-    assert answer.ok and record(answer)["shows_process_flow"] is False and record(answer)["evidence_establishes"] == ["connectivity"]
+    assert answer.ok and record(answer)["route_evidence"] and all(row["establishes"] == ["connectivity"] for row in record(answer)["route_evidence"])
     assert "when flow direction is ignored" in answer.render() and "downstream of" not in answer.render() and "upstream of" not in answer.render()
 
 
@@ -79,14 +78,15 @@ def test_reach_ignoring_flow_direction_is_not_flow_under_any_label(tools, kind):
 def test_a_route_along_the_drawn_flow_is_flow_evidence_whatever_the_label(tools, kind):
     obs = observe(tools, ("find_path", {"source_entity_id": "T4750", "target_entity_id": "P4712"}), ("traverse", {"start_entity_id": "P4712", "direction": "upstream", "entity_types": ["equipment"]}))
     answer = submit(obs, kind, "E1.1", "R2")
-    assert answer.ok and record(answer)["shows_process_flow"] is True and record(answer)["route_semantics"] == ["drawn_flow"]
+    assert answer.ok and len(record(answer)["route_evidence"]) > 1 and all(row["semantics"] == "drawn_flow" and "flow_reachability" in row["establishes"] for row in record(answer)["route_evidence"])
     assert "Route: " in answer.render() and "upstream of" in answer.render()  # the direction asked of the graph is the direction stated
 
 
 def test_mixing_both_readings_keeps_each_row_worded_by_its_own_semantics(tools):
     obs = observe(tools, ("find_path", BACKWARDS), ("find_path", {"source_entity_id": "T4750", "target_entity_id": "P4712"}))
     answer = submit(obs, "flow_reachability", "E1.1", "E2.1")
-    assert answer.ok and record(answer)["route_semantics"] == ["drawn_flow", "topological"]
+    # each row keeps its own reading: the drawn-flow route does not lend flow to the topological one beside it
+    assert answer.ok and {row["ref"]: row["establishes"] for row in record(answer)["route_evidence"]} == {"E1.1": ["connectivity"], "E2.1": ["connectivity", "flow_reachability"]}
     assert record(answer)["derived"] == ["E2.1"]  # only the drawn-flow route answers the flow output
     lines = answer.render().splitlines()
     assert sum("not a route in the drawn flow direction" in line for line in lines) == 1 and sum(line.startswith("- Route: ") for line in lines) == 1
