@@ -172,11 +172,13 @@ model wrote it. The hardened code did not produce the recorded results.
   relief valve into the pump's discharge. The row is labelled "direction any" and is correct
   as connectivity; it must not be read as "the tank can still feed the pump". The agent can
   still choose this operation when a question asks whether a route "remains". This affected
-  H5 and HG2 in the holdout below and is related to the miss on C7.
+  H5 and HG2 in the first holdout below and is related to the miss on C7. *Since then:* such a
+  route is marked topological, worded as connectivity, and blocked from satisfying a
+  process-flow output (see "Post-evaluation architecture hardening").
 
-**Next step for production.** Reduce planner freedom with a typed planning or capability
-layer, use composite deterministic graph analyses for the common multi-hop operations, and
-keep the structured answer contract.
+**Next step for production.** Reduce planner freedom further. A capability layer and
+deterministic completion of composite analyses now exist (see "Post-evaluation architecture
+hardening"), but the choice of operation is still the model's and still varies.
 
 ## Post-evaluation holdout / sanity check
 
@@ -198,11 +200,78 @@ changes were made after results were observed. Details:
 - No grounding or security regression: 0 model-authored prose in rendered answers, 0 cited
   ids missing from tool results, 0 model-controlled tool-input text in rendered output.
 
+## Post-evaluation architecture hardening
+
+Made after the official evaluation and after the first holdout. The official 150-run figures
+above are unchanged and historical; none of this was re-run on that set.
+
+The post-evaluation architecture hardening prevents direction-agnostic connectivity from
+satisfying process-flow outputs and completes composite analysis results deterministically
+from operation semantics. A second frozen holdout found 0 process-route semantic errors, 0
+contradictions and 0 unsupported facts, while planner/kind-selection variance remained.
+
+- **Capability declarations and constrained planning.** `capabilities.py` declares, as data,
+  which operations can answer each kind of requested output (a boundary by
+  `isolation_boundary`, a signal chain by `trace_instrumentation`, a line structure by
+  `trace_line`, flow reachability by `traverse` or `find_path` along the drawn flow). After
+  the decomposition the model is told which operations fit each output. Outputs a drawing
+  does not contain (procedures, behaviour) must be named as unknowns.
+- **Topological versus drawn-flow route semantics.** `traverse` and `find_path` mark every
+  result `drawn_flow` (direction downstream or upstream) or `topological` (direction any or
+  both). A topological route also reports how many pipes it follows against the drawn flow
+  and which check or relief devices it passes against their flow direction. It is rendered
+  as "connected by piping when flow direction is ignored", never as a route.
+- **Deterministic composite completion based on operation semantics.** Citing any row of an
+  isolation boundary, an instrumentation chain, a line trace or a route set makes the
+  application add the core rows of that same result: boundary valves, unisolated connections
+  and relief rows; measurement point, signal chain, final element, fail action and line
+  context; the runs of a line; every route found. Rows of other results, and the item and
+  property rows of the same result, are added only if cited.
+- **The trust boundary no longer depends on the model-assigned kind.** In the second holdout
+  completion and the flow check still followed the kind the model gave an output, and a wrong
+  label switched them off. Now the kind is used for planning and can only tighten the check.
+  What the evidence for an output establishes is computed from the operation and the route
+  semantics of its result: a topological route gives connectivity and never flow
+  reachability under any label, and each answered output records this row by row
+  (`route_evidence`). Planning and kind assignment remain variable: a wrong label can still
+  lead the model to call a different operation, and the application cannot know that a
+  question was about flow if neither the label nor the evidence says so. In that case the
+  answer still states connectivity only.
+- **Citable completed empty traversal facts.** An empty traversal gives the fact
+  `reaches_nothing` only when the search ran to the end of the drawn piping. The fact and its
+  fixed wording carry the start, the direction, the items treated as closed, the type filter
+  and the depth bound, and name any off-page connector the searched piping ends at. A search cut off at its depth limit, told to stop at certain types, or
+  filtered by a type the graph does not have gives `found_nothing_within_search_limits`,
+  worded as not showing that nothing lies beyond. Without a type filter the statement is
+  about every kind of item and is not narrowed to equipment.
+
+## Second post-evaluation holdout
+
+Not part of the official evaluation. Run on commit `1abcc01` (clean tree) after the capability
+and route-semantics pass, on questions and gold committed before inference; recorded as
+produced, nothing rescored. Details:
+[evals/followup/holdout-2/README.md](../evals/followup/holdout-2/README.md).
+
+- 8 new complex questions, one run each: 5 correct, 3 partial, 0 incorrect, 0 withheld; mean
+  0.87; required facts 25 of 28.
+- 4 new rephrasing groups, 4 phrasings each, 2 repeats (32 runs, all answered): 11 of 16
+  phrasings repeat-consistent, 0 of 4 groups fully consistent across phrasings, required-fact
+  recall 0.72, entity resolution consistent in 4 of 4 groups.
+- 0 process-route semantic errors, 0 contradictions, 0 unsupported facts, 0 model-authored
+  prose, 0 provider failures. The application added 27 rows to complete composite results.
+- Consistency did not improve in any way this small set can show. The misses were planner and
+  kind-selection variance: for example, runs that labelled a control-loop output as items
+  were not completed and two left out the fail action.
+- The two fixes that came after this run (operation semantics as the trust boundary; absence
+  facts with their filter and bound) were verified with deterministic tests only. No model
+  run was made after them.
+
 ## Reproduce
 
 ```bash
-uv run pytest                                              # 785 deterministic tests, no key
+uv run pytest                                              # 861 deterministic tests, no key
 uv run python evals/followup/holdout/run_holdout.py        # re-score the holdout, no key
+uv run python evals/followup/holdout-2/run_holdout.py      # re-score the second holdout, no key
 uv run python evals/followup/followup.py                   # re-score the saved runs, no key
 uv run python evals/followup/followup.py --run complex     # ask the 27 complex questions
 uv run python evals/followup/followup.py --run consistency --repeats 3
@@ -220,3 +289,5 @@ from the working session and excluding an overnight idle gap. Roughly three of t
 were unattended model runs (the 150-run evaluation 1 h 45 min, the diagnostic smoke runs about
 45 min, the holdout about 30 min). That is more than the four hours suggested. An AI coding
 assistant was used throughout, directed by the instructions in `prompts/30` to `prompts/37`.
+The later architecture hardening and second holdout (`prompts/39`, `prompts/40`) are not
+included in that figure.

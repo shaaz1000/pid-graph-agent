@@ -51,7 +51,7 @@ Without any API key you can still call the graph tools directly and run the test
 
 ```bash
 uv run pid-agent tool traverse '{"start_entity_id": "P4711", "direction": "downstream", "entity_types": ["valve"]}'
-uv run pytest                                    # 785 deterministic tests, no network
+uv run pytest                                    # 861 deterministic tests, no network
 uv run python evals/evaluator.py                 # re-score every saved evaluation run
 uv run python scripts/ingestion_matrix.py        # all 35 DEXPI 1.3 examples through ingestion
 ```
@@ -541,8 +541,48 @@ facts they retrieve and cite, not in what those facts say.
   gold, runs and transcripts: [evals/followup/](evals/followup/)
 - Post-evaluation holdout: [evals/followup/holdout/](evals/followup/holdout/README.md). A
   separate frozen holdout on the hardened final branch used 8 new complex questions and 3 new
-  paraphrase groups; it found no grounding/security regressions but reproduced the
-  directional-vs-topological route limitation.
+  paraphrase groups; it found no grounding/security regressions and exposed a route found
+  with flow direction ignored (backwards through a relief valve) being given for a flow
+  question.
+
+### Post-evaluation architecture hardening
+
+The results above are the official 150-run evaluation on commit `87953f4` and are historical;
+the changes below were made afterwards and were not re-run on that set.
+
+- **Capability declarations and constrained planning.** Each kind of requested output
+  declares which graph operations can answer it
+  ([capabilities.py](src/pid_agent/agent/capabilities.py)); after decomposing the question the
+  model is told which operations fit each output.
+- **Explicit route semantics.** Every route and reach result is marked `drawn_flow`
+  (downstream or upstream) or `topological` (flow direction ignored). A topological route is
+  worded as connectivity, names any check or relief device it passes against its flow
+  direction, and cannot satisfy a process-flow output. This blocks the backwards relief-valve
+  route the first holdout exposed.
+- **Deterministic composite completion from operation semantics.** When any row of an
+  isolation boundary, an instrumentation chain, a line trace or a route set is cited, the
+  application adds the core rows of that result, so a boundary keeps its unisolated
+  connections and relief rows and a loop keeps its final element and fail action.
+- **The trust boundary does not depend on the model-assigned kind.** The kind is still chosen
+  by the model and still varies; it is used for planning and can only make the check
+  stricter. What a cited result proves, and which rows complete it, are read from the
+  operation and its result.
+- **Citable completed empty traversals.** "Nothing was reached" is a fact only when the search
+  ran to the end of the drawn piping, and it states its start, direction, items treated as
+  closed, type filter and depth. A search cut off at its depth limit is worded as showing
+  nothing about what lies beyond.
+
+The post-evaluation architecture hardening prevents direction-agnostic connectivity from
+satisfying process-flow outputs and completes composite analysis results deterministically
+from operation semantics. A second frozen holdout found 0 process-route semantic errors, 0
+contradictions and 0 unsupported facts, while planner/kind-selection variance remained.
+
+Second holdout ([evals/followup/holdout-2/](evals/followup/holdout-2/README.md), commit
+`1abcc01`, 40 runs): 8 new complex questions gave 5 correct and 3 partial (mean 0.87); 4 new
+rephrasing groups gave 11 of 16 phrasings repeat-consistent and 0 of 4 groups fully
+consistent. This does not show that consistency improved. The last two fixes (operation
+semantics as the trust boundary, and filter- and truncation-aware absence facts) came after
+that run and are covered by deterministic tests only.
 
 ## Limitations
 

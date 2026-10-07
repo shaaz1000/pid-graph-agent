@@ -58,17 +58,36 @@ contradictions, but answers differ in which valid facts they retrieve and cite.
 - **Planner and tool selection vary.** The same question can lead to different operations.
 - **Multi-hop questions stop early**, at the step limit or one lookup short.
 - **Retrieved facts are sometimes left out** of the final structured answer.
-- **Directional versus direction-agnostic routes.** A route query that ignores flow direction
-  can return a path that is valid in the graph but is not a process-flow route, for example
-  T4750 -> SV 104.01 -> P4712, backwards through the relief valve. Such a row is graph
-  connectivity and must not be read as process flow; the agent can still choose it when asked
-  whether a route "remains".
+- **Direction-agnostic routes read as flow.** The first holdout exposed a route found with
+  flow direction ignored (T4750 -> SV 104.01 -> P4712, backwards through the relief valve)
+  being given for a flow question. This is now blocked; see below.
 - **Licence.** Nemotron is open-weight, not OSI open source. Provider and model are
   configuration.
 
-After the evaluation, a security review found that a status message could repeat model-chosen
-input. No evaluated answer was affected; the rendering was hardened in separate commits. A
-frozen holdout on the hardened branch found no regression and reproduced the route limitation.
+## After the evaluation
+
+The figures above are the official run on commit `87953f4` and are historical; later changes
+were not re-run on that set.
+
+- **Security.** A status message could repeat model-chosen input. No evaluated answer was
+  affected; the rendering was hardened. A first frozen holdout found no regression and
+  exposed the backwards relief-valve route.
+- **Architecture hardening.** Each kind of requested output declares which operations can
+  answer it, and the planner is told (capability-constrained planning). Every route is marked
+  drawn-flow or topological. Citing any row of a composite analysis makes the application add
+  the rest of it. A completed empty traversal is a citable fact stating its start, direction,
+  closed items, type filter and depth; a search cut off at its depth limit is not.
+- **Trust boundary.** Planning and the kind the model assigns still vary. What a cited result
+  proves, and which rows complete it, are read from the operation and its result.
+
+The post-evaluation architecture hardening prevents direction-agnostic connectivity from
+satisfying process-flow outputs and completes composite analysis results deterministically
+from operation semantics. A second frozen holdout found 0 process-route semantic errors, 0
+contradictions and 0 unsupported facts, while planner/kind-selection variance remained.
+
+That holdout (8 questions, 4 groups, 40 runs, commit `1abcc01`): 5 correct, 3 partial; 11 of
+16 phrasings repeat-consistent; 0 of 4 groups fully consistent. It does not show that
+consistency improved. The last two fixes followed it and have deterministic tests only.
 
 ## Time
 
@@ -80,5 +99,6 @@ more than the four hours suggested.
 - Detailed results and method: [FOLLOWUP_DETAILS.md](FOLLOWUP_DETAILS.md)
 - Questions, gold, runs, reports and transcripts with the tool trace of every answer:
   [evals/followup/](../evals/followup/) (`runs/` is the official evaluation, on commit `87953f4`)
-- Post-evaluation holdout: [evals/followup/holdout/](../evals/followup/holdout/README.md)
-- The exercise and the instructions for this round: [prompts/](../prompts/) 29 to 37
+- Post-evaluation holdouts: [first](../evals/followup/holdout/README.md),
+  [second](../evals/followup/holdout-2/README.md)
+- The exercise and the instructions for this round: [prompts/](../prompts/) 29 to 40

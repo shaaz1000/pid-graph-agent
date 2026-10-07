@@ -1686,7 +1686,7 @@ All from the DeepSeek run.
 
 ## Testing strategy
 
-785 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
+861 deterministic tests, no network (`uv run pytest`). Four live tests are deselected by default (`-m live`).
 
 | Layer | File | Tests | What it pins down |
 |---|---|---|---|
@@ -1891,7 +1891,7 @@ The lists below were written for the original C01 build; where an item no longer
 - **`find_path` is shortest path only.**
 - *Historical (original C01 build):* instrumentation cost one call per hop. `trace_instrumentation` now returns a whole chain in one call; whether the model chooses it still varies.
 - *Historical (original C01 build):* only C01 had been run. Since then all 35 official DEXPI 1.3 examples pass deterministic ingestion, eight structurally diverse additional P&IDs received a live reasoning evaluation, and the complex and rephrasing follow-up is on C01.
-- **Directional versus direction-agnostic routes.** A route query that ignores flow direction returns graph connectivity, which is not always a process-flow route (for example backwards through a relief valve).
+- **Directional versus direction-agnostic routes.** A route query that ignores flow direction returns graph connectivity, which is not always a process-flow route (for example backwards through a relief valve). Such a result is marked `topological`, worded as connectivity, and cannot satisfy a process-flow output, whatever kind the model gave the output; the model can still choose that operation.
 - **Resolver heuristics.** A small stop-word list and a plural rule decide whether a type phrase is a set or an ambiguity.
 
 **Evaluation and infrastructure**

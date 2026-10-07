@@ -90,7 +90,7 @@ The first evaluation (DeepSeek, and one question on Groq) ran against the agent 
 2. *Latency.* NVIDIA-hosted inference took from half a minute to several minutes per question during testing.
 3. *"Feeds" can stop at a fitting.* The model sometimes reports the adjacent tee instead of traversing to equipment.
 4. *Consistency under rephrasing is weak.* The model's choice of graph operation varies, multi-hop questions sometimes stop early, and retrieved facts are sometimes left out of the answer. Answers did not contradict each other.
-5. *Directional versus direction-agnostic routes.* A route found while ignoring flow direction is graph connectivity and may not be a process-flow route.
+5. *Directional versus direction-agnostic routes.* A route found while ignoring flow direction is graph connectivity and may not be a process-flow route. It is now marked topological and cannot satisfy a process-flow output; the model's choice of operation still varies.
 
 **Optional** (not built, on purpose): hosting; conversation memory between questions; highlighting on the drawing. (Multi-hop instrumentation traversal in one call was on this list for the original submission; it now exists as `trace_instrumentation`.)
 
@@ -102,7 +102,7 @@ Run from a new clone of this repository, without an API key:
 |---|---|
 | `uv sync` | installs |
 | `uv run pid-agent tool find_entities '{"query": "P4711"}'` | returns `CentrifugalPump-1` |
-| `uv run pytest` | 785 passed, 4 deselected (count updated after the follow-up round) |
+| `uv run pytest` | 861 passed, 4 deselected (count updated after the post-evaluation hardening) |
 | `uv run python evals/evaluator.py` | re-scores every saved run (C01 and the eight cross-P&ID suites) |
 | `uv run pid-agent-ui` | page loads and shows the graph |
 | `uv run pid-agent "..."` without a key | one-line error naming the variable to set |
