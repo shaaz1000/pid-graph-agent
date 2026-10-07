@@ -290,6 +290,10 @@ class GraphService:
         result.meta["unexplored_beyond_max_depth"] = sorted(outcome.frontier - {start.id})
         result.meta["start"] = start.id
         result.meta["route_semantics"] = ROUTE_SEMANTICS[direction]
+        # What the search was limited to, so that "nothing found" can be stated with its conditions.
+        unknown_types = [phrase for phrase in entity_types or [] if self._resolver.entities_of_type(phrase) is None]
+        result.meta["type_filter"] = {"applied": [phrase for phrase in entity_types or [] if phrase not in unknown_types], "unknown": unknown_types}
+        result.meta["stopped_at_types"] = list(stop_at_types or [])
         if blocked:
             # A hypothetical: these items were treated as closed. Nothing is said about the process.
             result.meta["blocked"] = sorted(blocked)

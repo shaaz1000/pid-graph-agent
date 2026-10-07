@@ -70,10 +70,37 @@ def canonical(predicate: str, subject: str | None, obj: str | None = None, value
         fact["o"] = obj
     if value is not None:
         fact["v"] = value if isinstance(value, bool) else str(value)
-    q = {k: v for k, v in qualifiers.items() if v not in (None, "", [], {})}
+    q = {k: v for k, v in qualifiers.items() if v is False or v not in (None, "", [], {})}
     if q:
         fact["q"] = q
     return fact
+
+
+def absence_is_definitive(result: dict[str, Any]) -> bool:
+    """Whether an empty traversal shows that nothing (of the filtered types) is connected.
+
+    Only a search that ran to the end of the drawn piping does: not one cut off by its depth
+    limit, not one told to stop at certain types, and not one whose type filter named a type
+    the graph does not have.
+    """
+    meta = result.get("meta") or {}
+    return not meta.get("truncated_by_max_depth") and not (meta.get("type_filter") or {}).get("unknown") and not meta.get("stopped_at_types")
+
+
+def absence_fact(result: dict[str, Any]) -> dict[str, Any]:
+    """The fact an empty traversal supports, with every condition it depends on.
+
+    ``reaches_nothing`` for a complete search; ``found_nothing_within_search_limits`` for one
+    that was bounded, which says nothing about what lies beyond. The start, direction, items
+    treated as closed, type filter and depth bound are part of the fact, so two searches with
+    different conditions are two different facts.
+    """
+    meta, given = result.get("meta") or {}, result.get("input") or {}
+    definitive = absence_is_definitive(result)
+    types = (meta.get("type_filter") or {}).get("applied") or []
+    return canonical("reaches_nothing" if definitive else "found_nothing_within_search_limits", meta["start"], None, None, direction=given.get("direction"), blocked=meta.get("blocked"),
+                     semantics=meta.get("route_semantics"), entity_types=sorted(types), max_depth=meta.get("max_depth"), complete=definitive,
+                     unknown_types=(meta.get("type_filter") or {}).get("unknown"), stopped_at_types=meta.get("stopped_at_types"))  # fmt: skip
 
 
 def fact_key(fact: dict[str, Any]) -> str:
@@ -180,9 +207,7 @@ class EvidenceRegistry:
             out.append(canonical(fact.predicate, fact.subject, fact.object, fact.value, **qualifiers))
         observed = self._by_step.get(_step(row_ref), {})
         if observed.get("tool") == "traverse" and observed.get("status") == "empty" and row_ref == observed.get("status_ref") and meta.get("start"):
-            # Nothing was reached: a result in its own right, for example with items treated as closed.
-            given = observed.get("input") or {}
-            out.append(canonical("reaches_nothing", meta["start"], None, None, direction=given.get("direction"), blocked=meta.get("blocked"), semantics=meta.get("route_semantics"), entity_types=given.get("entity_types")))
+            out.append(absence_fact(observed))
         for item in self._attributes.get(row_ref, []):
             out.append(canonical("has_property", item.get("on") or item["of"], None, item["value"], property=item["property"], owner=item["of"] if item.get("on") else None))
         return out

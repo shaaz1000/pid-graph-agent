@@ -203,7 +203,7 @@ def test_reach_ignoring_flow_direction_is_not_flow_reachability_either(tools):
 def test_nothing_reachable_is_a_fact_that_can_be_cited(tools):
     obs = observe(tools, ("traverse", {"start_entity_id": "T4750", "direction": "downstream", "blocked_entity_ids": [VALVE]}))
     answer = submit(obs, outputs("flow_reachability"), [("E1.0", ["q1"])])
-    assert answer.ok and {"p": "reaches_nothing", "s": TANK, "q": {"direction": "downstream", "blocked": [VALVE], "semantics": "drawn_flow"}} in answer.facts()
+    assert answer.ok and {"p": "reaches_nothing", "s": TANK, "q": {"direction": "downstream", "blocked": [VALVE], "semantics": "drawn_flow", "max_depth": 25, "complete": True}} in answer.facts()
     assert EvidenceRegistry(obs).kind("E1.0") == "derived"
 
 

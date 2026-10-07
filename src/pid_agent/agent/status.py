@@ -81,6 +81,29 @@ def _ids(items: list[Any], provenance: Provenance) -> list[str]:
     return [shown for shown in (provenance.canonical(i) for i in items) if shown is not None]
 
 
+def _nothing_reached(given: dict[str, Any], meta: dict[str, Any], provenance: Provenance) -> str:
+    """An empty traversal, with the conditions that decide what it shows.
+
+    A complete search can show that nothing is connected. A search that was cut off at its depth
+    limit, told to stop at certain types, or filtered by a type the graph does not have, shows
+    only that nothing was found within those limits.
+    """
+    start = provenance.named(meta.get("start") or given.get("start_entity_id"), "the requested item")
+    direction = {"downstream": "downstream of", "upstream": "upstream of", "both": "connected to (flow direction ignored)"}.get(given.get("direction"), "from")
+    closed = _ids(meta.get("blocked") or [], provenance)
+    conditions = f" with {', '.join(closed)} treated as closed" if closed else ""
+    types = (meta.get("type_filter") or {}).get("applied") or []
+    shown = _ids(types, provenance)
+    what = f"of type {', '.join(shown)}" if types and len(shown) == len(types) else "of the requested type(s)" if types else "at all"
+    unknown, stops, depth = (meta.get("type_filter") or {}).get("unknown"), meta.get("stopped_at_types"), meta.get("max_depth")
+    if meta.get("truncated_by_max_depth"):
+        return f"Nothing {what} was found within {depth} pipe(s) {direction} {start}{conditions}. The search stopped at that depth, so this does not show that nothing lies beyond."
+    if unknown or stops:
+        why = "its type filter named a type that is not in the graph" if unknown else "it was told to stop at certain types"
+        return f"Nothing {what} was found {direction} {start}{conditions}, but the search was limited ({why}), so this does not show that nothing is connected."
+    return f"Nothing {what} is {direction} {start}{conditions}. The search covered all the drawn piping in that direction" + (" (no type filter)." if not types else ".")
+
+
 def status_statement(result: dict[str, Any], provenance: Provenance) -> str | None:
     """What a result with no rows says, in fixed wording. None when it has nothing to say."""
     status, tool = result.get("status"), result.get("tool", "")
@@ -117,9 +140,7 @@ def status_statement(result: dict[str, Any], provenance: Provenance) -> str | No
         direction = f" in direction {given['direction']}" if given.get("direction") in DIRECTIONS - {"both"} else ""
         return f"{item} has no {relationship + ' ' if relationship else ''}connections{direction}."
     if tool == "traverse":
-        direction = given.get("direction") if given.get("direction") in DIRECTIONS else "in that direction"
-        closed = _ids(meta.get("blocked") or [], provenance)
-        return f"No matching entities were found {direction} of {item[0].lower() + item[1:] if item == 'The requested item' else item}" + (f" with {', '.join(closed)} treated as closed." if closed else ".")
+        return _nothing_reached(given, meta, provenance)
     if tool == "isolation_boundary":
         return f"{item} has no piping connections, so it has no isolation boundary."
     if tool == "trace_instrumentation":
